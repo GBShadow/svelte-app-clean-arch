@@ -10,6 +10,7 @@
 
 	let todoList = $state<TodoList>(new TodoList());
 	let revision = $state(0);
+	let ready = $state(false);
 
 	function bump() {
 		revision++;
@@ -43,14 +44,17 @@
 		);
 
 		todoList = list;
+		ready = true;
 		bump();
 	});
 </script>
 
-<TodoListComponent
-	{todoList}
-	{revision}
-	onAddItem={(description) => todoList.addItem(description)}
-	onRemoveItem={(item) => todoList.removeItem(item)}
-	onToggleDone={(item) => todoList.toggleDone(item)}
-/>
+{#if ready}
+	<TodoListComponent
+		{todoList}
+		{revision}
+		onAddItem={(description) => todoList.addItem(description)}
+		onRemoveItem={(item) => todoList.removeItem(item)}
+		onToggleDone={(item) => todoList.toggleDone(item)}
+	/>
+{/if}

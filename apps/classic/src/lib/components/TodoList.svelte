@@ -29,16 +29,18 @@
 	<p>No Item</p>
 {/if}
 
-<span class="completed" data-revision={revision}>{todoList.getCompleted()}%</span>
+{#key revision}
+	<span class="completed">{todoList.getCompleted()}%</span>
 
-{#each todoList.items as item (item.id)}
-	<div>
-		{item.id}
-		<span style:text-decoration={item.done ? 'line-through' : 'none'}>{item.description}</span>
-		<button type="button" onclick={() => onToggleDone(item)}>Done/Undone</button>
-		<button type="button" onclick={() => onRemoveItem(item)}>Remove</button>
-	</div>
-{/each}
+	{#each todoList.items as item (item.id)}
+		<div>
+			{item.id}
+			<span style:text-decoration={item.done ? 'line-through' : 'none'}>{item.description}</span>
+			<button type="button" onclick={() => onToggleDone(item)}>Done/Undone</button>
+			<button type="button" onclick={() => onRemoveItem(item)}>Remove</button>
+		</div>
+	{/each}
+{/key}
 
 <hr />
 

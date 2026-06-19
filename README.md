@@ -17,8 +17,30 @@ Gerenciado com **pnpm workspaces** + **Turborepo**.
 `packages/todo-domain` contém:
 
 - `observable/` — `TodoList extends Observable`, `Observer`
-- `runes/` — classes reativas com `$state` e `$derived`
 - `gateways/` — `TodoMemoryGateway`, `TodoHttpGateway`, `TodoRemoteGateway`
+
+Domínio runes vive em `apps/runes/src/lib/domain/` (classes `.svelte.ts`).
+
+## Documentação
+
+- [Índice geral](./docs/README.md)
+- [Features](./docs/features/) — documentação por funcionalidade
+- [Workflow](./docs/workflow/) — **PR e Jira na mesma pasta** (`<slug>.pr.md`, `<slug>.jira.md`)
+- [Changelog](./docs/CHANGELOG.md) — histórico resumido
+
+## Regras para agentes de IA
+
+Regras em `.cursor/rules/<pasta>/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
+
+| Pasta | Arquivo | Propósito |
+|-------|---------|-----------|
+| `architecture/` | `classic-ports-adapters.mdc` | Ports & Adapters (default) |
+| `documentation/` | `feature-documentation.mdc` | Doc features + CHANGELOG |
+| `workflow/` | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
+| `workflow/` | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
+| `meta/` | `rules-sync.mdc` | Sincronizar Cursor ↔ Claude |
+
+Ao adicionar ou alterar regras, atualize **Cursor**, **CLAUDE.md**, **README** e **docs/README.md**.
 
 ## Comandos
 

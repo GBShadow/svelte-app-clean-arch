@@ -1,0 +1,35 @@
+---
+description: Criar rascunho de tarefa Jira em markdown (docs/workflow/) para copiar ou integrar
+alwaysApply: false
+---
+
+# Tarefas Jira
+
+Quando o usuário pedir **criar tarefa Jira**, **ticket**, **story** ou **issue**:
+
+1. Copiar [`docs/workflow/_template-jira.md`](../../docs/workflow/_template-jira.md) → `docs/workflow/<slug>.jira.md`
+2. Preencher campos Jira em português (ou idioma do usuário)
+3. Vincular a `docs/features/<slug>.md` se a feature já tiver doc
+4. Atualizar índice em `docs/workflow/README.md`
+
+## Convenção de arquivo
+
+- **Pasta única:** `docs/workflow/` (PR e Jira juntos)
+- **Jira:** `<slug>.jira.md` (ex: `add-filters.jira.md`)
+- **PR (mesmo slug):** `<slug>.pr.md`
+
+## Campos obrigatórios
+
+Issue Type, Summary, Description, Acceptance Criteria, Technical Notes (classic), Labels.
+
+Ver `architecture/classic-ports-adapters.mdc` para checklist de camadas.
+
+## Após implementação
+
+1. `docs/features/<slug>.md`
+2. `docs/workflow/<slug>.pr.md`
+3. Atualizar Jira com links
+
+## Integração API
+
+Sem credenciais Jira: rascunho para colar no Jira. Placeholder `[JIRA-KEY]` — não inventar keys.

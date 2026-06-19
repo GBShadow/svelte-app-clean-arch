@@ -1,0 +1,34 @@
+---
+description: Gerar descrição de PR em markdown (docs/workflow/) ao preparar pull request
+alwaysApply: false
+---
+
+# Descrição de Pull Request
+
+Quando o usuário pedir **descrição de PR**, **criar PR** ou **preparar pull request**:
+
+1. Analisar diff/commits da branch (ou mudanças descritas)
+2. Copiar [`docs/workflow/_template-pr.md`](../../docs/workflow/_template-pr.md) → `docs/workflow/<slug>.pr.md`
+3. Preencher todas as seções em português (ou idioma do usuário)
+4. Referenciar `docs/features/<slug>.md` se existir doc da feature
+5. Atualizar índice em `docs/workflow/README.md`
+
+## Convenção de arquivo
+
+- **Pasta única:** `docs/workflow/` (PR e Jira juntos)
+- **PR:** `<slug>.pr.md` (ex: `add-filters.pr.md`)
+- **Jira (mesmo slug):** `<slug>.jira.md`
+
+## Conteúdo obrigatório
+
+Título, resumo, alterações por camada, test plan, docs, breaking changes.
+
+## GitHub
+
+```bash
+gh pr create --body-file docs/workflow/<slug>.pr.md
+```
+
+## Jira relacionado
+
+Referenciar `docs/workflow/<slug>.jira.md` se existir (mesmo slug).

@@ -1,0 +1,58 @@
+---
+description: Padrão Ports & Adapters do app classic (default para novas funcionalidades)
+globs: apps/classic/**,packages/todo-domain/**
+alwaysApply: false
+---
+
+# Classic — Ports & Adapters (default)
+
+Novas funcionalidades seguem **apps/classic** + **packages/todo-domain**, salvo pedido explícito de `remote` ou `runes`.
+
+## Exceções por app
+
+| App | Quando usar | Domínio |
+|-----|-------------|---------|
+| `remote` | Usuário pedir remote functions | Observable em `todo-domain` + `todos.remote.ts` |
+| `runes` | Usuário pedir runes | `$lib/domain/*.svelte.ts` + gateways de `todo-domain` |
+
+## Checklist (ordem obrigatória)
+
+1. **Domínio** — `packages/todo-domain/src/observable/` (model + `notify()`)
+2. **Porta** — `packages/todo-domain/src/gateways/*Gateway.ts` (interface)
+3. **Adaptadores** — `TodoMemoryGateway` (testes) + `TodoHttpGateway` (produção classic)
+4. **Server store** — `apps/classic/src/lib/server/<feature>Store.ts`
+5. **API REST** — `apps/classic/src/routes/api/<resource>/+server.ts` e `[id]/+server.ts`
+6. **UI presentacional** — `apps/classic/src/lib/components/<Feature>.svelte` (só props/callbacks)
+7. **Container** — `apps/classic/src/lib/components/<Feature>Container.svelte` (gateway + Observer)
+8. **Rota** — montar Container em `+page.svelte` ou nova rota
+9. **Teste** — `<Feature>.test.ts` colocado junto ao componente, com `TodoMemoryGateway`
+
+## Imports
+
+```ts
+import TodoList from 'todo-domain/observable/TodoList.js';
+import TodoHttpGateway from 'todo-domain/gateways/TodoHttpGateway.js';
+import { SEED_TODOS, createId, type TodoItemDTO } from 'todo-domain';
+```
+
+## Padrão Container
+
+```svelte
+const gateway = new TodoHttpGateway(fetch, '');
+let revision = $state(0);
+function bump() { revision++; }
+
+list.register(new Observer('addItem', async (item) => {
+  await gateway.addItem((item as Item).toDTO());
+  bump();
+}));
+```
+
+Use `revision` + `bump()` para re-renderizar — objetos de domínio não são reativos no Svelte.
+
+## Proibido
+
+- Lógica de negócio em `+server.ts` (apenas persistência/HTTP)
+- Gateway HTTP ou Observer dentro do componente presentacional
+- Pular testes com `TodoMemoryGateway`
+- Implementar gateway customizado no app quando cabe em `todo-domain`

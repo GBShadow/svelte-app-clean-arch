@@ -1,0 +1,43 @@
+---
+description: Manter regras sincronizadas entre Cursor (.cursor/rules) e Claude (CLAUDE.md)
+alwaysApply: true
+---
+
+# Sincronização de regras (Cursor + Claude)
+
+Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Claude** e **README**:
+
+| Destino | Local |
+|---------|-------|
+| Cursor | `.cursor/rules/<pasta>/<nome>.mdc` |
+| Claude | `CLAUDE.md` (raiz) |
+| Índice | `README.md` + `docs/README.md` |
+
+## Estrutura de pastas
+
+```
+.cursor/rules/
+  architecture/   # padrões de código
+  documentation/  # docs de features, CHANGELOG
+  workflow/       # regras PR + Jira
+  meta/           # sincronização
+docs/
+  features/       # doc por funcionalidade
+  workflow/       # PR (<slug>.pr.md) + Jira (<slug>.jira.md)
+```
+
+## Regras atuais (manter atualizada)
+
+| Pasta | Arquivo | Escopo |
+|-------|---------|--------|
+| architecture | `classic-ports-adapters.mdc` | classic + todo-domain |
+| documentation | `feature-documentation.mdc` | alwaysApply |
+| workflow | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
+| workflow | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
+| meta | `rules-sync.mdc` | alwaysApply |
+
+## Proibido
+
+- Regra só no Cursor ou só no Claude
+- PR e Jira em pastas separadas (`docs/pr/`, `docs/jira/`)
+- Arquivos soltos na raiz de `.cursor/rules/`

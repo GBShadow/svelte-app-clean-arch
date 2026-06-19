@@ -1,0 +1,24 @@
+---
+description: Documentar toda nova funcionalidade em docs/features e CHANGELOG
+alwaysApply: true
+---
+
+# Documentação de funcionalidades
+
+Ao **concluir** uma nova funcionalidade (não para bugfixes triviais de 1 linha):
+
+1. Criar `docs/features/<slug-da-feature>.md` (copiar de `docs/features/_template.md`)
+2. Adicionar entrada em `docs/CHANGELOG.md`
+3. Atualizar índice em `docs/features/README.md`
+
+Template completo: [`docs/features/_template.md`](../../docs/features/_template.md)
+
+## Campos obrigatórios
+
+Resumo, app(s) afetado(s), camadas alteradas, fluxo Ports & Adapters, como testar, decisões de design.
+
+## CHANGELOG
+
+Entrada em `docs/CHANGELOG.md` com data `YYYY-MM-DD`, app, domínio e link para `docs/features/<slug>.md`.
+
+Slug em kebab-case (ex: `todo-list`, `user-profile`).

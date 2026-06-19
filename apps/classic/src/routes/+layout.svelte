@@ -3,7 +3,9 @@
 </script>
 
 <nav>
-	<a href="http://localhost:5173">Classic</a>
+	<a href="/">Classic (revision)</a>
+	|
+	<a href="/invalidate">Classic (invalidate)</a>
 	|
 	<a href="http://localhost:5174">Remote</a>
 	|

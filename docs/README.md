@@ -4,6 +4,7 @@
 |-------|----------|-----------|
 | [features/](./features/) | Doc por funcionalidade | [_template.md](./features/_template.md) |
 | [workflow/](./workflow/) | **PR + Jira (mesma pasta)** | [_template-pr.md](./workflow/_template-pr.md), [_template-jira.md](./workflow/_template-jira.md) |
+| [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
 
 ## Convenção workflow

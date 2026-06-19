@@ -27,6 +27,7 @@ Domínio runes vive em `apps/runes/src/lib/domain/` (classes `.svelte.ts`).
 - [Features](./docs/features/) — documentação por funcionalidade
 - [Workflow](./docs/workflow/) — **PR e Jira na mesma pasta** (`<slug>.pr.md`, `<slug>.jira.md`)
 - [Changelog](./docs/CHANGELOG.md) — histórico resumido
+- [Playwright e2e](./docs/testing/playwright.md) — testes de browser (app classic)
 
 ## Regras para agentes de IA
 
@@ -47,6 +48,7 @@ Ao adicionar ou alterar regras, atualize **Cursor**, **CLAUDE.md**, **README** e
 ```bash
 pnpm install
 pnpm test
+pnpm test:e2e
 pnpm build
 pnpm check
 
@@ -58,6 +60,16 @@ pnpm dev:runes
 pnpm turbo run dev --filter=classic
 pnpm turbo run test --filter=todo-domain
 ```
+
+### Testes e2e (Playwright)
+
+Na **primeira vez** em Linux/WSL, além de `pnpm test:e2e:install`, instale as deps do sistema (requer sudo):
+
+```bash
+cd apps/classic && sudo pnpm exec playwright install-deps
+```
+
+Guia completo: [docs/testing/playwright.md](./docs/testing/playwright.md)
 
 ## Testabilidade
 

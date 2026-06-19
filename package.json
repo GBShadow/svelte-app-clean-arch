@@ -1,0 +1,18 @@
+{
+	"name": "svelte-app",
+	"private": true,
+	"packageManager": "pnpm@9.15.9",
+	"scripts": {
+		"build": "turbo run build",
+		"check": "turbo run check",
+		"check:domain": "pnpm --filter todo-domain check",
+		"dev": "turbo run dev",
+		"dev:classic": "turbo run dev --filter=classic",
+		"dev:remote": "turbo run dev --filter=remote",
+		"dev:runes": "turbo run dev --filter=runes",
+		"test": "turbo run test"
+	},
+	"devDependencies": {
+		"turbo": "^2.5.4"
+	}
+}

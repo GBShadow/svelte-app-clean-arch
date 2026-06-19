@@ -1,0 +1,21 @@
+{
+	"name": "todo-domain",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./observable/*": "./src/observable/*",
+		"./gateways/*": "./src/gateways/*",
+		"./types": "./src/types.ts"
+	},
+	"scripts": {
+		"test:unit": "vitest",
+		"test": "vitest run",
+		"check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.8"
+	}
+}

@@ -1,0 +1,14 @@
+node_modules/
+.pnpm-store/
+.svelte-kit/
+build/
+dist/
+.turbo/
+*.tsbuildinfo
+package-lock.json
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+ports_and_adapters_ca_design_patterns_frontend-master/

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import adapter from '@sveltejs/adapter-auto';
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	server: {
@@ -13,6 +14,7 @@ export default defineConfig({
 		noExternal: ['todo-domain']
 	},
 	plugins: [
+		tailwindcss(),
 		sveltekit({
 			compilerOptions: {
 				runes: ({ filename }) =>

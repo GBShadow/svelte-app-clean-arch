@@ -24,11 +24,12 @@ Domínio runes vive em `apps/runes/src/lib/domain/` (classes `.svelte.ts`).
 ## Documentação
 
 - [Índice geral](./docs/README.md)
+- [Arquitetura runes (default)](./docs/runes-ports-adapters.md) — Ports & Adapters com `$state`/`$derived`, passo a passo
 - [Specs](./docs/specs/) — spec-driven development, antes de implementar (`<slug>.md`)
 - [Features](./docs/features/) — documentação por funcionalidade
 - [Workflow](./docs/workflow/) — **PR e Jira na mesma pasta** (`<slug>.pr.md`, `<slug>.jira.md`)
 - [Changelog](./docs/CHANGELOG.md) — histórico resumido
-- [Playwright e2e](./docs/testing/playwright.md) — testes de browser (app classic)
+- [Playwright e2e](./docs/testing/playwright.md) — testes de browser (apps classic e runes)
 
 ## Regras para agentes de IA
 
@@ -36,7 +37,8 @@ Regras em `.cursor/rules/<pasta>/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
 
 | Pasta | Arquivo | Propósito |
 |-------|---------|-----------|
-| `architecture/` | `classic-ports-adapters.mdc` | Ports & Adapters (default) |
+| `architecture/` | `runes-ports-adapters.mdc` | Ports & Adapters (default) |
+| `architecture/` | `classic-ports-adapters.mdc` | Ports & Adapters (Observable/Observer, sob pedido) |
 | `documentation/` | `feature-documentation.mdc` | Doc features + CHANGELOG |
 | `workflow/` | `spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
 | `workflow/` | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |

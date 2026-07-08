@@ -31,15 +31,17 @@ _(performance, acessibilidade, testes — se aplicável)_
 - [ ] AC2: ...
 - [ ] Testes com `TodoMemoryGateway` cobrindo os cenários acima
 
-## Design (Ports & Adapters)
+## Design (Ports & Adapters — padrão runes)
 
 | Camada | Mudança prevista |
 |--------|-------------------|
-| Domínio | `packages/todo-domain/...` |
-| Gateway | `packages/todo-domain/src/gateways/...` |
-| Server | `apps/classic/src/lib/server/...` |
-| API | `apps/classic/src/routes/api/...` |
-| UI | `apps/classic/src/lib/components/...` |
+| Domínio reativo | `apps/runes/src/lib/domain/*.svelte.ts` |
+| Gateway (porta) | `packages/todo-domain/src/gateways/...` |
+| Server | `apps/runes/src/lib/server/...` |
+| API | `apps/runes/src/routes/api/...` |
+| UI | `apps/runes/src/lib/components/...` |
+
+_(Se a feature for explicitamente `classic` ou `remote`, adaptar os caminhos para `apps/classic/...` ou `apps/remote/...`.)_
 
 ## Contrato de API (se houver)
 

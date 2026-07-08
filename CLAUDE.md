@@ -4,13 +4,14 @@ Monorepo SvelteKit com **Ports & Adapters**: três apps (`classic`, `remote`, `r
 
 ## Regra principal
 
-**Novas funcionalidades = padrão classic**, salvo pedido explícito de `remote` ou `runes`.
+**Novas funcionalidades = padrão runes**, salvo pedido explícito de `classic` ou `remote`.
 
 ## Regras (`.cursor/rules/` — manter sincronizadas com este arquivo)
 
 | Pasta | Arquivo | Propósito |
 |-------|---------|-----------|
-| architecture | `classic-ports-adapters.mdc` | Ports & Adapters (default) |
+| architecture | `runes-ports-adapters.mdc` | Ports & Adapters (default) |
+| architecture | `classic-ports-adapters.mdc` | Ports & Adapters (Observable/Observer, sob pedido) |
 | documentation | `feature-documentation.mdc` | Doc em `docs/features/` + CHANGELOG |
 | workflow | `spec-driven.mdc` | Spec em `docs/specs/<slug>.md` (antes de implementar) |
 | workflow | `pr-description.mdc` | PR em `docs/workflow/<slug>.pr.md` |
@@ -47,11 +48,11 @@ gh pr create --body-file docs/workflow/<slug>.pr.md
 2. Atualizar este `CLAUDE.md`
 3. Atualizar `README.md` e `docs/README.md`
 
-## Classic (default)
+## Runes (default)
 
-UI → Container → TodoHttpGateway → /api/ → `$lib/server/*Store.ts`. Testes com `TodoMemoryGateway`.
+UI → Container (`onMount` + `service.load()`) → `TodoListService` (`$lib/domain/*.svelte.ts`, com `$state`/`$derived`) → `TodoHttpGateway` → `/api/` → `$lib/server/*Store.ts`. Testes com `TodoMemoryGateway`.
 
-## Remote / Runes
+## Classic / Remote
 
+- **classic:** Observable/Observer + Container com `revision`/`bump()` + `TodoHttpGateway`
 - **remote:** Observable + `*.remote.ts` + `TodoRemoteGateway`
-- **runes:** `$lib/domain/*.svelte.ts` + gateways de `todo-domain`

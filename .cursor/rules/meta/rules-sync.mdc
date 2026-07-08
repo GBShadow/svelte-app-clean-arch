@@ -31,6 +31,7 @@ docs/
 
 | Pasta | Arquivo | Escopo |
 |-------|---------|--------|
+| architecture | `runes-ports-adapters.mdc` | runes + todo-domain (default) |
 | architecture | `classic-ports-adapters.mdc` | classic + todo-domain |
 | documentation | `feature-documentation.mdc` | alwaysApply |
 | workflow | `spec-driven.mdc` | `docs/specs/<slug>.md` |

@@ -1,19 +1,19 @@
 ---
-description: Padrão Ports & Adapters do app classic (default para novas funcionalidades)
+description: Padrão Ports & Adapters do app classic (usar quando o usuário pedir classic explicitamente)
 globs: apps/classic/**,packages/todo-domain/**
 alwaysApply: false
 ---
 
-# Classic — Ports & Adapters (default)
+# Classic — Ports & Adapters
 
-Novas funcionalidades seguem **apps/classic** + **packages/todo-domain**, salvo pedido explícito de `remote` ou `runes`.
+Ver `runes-ports-adapters.mdc` para o padrão **default** de novas funcionalidades. Use **apps/classic** apenas quando o usuário pedir `classic` explicitamente.
 
-## Exceções por app
+## Outros apps
 
 | App | Quando usar | Domínio |
 |-----|-------------|---------|
+| `runes` (default) | Sem pedido explícito de app | `$lib/domain/*.svelte.ts` + gateways de `todo-domain` |
 | `remote` | Usuário pedir remote functions | Observable em `todo-domain` + `todos.remote.ts` |
-| `runes` | Usuário pedir runes | `$lib/domain/*.svelte.ts` + gateways de `todo-domain` |
 
 ## Checklist (ordem obrigatória)
 

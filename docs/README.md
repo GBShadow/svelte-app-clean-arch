@@ -2,6 +2,8 @@
 
 **Guia completo:** [spec-driven-development.md](./spec-driven-development.md) — como criar uma nova funcionalidade passo a passo.
 
+**Arquitetura default:** [runes-ports-adapters.md](./runes-ports-adapters.md) — como o app `runes` implementa Ports & Adapters passo a passo.
+
 | Pasta | Conteúdo | Templates |
 |-------|----------|-----------|
 | [specs/](./specs/) | Spec antes de implementar | [_template.md](./specs/_template.md) |
@@ -24,7 +26,7 @@ docs/features/add-filters.md          ← doc da feature
 
 1. **Spec** — `docs/specs/<slug>.md` (validar com o usuário antes de prosseguir)
 2. **Jira** — `docs/workflow/<slug>.jira.md`
-3. **Implementar** — `.cursor/rules/architecture/classic-ports-adapters.mdc`
+3. **Implementar** — `.cursor/rules/architecture/runes-ports-adapters.mdc` (default; `classic-ports-adapters.mdc` se pedido explicitamente)
 4. **Feature** — `docs/features/<slug>.md` + CHANGELOG
 5. **PR** — `docs/workflow/<slug>.pr.md`
 

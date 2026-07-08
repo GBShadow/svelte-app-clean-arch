@@ -1,6 +1,13 @@
 # Playwright (e2e)
 
-Testes end-to-end com [@playwright/test](https://playwright.dev/) contra o app **classic** em modo preview.
+Testes end-to-end com [@playwright/test](https://playwright.dev/) contra os apps **classic** e **runes**, em modo preview.
+
+| App | Porta preview | Config | Specs |
+|-----|---------------|--------|-------|
+| `classic` | 4173 | `apps/classic/playwright.config.ts` | `apps/classic/e2e/` |
+| `runes` | 4175 | `apps/runes/playwright.config.ts` | `apps/runes/e2e/` |
+
+Os passos abaixo usam `apps/classic` como exemplo — repita em `apps/runes` trocando o caminho.
 
 ## Preparação (primeira vez)
 
@@ -81,7 +88,7 @@ O script instala o Chromium automaticamente se faltar (passo 2). Em Linux/WSL, a
 
 Localmente (WSL), o config usa **Chromium com UI** (`headless: false`) para evitar problemas com o headless-shell. Em CI (`CI=true`), roda headless.
 
-O `playwright.config.ts` faz `build` + `preview` na porta **4173** automaticamente.
+O `playwright.config.ts` de cada app faz `build` + `preview` na sua porta (4173 para `classic`, 4175 para `runes`) automaticamente.
 
 ## Estrutura
 
@@ -89,8 +96,18 @@ O `playwright.config.ts` faz `build` + `preview` na porta **4173** automaticamen
 apps/classic/
   playwright.config.ts
   e2e/
+    fixtures.ts
+    todo-list.spec.ts
+    todo-list-invalidate.spec.ts
+
+apps/runes/
+  playwright.config.ts
+  e2e/
+    fixtures.ts
     todo-list.spec.ts
 ```
+
+Ambos os apps expõem `POST /api/test/reset` (uso exclusivo em e2e) para resetar o store em memória antes de cada teste — ver `e2e/fixtures.ts`.
 
 ## UI mode (debug)
 

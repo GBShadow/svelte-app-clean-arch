@@ -1,0 +1,72 @@
+---
+description: Padrão Ports & Adapters do app runes (default para novas funcionalidades)
+globs: apps/runes/**,packages/todo-domain/**
+alwaysApply: false
+---
+
+# Runes — Ports & Adapters (default)
+
+Novas funcionalidades seguem **apps/runes** + **packages/todo-domain**, salvo pedido explícito de `classic` ou `remote`.
+
+## Exceções por app
+
+| App | Quando usar | Domínio |
+|-----|-------------|---------|
+| `classic` | Usuário pedir classic | Observable em `todo-domain` + Container/Observer (`revision`/`bump()`) |
+| `remote` | Usuário pedir remote functions | Observable em `todo-domain` + `todos.remote.ts` |
+
+## Checklist (ordem obrigatória)
+
+1. **Domínio reativo** — `apps/runes/src/lib/domain/<Entity>.svelte.ts` (classe com `$state`/`$derived`, sem gateway)
+2. **Service** — `apps/runes/src/lib/domain/<Feature>Service.svelte.ts` (orquestra domínio + gateway, expõe getters)
+3. **Porta** — reutilizar `TodoGateway` de `packages/todo-domain/src/gateways/` (interface; não recriar por app)
+4. **Adaptadores** — `TodoMemoryGateway` (testes) + `TodoHttpGateway` (produção runes)
+5. **Server store** — `apps/runes/src/lib/server/<feature>Store.ts`
+6. **API REST** — `apps/runes/src/routes/api/<resource>/+server.ts` e `[id]/+server.ts`
+7. **UI presentacional** — `apps/runes/src/lib/components/<Feature>.svelte` (recebe `service` via `$props()`, sem lógica de negócio)
+8. **Container** — `apps/runes/src/lib/components/<Feature>Container.svelte` (instancia gateway + service; `onMount` chama `service.load()`)
+9. **Rota** — montar Container em `+page.svelte`
+10. **Teste** — `<Feature>Service.test.ts` (domínio) e `<Feature>.test.ts` (integração), ambos com `TodoMemoryGateway`
+
+## Imports
+
+```ts
+import { TodoHttpGateway, TodoMemoryGateway, type TodoGateway } from 'todo-domain';
+import { TodoListService } from '$lib/domain/TodoListService.svelte';
+import { Item } from '$lib/domain/Item.svelte';
+```
+
+## Padrão Service + Container
+
+```ts
+// domain/<Feature>Service.svelte.ts
+export class TodoListService {
+	#list = $state(new TodoList());
+	get list() { return this.#list; }
+	constructor(private gateway: TodoGateway) {}
+	async load() { this.#list = TodoList.fromDTO(await this.gateway.getTodos()); }
+	async addItem(description: string) { /* muta domínio, então chama gateway */ }
+}
+```
+
+```svelte
+<!-- components/<Feature>Container.svelte -->
+const gateway = new TodoHttpGateway(fetch, '');
+const service = new TodoListService(gateway);
+onMount(() => { void service.load(); });
+```
+
+```svelte
+<!-- components/<Feature>.svelte -->
+let { service }: { service: TodoListService } = $props();
+```
+
+Classes de domínio usam `$state`/`$derived` nativos do Svelte 5 — **não precisa de `revision`/`bump()` manual** (diferente do padrão classic, que usa Observable).
+
+## Proibido
+
+- Lógica de negócio em `+server.ts` (apenas persistência/HTTP)
+- Gateway HTTP dentro do componente presentacional (sempre no Container)
+- Pular testes com `TodoMemoryGateway`
+- Reimplementar Observable/Observer dentro de `apps/runes` (isso pertence ao padrão classic/remote)
+- Implementar gateway customizado no app quando cabe em `todo-domain`

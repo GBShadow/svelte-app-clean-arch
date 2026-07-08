@@ -50,6 +50,7 @@ O que deve ser entregue ao concluir?
 
 ## Links
 
+- Spec: `docs/specs/<slug>.md`
 - Feature doc: `docs/features/<slug>.md`
 - PR (após implementação): `docs/workflow/<slug>.pr.md`
 - Repositório: https://github.com/GBShadow/svelte-app-clean-arch

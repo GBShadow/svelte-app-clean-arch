@@ -1,8 +1,11 @@
 # Documentação do projeto
 
+**Guia completo:** [spec-driven-development.md](./spec-driven-development.md) — como criar uma nova funcionalidade passo a passo.
+
 | Pasta | Conteúdo | Templates |
 |-------|----------|-----------|
-| [features/](./features/) | Doc por funcionalidade | [_template.md](./features/_template.md) |
+| [specs/](./specs/) | Spec antes de implementar | [_template.md](./specs/_template.md) |
+| [features/](./features/) | Doc por funcionalidade (pós-implementação) | [_template.md](./features/_template.md) |
 | [workflow/](./workflow/) | **PR + Jira (mesma pasta)** | [_template-pr.md](./workflow/_template-pr.md), [_template-jira.md](./workflow/_template-jira.md) |
 | [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
@@ -17,12 +20,15 @@ docs/workflow/add-filters.pr.md     ← descrição do PR
 docs/features/add-filters.md          ← doc da feature
 ```
 
-## Fluxo
+## Fluxo (spec-driven)
 
-1. **Jira** — `docs/workflow/<slug>.jira.md`
-2. **Implementar** — `.cursor/rules/architecture/classic-ports-adapters.mdc`
-3. **Feature** — `docs/features/<slug>.md` + CHANGELOG
-4. **PR** — `docs/workflow/<slug>.pr.md`
+1. **Spec** — `docs/specs/<slug>.md` (validar com o usuário antes de prosseguir)
+2. **Jira** — `docs/workflow/<slug>.jira.md`
+3. **Implementar** — `.cursor/rules/architecture/classic-ports-adapters.mdc`
+4. **Feature** — `docs/features/<slug>.md` + CHANGELOG
+5. **PR** — `docs/workflow/<slug>.pr.md`
+
+Bugfixes triviais podem pular a etapa de spec.
 
 ## Regras para agentes de IA
 

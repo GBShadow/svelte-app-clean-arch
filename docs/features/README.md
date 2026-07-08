@@ -15,13 +15,15 @@ Documentação de funcionalidades implementadas no monorepo.
 3. Adicione entrada em [../CHANGELOG.md](../CHANGELOG.md)
 4. Atualize este índice
 
-## PR e Jira (mesma pasta)
+## Spec, PR e Jira
 
+- Spec (antes de implementar): [../specs/](../specs/) → `<slug>.md`
 - Jira: [../workflow/](../workflow/) → `<slug>.jira.md`
 - PR: [../workflow/](../workflow/) → `<slug>.pr.md`
 
 ## Regras para agentes de IA
 
+- Spec: `.cursor/rules/workflow/spec-driven.mdc`
 - Feature: `.cursor/rules/documentation/feature-documentation.mdc`
 - PR / Jira: `.cursor/rules/workflow/` → `docs/workflow/`
 - Sync: `.cursor/rules/meta/rules-sync.mdc` + `CLAUDE.md`

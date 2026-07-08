@@ -22,6 +22,7 @@ Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Claude*
   workflow/       # regras PR + Jira
   meta/           # sincronização
 docs/
+  specs/          # spec antes de implementar (<slug>.md)
   features/       # doc por funcionalidade
   workflow/       # PR (<slug>.pr.md) + Jira (<slug>.jira.md)
 ```
@@ -32,6 +33,7 @@ docs/
 |-------|---------|--------|
 | architecture | `classic-ports-adapters.mdc` | classic + todo-domain |
 | documentation | `feature-documentation.mdc` | alwaysApply |
+| workflow | `spec-driven.mdc` | `docs/specs/<slug>.md` |
 | workflow | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
 | workflow | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
 | meta | `rules-sync.mdc` | alwaysApply |

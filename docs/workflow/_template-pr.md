@@ -34,6 +34,7 @@ Descreva em 2–4 frases o objetivo e o impacto da mudança.
 
 ## Documentação
 
+- Spec: [docs/specs/<slug>.md](../specs/<slug>.md)
 - Feature: [docs/features/<slug>.md](../features/<slug>.md)
 - CHANGELOG: [docs/CHANGELOG.md](../CHANGELOG.md)
 

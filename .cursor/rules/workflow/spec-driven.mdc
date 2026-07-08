@@ -1,0 +1,35 @@
+---
+description: Criar spec (docs/specs/) antes de implementar nova funcionalidade não trivial
+alwaysApply: false
+---
+
+# Spec-driven development
+
+Quando o usuário pedir **spec**, **especificação**, **nova funcionalidade** (não trivial) ou **spec-driven**:
+
+1. Copiar [`docs/specs/_template.md`](../../docs/specs/_template.md) → `docs/specs/<slug>.md`
+2. Preencher junto com o usuário: contexto, objetivo, escopo, requisitos funcionais/não funcionais, critérios de aceite, design Ports & Adapters, contrato de API
+3. **Validar com o usuário antes de implementar** — alinhamento é o objetivo da spec, não documentação retroativa
+4. Atualizar índice em `docs/specs/README.md`
+5. Só então seguir o fluxo normal: Jira → implementação → feature doc → PR (mesmo `<slug>`)
+
+## Quando pular a spec
+
+Bugfixes triviais de 1 linha ou mudanças sem impacto de design não precisam de spec — vá direto para `jira-tasks.mdc` / `feature-documentation.mdc`.
+
+## Convenção de arquivo
+
+- **Pasta:** `docs/specs/`
+- **Arquivo:** `<slug>.md` (kebab-case, mesmo slug de Jira/PR/feature)
+
+## Fluxo completo (spec-driven)
+
+1. Spec: `docs/specs/<slug>.md`
+2. Jira: `docs/workflow/<slug>.jira.md` (referencia a spec)
+3. Implementar: `architecture/classic-ports-adapters.mdc`
+4. Feature doc: `docs/features/<slug>.md`
+5. PR: `docs/workflow/<slug>.pr.md`
+
+## Relação com Jira
+
+O Jira (`_template-jira.md`) descreve **a tarefa**; a spec descreve **a solução**. Referenciar a spec no campo Links do Jira quando existir.

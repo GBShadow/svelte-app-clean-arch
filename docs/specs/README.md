@@ -8,7 +8,11 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 
 | Feature | Status | Spec |
 |---------|--------|------|
-| — | — | _(nenhuma ainda)_ |
+| Subagente spec-driven | Em validação | [spec-driven-agent.md](./spec-driven-agent.md) |
+| Infra PocketBase (Docker + coleções) | Em validação | [pocketbase-infra.md](./pocketbase-infra.md) |
+| Autenticação PocketBase (runes) | Em validação | [pocketbase-auth.md](./pocketbase-auth.md) |
+| CRUD de usuário (runes) | Em validação | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
+| Todo multi-lista com compartilhamento (runes) | Em validação | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
 
 ## Nova spec
 

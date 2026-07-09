@@ -1,0 +1,8 @@
+---
+description: Sem trailer de co-autoria de IA em commits ou PRs
+alwaysApply: true
+---
+
+# Commits e PRs
+
+Não incluir trailer de co-autoria (`Co-Authored-By: Claude ...` ou equivalente) em mensagens de commit nem em descrições de PR deste repositório.

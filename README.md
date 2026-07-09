@@ -39,11 +39,13 @@ Regras em `.cursor/rules/<pasta>/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
 |-------|---------|-----------|
 | `architecture/` | `runes-ports-adapters.mdc` | Ports & Adapters (default) |
 | `architecture/` | `classic-ports-adapters.mdc` | Ports & Adapters (Observable/Observer, sob pedido) |
+| `architecture/` | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
 | `documentation/` | `feature-documentation.mdc` | Doc features + CHANGELOG |
 | `workflow/` | `spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
 | `workflow/` | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
 | `workflow/` | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
 | `meta/` | `rules-sync.mdc` | Sincronizar Cursor ↔ Claude |
+| `meta/` | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
 
 Ao adicionar ou alterar regras, atualize **Cursor**, **CLAUDE.md**, **README** e **docs/README.md**.
 

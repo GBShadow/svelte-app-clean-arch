@@ -1,0 +1,43 @@
+---
+description: Idioma do código (inglês) vs. idioma voltado ao usuário (português)
+alwaysApply: true
+---
+
+# Convenção de idioma
+
+## Inglês
+
+Tudo que é **código e estrutura técnica**, em qualquer app ou pacote:
+
+- Variáveis, funções, classes, tipos, interfaces
+- Nomes de arquivos e pastas
+- Comentários no código
+- Nomes de tabelas/collections e colunas/campos no banco (ex.: PocketBase)
+- Mensagens de commit, nomes de branch
+
+## Português
+
+Tudo que é **voltado ao usuário final ou ao operador do sistema**:
+
+- Textos de UI (labels, botões, títulos, placeholders)
+- Mensagens de erro e validação retornadas por form actions/APIs (o texto exibido, não a chave/código do erro)
+
+_(Documentação — specs, PR, Jira, features, CHANGELOG — já segue português por [`spec-driven.mdc`](../workflow/spec-driven.mdc), [`pr-description.mdc`](../workflow/pr-description.mdc) e [`jira-tasks.mdc`](../workflow/jira-tasks.mdc).)_
+
+## Exemplo
+
+```ts
+// user.server.ts — código em inglês
+export async function createUser(input: CreateUserInput) {
+  if (!input.email) {
+    // mensagem exibida ao usuário: português
+    return fail(400, { error: 'O e-mail é obrigatório.' });
+  }
+}
+```
+
+```js
+// pb_migrations/xxx_user.js — nomes de coleção/campo em inglês
+collection.name = 'user';
+collection.fields = [{ name: 'jobTitle', type: 'select' /* ... */ }];
+```

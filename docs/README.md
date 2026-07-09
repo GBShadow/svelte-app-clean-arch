@@ -32,6 +32,10 @@ docs/features/add-filters.md          ← doc da feature
 
 Bugfixes triviais podem pular a etapa de spec.
 
+## Idioma
+
+Código em inglês; UI e mensagens de erro/validação voltadas ao usuário em português. Ver `.cursor/rules/architecture/language-convention.mdc`.
+
 ## Regras para agentes de IA
 
 [README.md](../README.md#regras-para-agentes-de-ia) · [CLAUDE.md](../CLAUDE.md)

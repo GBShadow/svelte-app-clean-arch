@@ -8,7 +8,10 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 
 | Slug | PR | Jira |
 |------|----|------|
-| — | — | _(nenhum ainda)_ |
+| `pocketbase-infra` | _(pendente)_ | [pocketbase-infra.jira.md](./pocketbase-infra.jira.md) |
+| `pocketbase-auth` | _(pendente)_ | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |
+| `pocketbase-user-crud` | _(pendente)_ | [pocketbase-user-crud.jira.md](./pocketbase-user-crud.jira.md) |
+| `pocketbase-todo-sharing` | _(pendente)_ | [pocketbase-todo-sharing.jira.md](./pocketbase-todo-sharing.jira.md) |
 
 ## Convenção de nomes
 
@@ -23,7 +26,7 @@ Mesmo `<slug>` (kebab-case) para PR e Jira da mesma feature (ex: `add-filters.pr
 
 0. Spec: [../specs/](../specs/) — copie `_template.md` → `<slug>.md` e valide com o usuário
 1. Jira: copie `_template-jira.md` → `<slug>.jira.md` (referencia a spec)
-2. Implemente seguindo `.cursor/rules/architecture/classic-ports-adapters.mdc`
+2. Implemente seguindo `.cursor/rules/architecture/runes-ports-adapters.mdc` (default; `classic-ports-adapters.mdc` se pedido explicitamente)
 3. Feature doc: [../features/](../features/)
 4. PR: copie `_template-pr.md` → `<slug>.pr.md`
 5. Atualize este índice

@@ -340,9 +340,9 @@ docs/
 | Arquivo | Função |
 |---------|--------|
 | `pnpm-workspace.yaml` | Workspaces: `apps/runes`, `packages/*` |
-| `turbo.json` | Tasks: build, test, test:e2e, check, dev |
+| `turbo.json` | Tasks: build, test, test:e2e, check, dev, backend:*, dev:full, dev:reset |
 | `tsconfig.json` (raiz) | References: todo-domain, runes |
-| `package.json` (raiz) | Scripts globais + turbo. `dev:full` roda backend (PocketBase) + frontend (runes) |
+| `package.json` (raiz) | Scripts globais + turbo. `dev:full` verifica se Docker está rodando antes de subir + frontend (runes) |
 | `.env.example` | Variáveis de ambiente (PocketBase) |
 | `.npmrc` | Config npm (raiz) |
 | `.vscode/settings.json` | Configurações do VS Code |

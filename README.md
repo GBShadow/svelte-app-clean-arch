@@ -66,7 +66,9 @@ pnpm build
 pnpm check
 
 pnpm dev:runes        # frontend apenas (porta 5175)
-pnpm dev:full         # backend (PocketBase) + frontend juntos
+pnpm dev:full         # backend (PocketBase, só sobe se parado) + frontend juntos
+pnpm backend:reset    # derruba, apaga volume Docker e sobe backend fresco
+pnpm dev:reset        # backend:reset + frontend runes
 
 # via turbo diretamente
 pnpm turbo run test --filter=todo-domain

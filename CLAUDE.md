@@ -61,8 +61,12 @@ docs/                    # Documentação
 
 ```bash
 pnpm install && pnpm test && pnpm check
-pnpm dev:runes   # :5175 (frontend apenas)
-pnpm dev:full    # backend (PocketBase) + frontend (runes) juntos
+pnpm dev:runes     # :5175 (frontend apenas)
+pnpm dev:full      # backend (só sobe se parado) + frontend juntos
+pnpm backend:reset # derruba, apaga volume Docker e sobe fresco
+pnpm dev:reset     # backend:reset + frontend
+# ou via turbo:
+turbo run backend:dev | backend:down | backend:reset | dev:full | dev:reset
 gh pr create --body-file docs/workflow/<slug>.pr.md
 ```
 

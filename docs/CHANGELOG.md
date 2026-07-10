@@ -2,6 +2,16 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] Correção dos testes e2e + endurecimento de segurança (runes)
+
+- App: runes (e2e) + backend PocketBase
+- Config: `apps/runes/playwright.config.ts`, `package.json` (raiz)
+- E2E: `e2e/env.ts` (novo), `e2e/cleanup.ts` (novo), `fixtures.ts`, todos os `*.spec.ts` (`todo-sharing` → `todo-crud-basico`)
+- Segurança: `apps/runes/src/routes/change-password/+page.server.ts`, `pocketbase/docker-entrypoint.sh`, `pocketbase/docker-compose.yml`
+- Docs: [docs/features/e2e-test-fix-plan.md](./features/e2e-test-fix-plan.md)
+
+Os 10 testes e2e quebravam porque o teste antigo de troca de senha envenenava o admin seed. Corrigido: change-password usa usuário temporário; `webServer` passou a `build && preview` (o dev server deixava a hidratação instável e submetia forms vazios); guard fail-fast do seed na fixture; cleanup via API do PocketBase agora limpa `user`+`auth` e não engole falhas. Revisão de segurança encontrou e fechou um bypass da senha atual na troca de senha (o `manageRule` do PocketBase dispensa `oldPassword` para admins) via reautenticação explícita, e o entrypoint do PocketBase passou a recusar subir com a senha de exemplo. Suíte: 10/10, idempotente, sem resíduo no banco.
+
 ## [2026-07-09] Descontinuação dos apps classic e remote
 
 - Os apps `classic` e `remote` foram movidos de `apps/` para `deprecated/`

@@ -40,7 +40,17 @@ Bugfixes triviais podem pular a etapa de spec.
 - `runes-ports-adapters` — guia de implementação runes (default)
 - `feature-documentation` — documentação de funcionalidades
 - `language-convention` — convenção de idioma
-- `code-structure` — manter `docs/CODE-STRUCTURE.md` atualizado
+- `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
+- `data-testid` — adicionar data-testid em componentes + usar getByTestId em testes
+
+## Leitura prioritária do CODE-STRUCTURE.md
+
+**Antes de qualquer implementação**, leia [docs/CODE-STRUCTURE.md](./CODE-STRUCTURE.md) para:
+- Entender a estrutura atual do projeto
+- Localizar os arquivos relevantes
+- Identificar a camada correta para as mudanças
+
+Ao concluir a tarefa, atualize o CODE-STRUCTURE.md se a estrutura de arquivos/pastas tiver mudado.
 
 ## Idioma
 

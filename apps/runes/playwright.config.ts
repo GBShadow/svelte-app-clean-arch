@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const port = 4175;
+const port = 5175;
 const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
@@ -18,9 +18,12 @@ export default defineConfig({
 	},
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	webServer: {
+		// Build de produção + preview: no dev server, o websocket de HMR do Vite
+		// deixa a hidratação não-determinística e os forms são submetidos antes de
+		// os inputs serem preenchidos. O preview elimina essa corrida.
 		command: `pnpm run build && pnpm run preview --port ${port} --strictPort`,
 		url: baseURL,
-		reuseExistingServer: !process.env.CI,
+		reuseExistingServer: true,
 		timeout: 120_000
 	}
 });

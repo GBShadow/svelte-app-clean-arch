@@ -8,10 +8,10 @@
 <div class="flex flex-col gap-4 max-w-lg">
 	<h1 class="text-2xl font-bold">Novo usuário</h1>
 
-	<form method="POST" class="card bg-base-100 shadow-xl">
+	<form method="POST" novalidate data-testid="new-user-form" class="card bg-base-100 shadow-xl">
 		<div class="card-body gap-4">
-			<UserForm values={form?.values} showPasswordFields errors={form?.errors ?? {}} />
-			<button type="submit" class="btn btn-primary mt-2">Criar</button>
+			<UserForm values={form?.values} showPasswordFields errors={form?.errors ?? {}} testId="user-form-new" />
+			<button type="submit" class="btn btn-primary mt-2" data-testid="btn-create-user">Criar</button>
 		</div>
 	</form>
 </div>

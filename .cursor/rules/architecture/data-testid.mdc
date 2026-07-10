@@ -1,0 +1,146 @@
+---
+description: Todo elemento interativo em Svelte deve ter data-testid em kebab-case para permitir seletores estáveis em testes e2e
+alwaysApply: true
+---
+
+# data-testid em Componentes Svelte
+
+Todo **elemento interativo** (formulário, input, botão, checkbox, link, select, alerta) em
+componentes Svelte deve ter o atributo `data-testid` para permitir seletores estáveis nos testes e2e.
+
+## Convenção de nomenclatura
+
+```
+data-testid="kebab-case-com-hipens"
+```
+
+Prefixos padronizados:
+
+| Prefixo | Uso | Exemplo |
+|---------|-----|---------|
+| `btn-` | Botões | `btn-login`, `btn-salvar`, `btn-excluir` |
+| `input-` | Inputs | `input-email`, `input-password`, `input-name` |
+| `select-` | Selects | `select-job-title` |
+| `checkbox-` | Checkboxes | `checkbox-item-{id}` |
+| `form-` | Formulários | `form-login`, `form-usuario` |
+| `nav-` | Links de navegação | `nav-minhas-listas`, `nav-usuarios` |
+| `link-` | Links | `link-editar`, `link-lista-{id}` |
+| `error-` | Mensagens de erro | `error-email`, `error-general` |
+| `alert-` | Alertas/notificações | `alert-change-password` |
+| `card-` | Cards/containers | `card-usuarios`, `card-itens` |
+| `msg-` | Mensagens de estado | `msg-vazia`, `msg-sucesso` |
+| `badge-` | Badges | `badge-publica` |
+| `list-` | Listas/containers de lista | `list-item-{id}` |
+| `item-` | Itens individuais | `item-tarefa-{id}` |
+| `select-` | Elementos select | `select-job-title` |
+
+## IDs dinâmicos
+
+Para elementos em listas (itens de tarefa, linhas de usuário), use o **ID real do banco** (PocketBase):
+
+```svelte
+{#each items as item (item.id)}
+  <div data-testid="todo-item-{item.id}">
+    <input type="checkbox" data-testid="checkbox-item-{item.id}" />
+    <span data-testid="item-desc-{item.id}">{item.description}</span>
+    <button data-testid="btn-remove-item-{item.id}">Remover</button>
+  </div>
+{/each}
+```
+
+## Componentes reutilizáveis
+
+Componentes usados em múltiplos contextos (ex: `UserForm`) devem receber uma prop `testId` para
+diferenciar o data-testid do container:
+
+```svelte
+<script lang="ts">
+  let { testId = 'user-form' }: { testId?: string } = $props();
+</script>
+
+<div data-testid={testId}>
+  <input data-testid="input-name" name="name" />
+</div>
+```
+
+Uso:
+```svelte
+<UserForm testId="new-user-form" />
+<UserForm testId="edit-user-form" />
+```
+
+## novalidate
+
+Todo elemento `<form>` deve ter o atributo `novalidate` para permitir que os testes e2e submetam
+dados inválidos e verifiquem a validação server-side (em vez de depender de `page.evaluate()` para
+remover `required`).
+
+```svelte
+<form method="POST" novalidate data-testid="login-form">
+```
+
+## Onde aplicar
+
+Aplique `data-testid` em:
+
+- `<form>` — todos os formulários
+- `<input>`, `<select>`, `<textarea>` — todos os campos
+- `<button>`, `<a>` com role de botão — todos os botões e links de ação
+- `<a>` — links de navegação principais
+- `<div role="alert">`, `<div role="status">` — alertas e notificações
+- Containers de itens em `{#each}` — com ID dinâmico
+- `<table>`, `<tr>` de listagem — tabelas e linhas
+
+## Verificações em testes
+
+Nos testes e2e (Playwright), prefira `getByTestId` sobre `getByRole`, `getByLabel`, `getByText`
+ou `getByPlaceholder`:
+
+```typescript
+// ✅ Correto
+await page.getByTestId('input-email').fill('user@example.com');
+await page.getByTestId('btn-login').click();
+await expect(page.getByTestId('todo-item-{id}')).toBeVisible();
+
+// ❌ Evitar (seletores frágeis)
+await page.getByLabel('E-mail').fill('user@example.com');
+await page.getByRole('button', { name: 'Entrar' }).click();
+```
+
+Exceção: para elementos aninhados dentro de um container identificado por `data-testid`, pode-se
+usar `getByRole` dentro do container:
+```typescript
+await page.getByTestId('todo-item-0').getByRole('button', { name: 'Remover' }).click();
+```
+
+## Exemplos completos
+
+### Formulário de login
+```svelte
+<form method="POST" novalidate data-testid="login-form">
+  <input type="email" name="email" data-testid="input-email" required />
+  <input type="password" name="password" data-testid="input-password" required />
+  <button type="submit" data-testid="btn-login">Entrar</button>
+  {#if error}
+    <div role="alert" data-testid="login-error">{error}</div>
+  {/if}
+</form>
+```
+
+### Lista de tarefas
+```svelte
+<div data-testid="todo-items-card">
+  {#each items as item (item.id)}
+    <div data-testid="todo-item-{item.id}">
+      <input type="checkbox" data-testid="checkbox-item-{item.id}" checked={item.done} />
+      <span data-testid="item-desc-{item.id}">{item.description}</span>
+      <button data-testid="btn-remove-item-{item.id}">Remover</button>
+    </div>
+  {/each}
+</div>
+```
+
+## Ver também
+
+- `.agents/skills/data-testid.md` — skill Freebuff equivalente
+- `docs/specs/data-testid-e2e.md` — spec completa com dicionário de todos os data-testid

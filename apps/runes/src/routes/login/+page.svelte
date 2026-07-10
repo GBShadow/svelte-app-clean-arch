@@ -12,6 +12,8 @@
 
 		<form
 			method="POST"
+			novalidate
+			data-testid="login-form"
 			class="card w-full bg-base-100 shadow-xl"
 			use:enhance={() => {
 				return async ({ result, update }) => {
@@ -24,7 +26,7 @@
 		>
 			<div class="card-body gap-4">
 				{#if form?.error}
-					<div class="alert alert-error" role="alert">{form.error}</div>
+					<div class="alert alert-error" role="alert" data-testid="error-login">{form.error}</div>
 				{/if}
 
 				<label class="form-control">
@@ -32,6 +34,7 @@
 					<input
 						type="email"
 						name="email"
+						data-testid="input-email"
 						class="input input-bordered w-full"
 						autocomplete="email"
 						required
@@ -43,13 +46,14 @@
 					<input
 						type="password"
 						name="password"
+						data-testid="input-password"
 						class="input input-bordered w-full"
 						autocomplete="current-password"
 						required
 					/>
 				</label>
 
-				<button type="submit" class="btn btn-primary mt-2">Entrar</button>
+				<button type="submit" class="btn btn-primary mt-2" data-testid="btn-login">Entrar</button>
 			</div>
 		</form>
 	</div>

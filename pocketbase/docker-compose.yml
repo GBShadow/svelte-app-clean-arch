@@ -8,6 +8,10 @@ services:
       - pb_data:/pb/pb_data
     env_file:
       - ../.env
+    environment:
+      # Este compose é só para desenvolvimento local: libera as senhas de
+      # exemplo do .env.example, que o entrypoint recusa por padrão.
+      ALLOW_INSECURE_ADMIN_PASSWORD: "true"
     restart: unless-stopped
 
 volumes:

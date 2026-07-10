@@ -123,30 +123,32 @@ src/hooks.server.ts             ← handle: auth refresh, route protection, cook
 
 ```
 e2e/
-├── fixtures.ts                 ← Login automático como admin antes de cada teste
+├── env.ts                      ← Constantes do seed + guard fail-fast (assertSeedAdmin)
+├── fixtures.ts                 ← Login automático como admin (com guard) antes de cada teste
+├── cleanup.ts                  ← Limpeza de registros via API PocketBase (user+auth, listas)
 ├── auth-cross-tab.spec.ts      ← Sync login/logout entre abas (BroadcastChannel)
-├── todo-sharing.spec.ts        ← CRUD lista + itens
-├── change-password.spec.ts     ← Troca de senha
+├── todo-crud-basico.spec.ts    ← CRUD básico lista + item
+├── change-password.spec.ts     ← Troca de senha (usuário temporário)
 ├── user-crud.spec.ts           ← CRUD usuário (admin)
 └── todo-list-management.spec.ts ← Gerenciamento completo de lista
 ```
 
 ### 2.5 Configuração
 
-| Arquivo | Função |
-|---------|--------|
-| `vite.config.ts` | Vite + SvelteKit + Tailwind + Vitest |
-| `playwright.config.ts` | Playwright (build + preview na porta 4175) |
-| `tsconfig.json` | TypeScript |
-| `package.json` | Scripts: dev, build, test, test:e2e |
-| `.gitignore` | Arquivos ignorados pelo git |
-| `.npmrc` | Configuração npm |
-| `.vscode/extensions.json` | Extensões recomendadas VS Code |
-| `README.md` | Descrição do app (template SvelteKit) |
-| `src/app.html` | HTML shell do SvelteKit |
-| `src/app.css` | Estilos globais (Tailwind + DaisyUI) |
-| `src/app.d.ts` | Declarações de tipo globais (App.Locals) |
-| `static/robots.txt` | Configuração de robôs de busca |
+| Arquivo                   | Função                                     |
+| ------------------------- | ------------------------------------------ |
+| `vite.config.ts`          | Vite + SvelteKit + Tailwind + Vitest       |
+| `playwright.config.ts`    | Playwright (build + preview na porta 5175) |
+| `tsconfig.json`           | TypeScript                                 |
+| `package.json`            | Scripts: dev, build, test, test:e2e        |
+| `.gitignore`              | Arquivos ignorados pelo git                |
+| `.npmrc`                  | Configuração npm                           |
+| `.vscode/extensions.json` | Extensões recomendadas VS Code             |
+| `README.md`               | Descrição do app (template SvelteKit)      |
+| `src/app.html`            | HTML shell do SvelteKit                    |
+| `src/app.css`             | Estilos globais (Tailwind + DaisyUI)       |
+| `src/app.d.ts`            | Declarações de tipo globais (App.Locals)   |
+| `static/robots.txt`       | Configuração de robôs de busca             |
 
 ---
 
@@ -313,57 +315,57 @@ docs/
 
 ## 7. Regras e Skills para IA
 
-| Local | Conteúdo | Propósito |
-|-------|----------|-----------|
-| `.cursor/rules/architecture/runes-ports-adapters.mdc` | Ports & Adapters (runes) | Checklist de implementação |
-| `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica |
-| `.cursor/rules/architecture/language-convention.mdc` | Idioma | Código em inglês, UI em português |
-| `.cursor/rules/architecture/data-testid.mdc` | data-testid | data-testid em componentes + getByTestId em testes |
-| `.cursor/rules/documentation/feature-documentation.mdc` | Doc features | Criar/atualizar docs/features/ |
-| `.cursor/rules/workflow/spec-driven.mdc` | Spec-driven | Criar docs/specs/ |
-| `.cursor/rules/workflow/pr-description.mdc` | PR | Criar docs/workflow/<slug>.pr.md |
-| `.cursor/rules/workflow/jira-tasks.mdc` | Jira | Criar docs/workflow/<slug>.jira.md |
-| `.cursor/rules/meta/rules-sync.mdc` | Sync | Manter regras sincronizadas |
-| `.cursor/rules/meta/commit-convention.mdc` | Commits | Sem co-autoria de IA |
-| `.cursor/rules/meta/code-structure.mdc` | Estrutura | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
-| `.agents/skills/spec-driven.md` | SDD (Freebuff) | Equivalente ao agente Claude |
-| `.agents/skills/runes-ports-adapters.md` | Runes (Freebuff) | Guia de implementação runes |
-| `.agents/skills/classic-ports-adapters.md` | Classic (Freebuff) | Guia de implementação classic (deprecated) |
-| `.agents/skills/feature-documentation.md` | Feature doc (Freebuff) | Documentação de features |
-| `.agents/skills/language-convention.md` | Idioma (Freebuff) | Convenção de idioma |
-| `.agents/skills/code-structure.md` | Estrutura (Freebuff) | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
-| `.agents/skills/data-testid.md` | data-testid (Freebuff) | data-testid em componentes + getByTestId em testes |
-| `.claude/agents/spec-driven.md` | SDD (Claude) | Agente spec-driven original |
+| Local                                                   | Conteúdo                      | Propósito                                          |
+| ------------------------------------------------------- | ----------------------------- | -------------------------------------------------- |
+| `.cursor/rules/architecture/runes-ports-adapters.mdc`   | Ports & Adapters (runes)      | Checklist de implementação                         |
+| `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica                               |
+| `.cursor/rules/architecture/language-convention.mdc`    | Idioma                        | Código em inglês, UI em português                  |
+| `.cursor/rules/architecture/data-testid.mdc`            | data-testid                   | data-testid em componentes + getByTestId em testes |
+| `.cursor/rules/documentation/feature-documentation.mdc` | Doc features                  | Criar/atualizar docs/features/                     |
+| `.cursor/rules/workflow/spec-driven.mdc`                | Spec-driven                   | Criar docs/specs/                                  |
+| `.cursor/rules/workflow/pr-description.mdc`             | PR                            | Criar docs/workflow/<slug>.pr.md                   |
+| `.cursor/rules/workflow/jira-tasks.mdc`                 | Jira                          | Criar docs/workflow/<slug>.jira.md                 |
+| `.cursor/rules/meta/rules-sync.mdc`                     | Sync                          | Manter regras sincronizadas                        |
+| `.cursor/rules/meta/commit-convention.mdc`              | Commits                       | Sem co-autoria de IA                               |
+| `.cursor/rules/meta/code-structure.mdc`                 | Estrutura                     | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| `.agents/skills/spec-driven.md`                         | SDD (Freebuff)                | Equivalente ao agente Claude                       |
+| `.agents/skills/runes-ports-adapters.md`                | Runes (Freebuff)              | Guia de implementação runes                        |
+| `.agents/skills/classic-ports-adapters.md`              | Classic (Freebuff)            | Guia de implementação classic (deprecated)         |
+| `.agents/skills/feature-documentation.md`               | Feature doc (Freebuff)        | Documentação de features                           |
+| `.agents/skills/language-convention.md`                 | Idioma (Freebuff)             | Convenção de idioma                                |
+| `.agents/skills/code-structure.md`                      | Estrutura (Freebuff)          | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| `.agents/skills/data-testid.md`                         | data-testid (Freebuff)        | data-testid em componentes + getByTestId em testes |
+| `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---
 
 ## 8. Configurações do Projeto
 
-| Arquivo | Função |
-|---------|--------|
-| `pnpm-workspace.yaml` | Workspaces: `apps/runes`, `packages/*` |
-| `turbo.json` | Tasks: build, test, test:e2e, check, dev, backend:*, dev:full, dev:reset |
-| `tsconfig.json` (raiz) | References: todo-domain, runes |
-| `package.json` (raiz) | Scripts globais + turbo. `dev:full` verifica se Docker está rodando antes de subir + frontend (runes) |
-| `.env.example` | Variáveis de ambiente (PocketBase) |
-| `.npmrc` | Config npm (raiz) |
-| `.vscode/settings.json` | Configurações do VS Code |
-| `.gitignore` (raiz) | Arquivos ignorados pelo git |
-| `.agents/skills/` | Skills Freebuff (7 skills) |
-| `.claude/agents/spec-driven.md` | Agente Claude (processo) |
-| `.claude/settings.local.json` | Permissões do Claude |
+| Arquivo                         | Função                                                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `pnpm-workspace.yaml`           | Workspaces: `apps/runes`, `packages/*`                                                                |
+| `turbo.json`                    | Tasks: build, test, test:e2e, check, dev, backend:\*, dev:full, dev:reset                             |
+| `tsconfig.json` (raiz)          | References: todo-domain, runes                                                                        |
+| `package.json` (raiz)           | Scripts globais + turbo. `dev:full` verifica se Docker está rodando antes de subir + frontend (runes) |
+| `.env.example`                  | Variáveis de ambiente (PocketBase)                                                                    |
+| `.npmrc`                        | Config npm (raiz)                                                                                     |
+| `.vscode/settings.json`         | Configurações do VS Code                                                                              |
+| `.gitignore` (raiz)             | Arquivos ignorados pelo git                                                                           |
+| `.agents/skills/`               | Skills Freebuff (7 skills)                                                                            |
+| `.claude/agents/spec-driven.md` | Agente Claude (processo)                                                                              |
+| `.claude/settings.local.json`   | Permissões do Claude                                                                                  |
 
 ---
 
 ## 9. Testes — Resumo
 
-| Pacote/App | Unit | E2E | Total |
-|-----------|------|-----|-------|
-| `todo-domain` | 60 | — | 60 |
-| `runes` | 38 | 5 specs | 43+ |
-| `deprecated/classic` | 17 | 2 specs | 19+ |
-| `deprecated/remote` | 15 | — | 15 |
-| **Total** | **130** | **7 specs** | **137+** |
+| Pacote/App           | Unit    | E2E         | Total    |
+| -------------------- | ------- | ----------- | -------- |
+| `todo-domain`        | 60      | —           | 60       |
+| `runes`              | 38      | 5 specs     | 43+      |
+| `deprecated/classic` | 17      | 2 specs     | 19+      |
+| `deprecated/remote`  | 15      | —           | 15       |
+| **Total**            | **130** | **7 specs** | **137+** |
 
 ---
 

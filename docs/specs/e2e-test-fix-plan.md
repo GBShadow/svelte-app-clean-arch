@@ -1,27 +1,34 @@
 # Plano de Correção — Testes E2E (Playwright)
 
+> **Estado (2026-07-10):** implementado. Registro fiel do resultado em
+> `docs/features/e2e-test-fix-plan.md`. Este documento manteve o plano original; os pontos
+> abaixo foram ajustados onde o diagnóstico real divergiu da hipótese inicial.
+
 ## Contexto
 
-Atualmente 8 dos 9 testes e2e do app `runes` estão falhando. As causas raiz identificadas são:
+São **10** testes e2e no app `runes`, todos falhando no mesmo ponto (o login da fixture). As causas
+raiz identificadas foram:
 
-1. **Preview server não inicia** — `ERR_MODULE_NOT_FOUND` ao tentar carregar
-   `.svelte-kit/output/server/manifest.js` durante o `webServer` do Playwright. O comando
-   `pnpm run build && pnpm run preview` falha quando executado como script único do Playwright.
+1. **Seed admin envenenado** — o teste `troca de senha com sucesso` (versão antiga) alterava a senha
+   do admin seed (`changeme123456`) e não conseguia revertê-la: o PocketBase invalida o token após a
+   troca, o `hooks.server.ts` falha no `authRefresh()` e redireciona para `/login`, enquanto o teste
+   esperava `/todos`. A reversão nunca rodava e o seed ficava quebrado para toda a suíte.
 
-2. **Teste de change-password corrompe o seed** — O teste `troca de senha com sucesso` altera a
-   senha do admin seed (`changeme123456`). Se o teste falha no meio do fluxo, a senha fica
-   permanentemente alterada e todos os outros testes (que dependem do login seed) quebram.
+2. **Hidratação não-determinística no dev server** — com `pnpm run dev`, o websocket de HMR do Vite
+   deixa a hidratação instável: os testes preenchiam formulários antes de o Svelte hidratar e o submit
+   ia vazio. Resolvido rodando `build && preview` no `webServer` (build de produção, sem HMR).
 
-3. **Auth token invalidado pós-troca de senha** — O PocketBase invalida o token de autenticação
-   após `auth.update()` com nova senha. O `hooks.server.ts` tenta `authRefresh()`, falha, limpa
-   o store e redireciona para `/login`. O teste original esperava navegação para `/todos`.
+3. **Falta de isolamento e de defesa contra o envenenamento** — sem cleanup confiável nem verificação
+   antecipada do seed, uma quebra de credencial custava 30s de timeout por teste, sem diagnóstico.
 
-4. **Falta de isolamento entre testes** — A fixture compartilha o mesmo login (seed admin) entre
-   todos os testes. Não há cleanup de dados entre execuções.
+4. **(Descoberto durante a implementação) Bypass da senha atual** — a action de change-password não
+   forçava a senha atual para admins (o `manageRule` do PocketBase dispensa `oldPassword`). Corrigido
+   com reautenticação explícita. Ver feature doc.
 
 ## Objetivo
 
 Corrigir os 8 testes e2e falhos, garantindo:
+
 - Preview server funcional via script separado na raiz
 - Isolamento total entre testes (nenhum teste afeta o seed)
 - Fluxo de change-password correto (com re-login manual pós-troca)
@@ -68,7 +75,7 @@ Adicionar no `package.json` raiz:
 {
   "scripts": {
     "test:e2e": "pnpm --filter=runes build && pnpm --filter=runes exec playwright test"
-  },
+  }
 }
 ```
 
@@ -171,7 +178,7 @@ Os data-testid já foram implementados nos componentes. Os testes devem continua
 
 ## Questões em aberto
 
-- O preview server pode ocupar a porta 4175 se um processo anterior não foi encerrado.
+- O preview server pode ocupar a porta 4173 se um processo anterior não foi encerrado.
   O `--strictPort` garante que falhe se a porta estiver ocupada.
 - O cleanup via `afterAll` precisa de acesso ao PocketBase para remover registros.
   Os helpers de acesso ao PB podem usar as mesmas env vars do app

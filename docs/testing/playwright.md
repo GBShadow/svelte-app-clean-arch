@@ -2,9 +2,9 @@
 
 Testes end-to-end com [@playwright/test](https://playwright.dev/) contra o app **runes** (o app `classic` foi movido para `deprecated/`).
 
-| App | Porta preview | Config | Specs |
-|-----|---------------|--------|-------|
-| `runes` | 4175 | `apps/runes/playwright.config.ts` | `apps/runes/e2e/` |
+| App     | Porta preview | Config                            | Specs             |
+| ------- | ------------- | --------------------------------- | ----------------- |
+| `runes` | 5175          | `apps/runes/playwright.config.ts` | `apps/runes/e2e/` |
 
 Os passos abaixo usam `apps/runes`.
 
@@ -62,11 +62,11 @@ sudo pnpm exec playwright install-deps
 
 ## Erros comuns
 
-| Erro | Causa | Correção |
-|------|-------|----------|
-| `Executable doesn't exist at .../ms-playwright/...` | Chromium não instalado | `pnpm test:e2e:install` (raiz) ou `pnpm exec playwright install chromium` em `apps/classic` |
-| `libnspr4.so: cannot open shared object file` (ou libs similares) | Deps do sistema faltando (WSL/Ubuntu) | `cd apps/classic && sudo pnpm exec playwright install-deps` |
-| Browser abre e fecha imediatamente / crash ao iniciar | Mesmo que acima — libs incompletas | Rodar `install-deps` com sudo |
+| Erro                                                              | Causa                                 | Correção                                                                                    |
+| ----------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `Executable doesn't exist at .../ms-playwright/...`               | Chromium não instalado                | `pnpm test:e2e:install` (raiz) ou `pnpm exec playwright install chromium` em `apps/classic` |
+| `libnspr4.so: cannot open shared object file` (ou libs similares) | Deps do sistema faltando (WSL/Ubuntu) | `cd apps/classic && sudo pnpm exec playwright install-deps`                                 |
+| Browser abre e fecha imediatamente / crash ao iniciar             | Mesmo que acima — libs incompletas    | Rodar `install-deps` com sudo                                                               |
 
 ## Executar
 
@@ -87,7 +87,7 @@ O script instala o Chromium automaticamente se faltar (passo 2). Em Linux/WSL, a
 
 Localmente (WSL), o config usa **Chromium com UI** (`headless: false`) para evitar problemas com o headless-shell. Em CI (`CI=true`), roda headless.
 
-O `playwright.config.ts` faz `build` + `preview` na porta 4175.
+O `playwright.config.ts` faz `build` + `preview` na porta 5175. O dev server não é usado: o websocket de HMR do Vite deixa a hidratação instável e os formulários chegam a ser submetidos vazios.
 
 ## Estrutura
 
@@ -95,15 +95,18 @@ O `playwright.config.ts` faz `build` + `preview` na porta 4175.
 apps/runes/
   playwright.config.ts
   e2e/
-    fixtures.ts
+    env.ts                    ← constantes do seed + guard fail-fast (assertSeedAdmin)
+    fixtures.ts               ← login como admin (com guard) antes de cada teste
+    cleanup.ts                ← limpeza de registros via API PocketBase (user+auth, listas)
     auth-cross-tab.spec.ts
-    todo-sharing.spec.ts
+    todo-crud-basico.spec.ts
     change-password.spec.ts
     user-crud.spec.ts
     todo-list-management.spec.ts
 ```
 
-O app runes expõe `POST /api/test/reset` (uso exclusivo em e2e) para resetar o store em memória antes de cada teste — ver `e2e/fixtures.ts`.
+Se a suíte quebrar em massa no login, a causa provável é o seed admin com senha divergente — o guard
+falha rápido com a mensagem "Rode: pnpm backend:reset". Rode `pnpm backend:reset` para recriar o seed.
 
 ### Pré-requisito extra: `apps/runes` exige o PocketBase rodando
 

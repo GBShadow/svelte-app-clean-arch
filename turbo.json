@@ -20,6 +20,24 @@
 			"cache": false,
 			"persistent": true
 		},
+		"backend:dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"backend:down": {
+			"cache": false
+		},
+		"backend:reset": {
+			"cache": false
+		},
+		"dev:full": {
+			"cache": false,
+			"persistent": true
+		},
+		"dev:reset": {
+			"cache": false,
+			"persistent": true
+		},
 		"prepare": {
 			"cache": false
 		}

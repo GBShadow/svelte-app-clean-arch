@@ -14,6 +14,8 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | CRUD de usuário (runes) | Implementada | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Todo multi-lista com compartilhamento (runes) | Implementada | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
 | App Hub (tela inicial) | Implementada | [app-hub.md](./app-hub.md) |
+| Chat em tempo real com avatar (runes) | Spec aprovada | [chat-realtime.md](./chat-realtime.md) |
+| Push notifications de chat (runes) | Spec aprovada | [chat-notifications.md](./chat-notifications.md) |
 
 ## Nova spec
 

@@ -12,6 +12,7 @@ Documentação de funcionalidades implementadas no monorepo.
 | Autenticação PocketBase (runes) | runes | [pocketbase-auth.md](./pocketbase-auth.md) |
 | CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Todo multi-lista com compartilhamento (runes) | runes | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
+| Correção de testes e2e (Playwright) | runes (e2e) | [e2e-test-fix-plan.md](./e2e-test-fix-plan.md) |
 
 ## Nova feature
 

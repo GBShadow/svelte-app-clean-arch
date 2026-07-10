@@ -1,22 +1,54 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { onAuthEvent, postAuthEvent } from '$lib/client/authChannel';
+	import type { LayoutProps } from './$types';
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
+
+	onMount(() => onAuthEvent(() => invalidateAll()));
+
+	async function handleLogout(event: SubmitEvent) {
+		event.preventDefault();
+		// aguarda o cookie ser limpo no servidor antes de avisar as outras abas,
+		// senão elas podem revalidar contra um cookie ainda válido (race condition)
+		await fetch('/logout', { method: 'POST' });
+		postAuthEvent('logout');
+		await goto('/login');
+	}
 </script>
 
 <div class="min-h-screen bg-base-200">
 	<div class="navbar bg-base-100 shadow-sm">
 		<div class="flex-1">
-			<span class="btn btn-ghost text-xl">Todo Apps</span>
+			<a href="/todos" class="btn btn-ghost text-xl">Todo Apps</a>
 		</div>
-		<div class="flex-none">
+		<div class="flex-none flex items-center gap-4">
 			<div class="tabs tabs-boxed">
 				<a href="http://localhost:5173" class="tab">Classic</a>
 				<a href="http://localhost:5174" class="tab">Remote</a>
 				<a href="http://localhost:5175" class="tab tab-active">Runes</a>
 			</div>
+			{#if data.user}
+				<a href="/todos" class="btn btn-ghost btn-sm">Minhas listas</a>
+			{/if}
+			{#if data.user?.isAdmin}
+				<a href="/users" class="btn btn-ghost btn-sm">Usuários</a>
+			{/if}
+			{#if data.user}
+				<form method="POST" action="/logout" onsubmit={handleLogout}>
+					<button type="submit" class="btn btn-ghost btn-sm">Sair ({data.user.name})</button>
+				</form>
+			{/if}
 		</div>
 	</div>
+
+	{#if data.user?.mustChangePassword}
+		<div class="alert alert-warning rounded-none justify-center" role="alert">
+			Sua senha precisa ser trocada em breve. <a href="/change-password" class="link ml-1">Trocar agora</a>
+		</div>
+	{/if}
 
 	<main class="container mx-auto p-4">
 		{@render children()}

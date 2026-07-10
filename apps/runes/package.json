@@ -16,7 +16,8 @@
 		"test:e2e": "playwright install chromium && playwright test"
 	},
 	"dependencies": {
-		"todo-domain": "workspace:*"
+		"pocketbase": "^0.27.0",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.60.0",

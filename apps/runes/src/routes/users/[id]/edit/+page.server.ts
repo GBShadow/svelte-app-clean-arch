@@ -3,12 +3,8 @@ import { ClientResponseError } from 'pocketbase';
 import type PocketBase from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
 import type { UserRecord } from '$lib/server/userRecord';
-import {
-	adminEmailSchema,
-	fieldErrorsFrom,
-	resetPasswordSchema,
-	updateUserSchema
-} from '$lib/validation/userSchemas';
+import { adminEmailSchema, resetPasswordSchema, updateUserSchema } from '$lib/validation/userSchemas';
+import { fieldErrorsFrom } from '$lib/validation/formErrors';
 
 async function findAuthRecordByUserEmail(pb: PocketBase, email: string) {
 	return pb.collection('auth').getFirstListItem(pb.filter('email = {:email}', { email }));

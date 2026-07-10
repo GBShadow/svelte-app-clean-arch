@@ -35,28 +35,28 @@ Usuário gerencia várias listas próprias (CRUD completo). Lista com `public = 
 
 ## Acceptance Criteria
 
-- [ ] AC1: Usuário sem listas vê `/todos` vazio com opção de criar
-- [ ] AC2: Usuário cria lista e adiciona itens a ela
-- [ ] AC3: Dono edita título e `public` da própria lista
-- [ ] AC4: Lista `public = true` é visível (somente leitura) para outro usuário via link
-- [ ] AC5: Lista `public = false` é bloqueada para quem não é dono
-- [ ] AC6: Escrita por não-dono é rejeitada tanto pela API Rule quanto pela checagem server-side, mesmo em lista pública
-- [ ] AC7: Exclusão pelo dono remove lista e itens, inclusive para quem tinha o link
-- [ ] Testes com `TodoMemoryGateway`/fakes cobrindo os cenários acima
-- [ ] `pnpm test` e `pnpm check` sem erros
-- [ ] Documentação em `docs/features/pocketbase-todo-sharing.md`
+- [x] AC1: Usuário sem listas vê `/todos` vazio com opção de criar
+- [x] AC2: Usuário cria lista e adiciona itens a ela
+- [x] AC3: Dono edita título e `public` da própria lista
+- [x] AC4: Lista `public = true` é visível (somente leitura) para outro usuário via link
+- [x] AC5: Lista `public = false` é bloqueada para quem não é dono (PocketBase retorna 404 — a viewRule já barra o `getOne`; não vaza nem a existência da lista, mais forte que o 403 sugerido)
+- [x] AC6: Escrita por não-dono é rejeitada tanto pela API Rule quanto pela checagem server-side, mesmo em lista pública — testado também com chamadas diretas à API do PocketBase (fora do app), não só pela UI
+- [x] AC7: Exclusão pelo dono remove lista e itens (cascadeDelete), inclusive para quem tinha o link
+- [x] Testes cobrindo os cenários acima (unitários para predicados de autorização puros + Zod; e2e Playwright real; validação manual com dois usuários e PocketBase real, incluindo ataque direto à API)
+- [x] `pnpm test` e `pnpm check` sem erros
+- [x] Documentação em `docs/features/pocketbase-todo-sharing.md`
 
 ## Technical Notes (Ports & Adapters — runes)
 
 | Camada | Ação |
 |--------|------|
-| PocketBase | Migration `pocketbase/pb_migrations/0005_create_todo_collections.js` + API Rules `todo_lists`/`todo_items` |
-| Gateway (porta) | `packages/todo-domain/src/gateways/TodoListsGateway.ts` + `TodoListsPocketBaseGateway.ts` |
-| Domínio reativo | `apps/runes/src/lib/domain/TodoListsService.svelte.ts` |
-| Server | `apps/runes/src/routes/todos/+page.server.ts`, `todos/new/+page.server.ts`, `todos/[id]/+page.server.ts` |
-| UI | `apps/runes/src/lib/components/TodoListsIndex.svelte`, `TodoListDetail.svelte` |
+| PocketBase | Migration `pocketbase/pb_migrations/0008_create_todo_collections.js` (spec sugeria `0005`, já ocupada) + API Rules `todo_lists`/`todo_items` |
+| Autorização | `apps/runes/src/lib/domain/todoListAccess.ts` (`canView`/`canWrite`, predicados puros testáveis) — usados direto nas rotas em vez de um Gateway/Service dedicado (ver Decisões de design na feature doc) |
+| Server | `apps/runes/src/routes/todos/+page.server.ts`, `todos/new/+page.server.ts`, `todos/[id]/+page.server.ts` — chamam `locals.pb` diretamente, mesmo padrão de `pocketbase-auth`/`pocketbase-user-crud` |
+| UI | `apps/runes/src/routes/todos/+page.svelte`, `todos/new/+page.svelte`, `todos/[id]/+page.svelte` |
 | Validação | `apps/runes/src/lib/validation/todoSchemas.ts` (Zod) |
-| Testes | `TodoListsService.test.ts` (domínio) + integração com `TodoMemoryGateway`/fake |
+| Remoção | Feature de lista única do runes (`TodoListContainer`, `TodoList.svelte`, `todoStore.ts`, `/api/todos`, `/api/test/reset`) — descontinuada por decisão do usuário; `classic`/`remote` não foram tocados |
+| Testes | `todoListAccess.test.ts`, `todoSchemas.test.ts` (unitários) + `e2e/todo-sharing.spec.ts` (Playwright) |
 
 ## Links
 
@@ -67,8 +67,8 @@ Usuário gerencia várias listas próprias (CRUD completo). Lista com `public = 
 
 ## Subtasks
 
-- [ ] Coleções + API Rules
-- [ ] Gateway + domínio reativo (múltiplas listas)
-- [ ] Rotas e forms (CRUD de lista e itens)
-- [ ] Visualização somente leitura (compartilhamento público)
-- [ ] Testes + documentação + PR
+- [x] Coleções + API Rules
+- [x] Remover feature de lista única do runes
+- [x] Rotas e forms (CRUD de lista e itens)
+- [x] Visualização somente leitura (compartilhamento público)
+- [x] Testes + documentação + PR

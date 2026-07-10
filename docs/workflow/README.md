@@ -8,10 +8,11 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 
 | Slug | PR | Jira |
 |------|----|------|
-| `pocketbase-infra` | _(pendente)_ | [pocketbase-infra.jira.md](./pocketbase-infra.jira.md) |
-| `pocketbase-auth` | _(pendente)_ | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |
-| `pocketbase-user-crud` | _(pendente)_ | [pocketbase-user-crud.jira.md](./pocketbase-user-crud.jira.md) |
-| `pocketbase-todo-sharing` | _(pendente)_ | [pocketbase-todo-sharing.jira.md](./pocketbase-todo-sharing.jira.md) |
+| `spec-driven-agent` | [spec-driven-agent.pr.md](./spec-driven-agent.pr.md) | [spec-driven-agent.jira.md](./spec-driven-agent.jira.md) |
+| `pocketbase-infra` | [pocketbase-infra.pr.md](./pocketbase-infra.pr.md) | [pocketbase-infra.jira.md](./pocketbase-infra.jira.md) |
+| `pocketbase-auth` | [pocketbase-auth.pr.md](./pocketbase-auth.pr.md) | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |
+| `pocketbase-user-crud` | [pocketbase-user-crud.pr.md](./pocketbase-user-crud.pr.md) | [pocketbase-user-crud.jira.md](./pocketbase-user-crud.jira.md) |
+| `pocketbase-todo-sharing` | [pocketbase-todo-sharing.pr.md](./pocketbase-todo-sharing.pr.md) | [pocketbase-todo-sharing.jira.md](./pocketbase-todo-sharing.jira.md) |
 
 ## Convenção de nomes
 

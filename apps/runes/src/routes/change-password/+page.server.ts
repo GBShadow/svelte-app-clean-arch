@@ -1,7 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
-import { changePasswordSchema, fieldErrorsFrom } from '$lib/validation/userSchemas';
+import { changePasswordSchema } from '$lib/validation/userSchemas';
+import { fieldErrorsFrom } from '$lib/validation/formErrors';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	return { user: locals.user };

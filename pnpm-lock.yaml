@@ -115,9 +115,12 @@ importers:
 
   apps/runes:
     dependencies:
-      todo-domain:
-        specifier: workspace:*
-        version: link:../../packages/todo-domain
+      pocketbase:
+        specifier: ^0.27.0
+        version: 0.27.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@playwright/test':
         specifier: ^1.60.0
@@ -875,6 +878,9 @@ packages:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
 
+  pocketbase@0.27.0:
+    resolution: {integrity: sha512-K5N6d93UP/BNMbMnlZ6BUfy9VPCIvLyqhJFOsNI8OsZwzvKWEAfyD36boi5K4ECIOl5HMlo0TzuaeGdKpMwizQ==}
+
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
@@ -1101,6 +1107,9 @@ packages:
 
   zimmerframe@1.1.4:
     resolution: {integrity: sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ==}
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -1675,6 +1684,8 @@ snapshots:
 
   pngjs@7.0.0: {}
 
+  pocketbase@0.27.0: {}
+
   postcss@8.5.15:
     dependencies:
       nanoid: 3.3.13
@@ -1864,3 +1875,5 @@ snapshots:
   ws@8.21.0: {}
 
   zimmerframe@1.1.4: {}
+
+  zod@4.4.3: {}

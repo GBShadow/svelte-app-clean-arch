@@ -11,9 +11,6 @@ export default defineConfig({
 	resolve: {
 		preserveSymlinks: true
 	},
-	ssr: {
-		noExternal: ['todo-domain']
-	},
 	plugins: [
 		tailwindcss(),
 		sveltekit({

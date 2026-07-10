@@ -1,5 +1,7 @@
 # Todo List
 
+> **Nota (2026-07-09):** a lista global do app **runes** descrita aqui foi removida e substituída por múltiplas listas por usuário — ver [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md). Este documento continua valendo integralmente para **classic** e **remote**, que não foram alterados.
+
 ## Resumo
 
 CRUD de tarefas com percentual de conclusão. Demonstra Ports & Adapters com padrão Observable/Observer no classic e remote, e domínio reativo com runes no app runes.

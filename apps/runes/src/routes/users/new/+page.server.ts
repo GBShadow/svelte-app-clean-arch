@@ -1,7 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
-import { createUserSchema, fieldErrorsFrom } from '$lib/validation/userSchemas';
+import { createUserSchema } from '$lib/validation/userSchemas';
+import { fieldErrorsFrom } from '$lib/validation/formErrors';
 
 const GENERIC_CREATE_ERROR =
 	'Não foi possível criar o usuário. Verifique se o e-mail já está em uso.';

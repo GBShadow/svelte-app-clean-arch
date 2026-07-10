@@ -3,10 +3,10 @@ import {
 	adminEmailSchema,
 	changePasswordSchema,
 	createUserSchema,
-	fieldErrorsFrom,
 	resetPasswordSchema,
 	updateUserSchema
 } from './userSchemas';
+import { fieldErrorsFrom } from './formErrors';
 
 describe('createUserSchema', () => {
 	test('aceita dados válidos', () => {

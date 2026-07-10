@@ -14,7 +14,7 @@
 	const resetPasswordSuccess = $derived(form?.action === 'resetPassword' && form.success === true);
 </script>
 
-<div class="flex flex-col gap-6 max-w-lg">
+<div class="flex flex-col gap-6 max-w-lg mx-auto w-full">
 	<h1 class="text-2xl font-bold font-display">Editar usuário</h1>
 
 	<form method="POST" action="?/update" novalidate data-testid="edit-user-form" class="card bg-base-100 border border-base-300 shadow-sm">

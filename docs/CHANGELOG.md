@@ -2,6 +2,13 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] Centralização de conteúdo nas telas de usuários (runes)
+
+- App: runes
+- UI: `src/routes/users/+page.svelte`, `src/routes/users/new/+page.svelte`, `src/routes/users/[id]/edit/+page.svelte`
+
+As telas de listagem, criação e edição de usuários não tinham `mx-auto`/`max-w-*` no wrapper raiz e ficavam esticadas (ou desalinhadas à esquerda) na largura total do `<main class="container mx-auto p-4">` do layout. Corrigido aplicando o mesmo padrão já usado em `todos/*`: wrapper raiz sempre com `mx-auto w-full max-w-*` (lista de usuários em `max-w-3xl`, formulários de novo/editar usuário em `max-w-lg`, igual aos formulários de todo). Esse é agora o padrão obrigatório para qualquer nova página: todo `+page.svelte` deve centralizar seu conteúdo com `mx-auto w-full max-w-*` no elemento raiz (exceção: páginas de auth com `hero`, que já centralizam via daisyUI, e a home `/`, que centraliza via flexbox). Verificado visualmente em 1440px e via suíte e2e (10/10).
+
 ## [2026-07-10] App Hub — tela inicial com grid de aplicativos (runes)
 
 - App: runes

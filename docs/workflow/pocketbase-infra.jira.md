@@ -37,13 +37,13 @@ PocketBase rodando via Docker Compose, com as coleções `auth` e `user` criadas
 
 ## Acceptance Criteria
 
-- [ ] AC1: `pnpm backend:dev` sobe o PocketBase e responde em `http://127.0.0.1:8090/api/health`
-- [ ] AC2: Superusuário criado automaticamente a partir de `PB_ADMIN_EMAIL`/`PB_ADMIN_PASSWORD`
-- [ ] AC3: Coleções `auth` e `user` existem após o boot, sem passo manual no painel
-- [ ] AC4: Conta seed (`SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`, `isAdmin = true`) autentica e tem registro correspondente em `user`
-- [ ] AC5: Dados persistem entre reinicializações do container, sem duplicar migrations
-- [ ] `pnpm test` e `pnpm check` sem erros
-- [ ] Documentação em `docs/features/pocketbase-infra.md`
+- [x] AC1: `pnpm backend:dev` sobe o PocketBase e responde em `http://127.0.0.1:8090/api/health`
+- [x] AC2: Superusuário criado automaticamente a partir de `PB_ADMIN_EMAIL`/`PB_ADMIN_PASSWORD`
+- [x] AC3: Coleções `auth` e `user` existem após o boot, sem passo manual no painel
+- [x] AC4: Conta seed (`SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`, `isAdmin = true`) autentica e tem registro correspondente em `user`
+- [x] AC5: Dados persistem entre reinicializações do container, sem duplicar migrations
+- [x] `pnpm test` e `pnpm check` sem erros (não aplicável — sem código TS/JS de app, apenas Dockerfile/migrations/scripts)
+- [x] Documentação em `docs/features/pocketbase-infra.md`
 
 ## Technical Notes (Ports & Adapters — runes)
 
@@ -66,8 +66,8 @@ PocketBase rodando via Docker Compose, com as coleções `auth` e `user` criadas
 
 ## Subtasks
 
-- [ ] Dockerfile + docker-compose
-- [ ] Migrations `auth` + `user`
-- [ ] Migration de seed
-- [ ] Scripts pnpm + `.env.example`
-- [ ] Documentação + PR
+- [x] Dockerfile + docker-compose
+- [x] Migrations `auth` + `user`
+- [x] Migration de seed
+- [x] Scripts pnpm + `.env.example`
+- [x] Documentação + PR

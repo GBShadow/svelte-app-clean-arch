@@ -3,6 +3,8 @@
 	"private": true,
 	"packageManager": "pnpm@9.15.9",
 	"scripts": {
+		"backend:dev": "docker compose -f pocketbase/docker-compose.yml up",
+		"backend:down": "docker compose -f pocketbase/docker-compose.yml down",
 		"build": "turbo run build",
 		"check": "turbo run check",
 		"check:domain": "pnpm --filter todo-domain check",

@@ -8,13 +8,13 @@
 
 <div class="hero min-h-[60vh]">
 	<div class="hero-content w-full max-w-sm flex-col">
-		<h1 class="text-3xl font-bold">Entrar</h1>
+		<h1 class="text-3xl font-bold font-display">Entrar</h1>
 
 		<form
 			method="POST"
 			novalidate
 			data-testid="login-form"
-			class="card w-full bg-base-100 shadow-xl"
+			class="card w-full bg-base-100 border border-base-300 shadow-sm"
 			use:enhance={() => {
 				return async ({ result, update }) => {
 					if (result.type === 'redirect') {

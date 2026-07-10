@@ -2,6 +2,15 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] Tema Dracula + redesign visual (runes)
+
+- App: runes (somente UI)
+- Config: `apps/runes/src/app.css` (tema + tipografia), `apps/runes/src/app.html` (fontes)
+- UI: `src/lib/components/icons/` (novo), `+layout.svelte`, `UserList.svelte`, `ChangePasswordForm.svelte`, rotas de `login`, `todos`, `users`, `change-password`
+- Docs: [docs/features/dracula-theme.md](./features/dracula-theme.md)
+
+Tema `dracula` do daisyUI aplicado via `@plugin "daisyui" { themes: dracula --default; }` (sintaxe confirmada na doc oficial). Par tipográfico dedicado (Space Grotesk nos títulos, Manrope no corpo, JetBrains Mono em badges/dados/estados vazios/wordmark), ícones SVG inline aditivos nos botões de ação (nunca substituindo texto), cards com borda fina em vez de sombra pesada, tabela de usuários com zebra, estados vazios com voz mais ativa, e a marca do app na navbar redesenhada como prompt de terminal (`❯ todo.apps`) — o elemento de assinatura que conecta a herança "dracula = editor de código" ao produto. Todos os `data-testid` e accessible names preservados; suíte e2e (10/10) usada como prova.
+
 ## [2026-07-10] Correção dos testes e2e + endurecimento de segurança (runes)
 
 - App: runes (e2e) + backend PocketBase

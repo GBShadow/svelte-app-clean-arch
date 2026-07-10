@@ -11,6 +11,7 @@ Documentação de funcionalidades implementadas no monorepo.
 | CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Infra PocketBase (Docker + coleções) | — (infra, sem app) | [pocketbase-infra.md](./pocketbase-infra.md) |
 | Subagente spec-driven | — (agente de processo) | [spec-driven-agent.md](./spec-driven-agent.md) |
+| Tema Dracula + redesign visual (runes) | runes | [dracula-theme.md](./dracula-theme.md) |
 | Todo List | classic, remote (~~deprecated~~), runes | [todo-list.md](./todo-list.md) |
 | Todo multi-lista com compartilhamento (runes) | runes | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
 

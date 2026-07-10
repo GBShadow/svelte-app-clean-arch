@@ -47,6 +47,8 @@ Regras em `.cursor/rules/<pasta>/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
 | `meta/` | `rules-sync.mdc` | Sincronizar Cursor ↔ Claude |
 | `meta/` | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
 
+Subagente: [`.claude/agents/spec-driven.md`](./.claude/agents/spec-driven.md) conduz o fluxo spec → Jira → (pausa) → feature/PR conversacionalmente — ver [docs/specs/spec-driven-agent.md](./docs/specs/spec-driven-agent.md).
+
 Ao adicionar ou alterar regras, atualize **Cursor**, **CLAUDE.md**, **README** e **docs/README.md**.
 
 ## Comandos

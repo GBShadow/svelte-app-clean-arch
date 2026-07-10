@@ -34,6 +34,8 @@ PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
 
 Fluxo: **spec → Jira → implementar → feature doc → PR**, mesmo `<slug>` em todos. Bugfixes triviais podem pular a spec.
 
+Agente: `.claude/agents/spec-driven.md` conduz esse fluxo conversacionalmente — gera spec + Jira, para e aguarda confirmação de implementação, depois gera feature doc + CHANGELOG + PR. Ver `docs/specs/spec-driven-agent.md`.
+
 Índice: [docs/README.md](./docs/README.md)
 
 ## Comandos

@@ -32,6 +32,8 @@ docs/features/add-filters.md          ← doc da feature
 
 Bugfixes triviais podem pular a etapa de spec.
 
+Agente dedicado: `.claude/agents/spec-driven.md` conduz os passos 1–2 e 4–5 conversacionalmente, parando após spec + Jira até a implementação (passo 3) ser confirmada.
+
 ## Idioma
 
 Código em inglês; UI e mensagens de erro/validação voltadas ao usuário em português. Ver `.cursor/rules/architecture/language-convention.mdc`.

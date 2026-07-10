@@ -36,9 +36,8 @@ Corrigir os 8 testes e2e falhos, garantindo:
 - Atualizar `playwright.config.ts` para usar `reuseExistingServer: true`
 - Criar helper/fixture para criar usuário temporário via UI (login admin → navegar para criar)
 - Refatorar `change-password.spec.ts`: usar usuário temporário + re-login manual
-- Adicionar `beforeEach` global para cleanup de dados via PocketBase API
+- Adicionar `afterAll` nas specs CRUD para cleanup de dados
 - Manter fixture de login atual para os testes CRUD (todo-list, user-crud)
-- Cleanup de dados temporários ao final de cada teste
 
 **Fora do escopo:**
 
@@ -131,18 +130,15 @@ compartilhadas.
 
 ### 5. Cleanup entre testes
 
-Adicionar no `playwright.config.ts`:
+Cada spec que cria dados (todo-list-management, user-crud, change-password) deve fazer
+cleanup próprio via `afterAll`:
 
 ```typescript
-globalSetup: './e2e/global-setup.ts',
+test.afterAll(async () => {
+  // Excluir registros criados durante o teste
+  // usando IDs únicos armazenados em variáveis do describe
+});
 ```
-
-Criar `e2e/global-setup.ts` que:
-- Conecta no PocketBase como admin
-- Lista e remove registros de coleções `user` e `auth` que não sejam o seed
-- Remove registros de `todo_lists` e `todo_items` não-seed
-
-Alternativa mais simples: cada teste que cria dados faz cleanup próprio via `afterAll`.
 
 ### 6. Timeout
 
@@ -158,10 +154,9 @@ Os data-testid já foram implementados nos componentes. Os testes devem continua
 
 1. Atualizar `playwright.config.ts` — `reuseExistingServer: true`
 2. Criar script `test:e2e` no `package.json` raiz (build + test)
-3. Criar `e2e/global-setup.ts` — cleanup de dados entre execuções
-4. Refatorar `change-password.spec.ts` — usar usuário temporário + re-login
-5. Adicionar `afterAll` nos specs CRUD para cleanup de dados
-6. Validar: `pnpm test:e2e` passa com 9/9 testes
+3. Refatorar `change-password.spec.ts` — usar usuário temporário + re-login
+4. Adicionar `afterAll` nos specs CRUD para cleanup de dados
+5. Validar: `pnpm test:e2e` passa com 9/9 testes
 
 ## Critérios de aceite
 
@@ -176,10 +171,11 @@ Os data-testid já foram implementados nos componentes. Os testes devem continua
 
 ## Questões em aberto
 
-- A conexão com PocketBase no `global-setup.ts` precisa das mesmas env vars do app
-  (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`). O `.env.example` já contém essas vars.
 - O preview server pode ocupar a porta 4175 se um processo anterior não foi encerrado.
   O `--strictPort` garante que falhe se a porta estiver ocupada.
+- O cleanup via `afterAll` precisa de acesso ao PocketBase para remover registros.
+  Os helpers de acesso ao PB podem usar as mesmas env vars do app
+  (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`) definidas em `.env.example`.
 
 ## Links
 

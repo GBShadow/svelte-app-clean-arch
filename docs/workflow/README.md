@@ -10,6 +10,7 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 |------|----|------|
 | `app-hub` | _(pendente)_ | [app-hub.jira.md](./app-hub.jira.md) |
 | `data-testid-e2e` | _(pendente)_ | [data-testid-e2e.jira.md](./data-testid-e2e.jira.md) |
+| `dracula-theme-redesign` | [dracula-theme-redesign.pr.md](./dracula-theme-redesign.pr.md) | _(ver app-hub.jira.md)_ |
 | `e2e-test-fix-plan` | [e2e-test-fix-plan.pr.md](./e2e-test-fix-plan.pr.md) | [e2e-test-fix-plan.jira.md](./e2e-test-fix-plan.jira.md) |
 | `pocketbase-auth` | [pocketbase-auth.pr.md](./pocketbase-auth.pr.md) | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |
 | `pocketbase-infra` | [pocketbase-infra.pr.md](./pocketbase-infra.pr.md) | [pocketbase-infra.jira.md](./pocketbase-infra.jira.md) |

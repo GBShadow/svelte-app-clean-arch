@@ -2,6 +2,21 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] Suíte e2e (runes) sempre headless
+
+- App: runes (e2e)
+- Config: `apps/runes/playwright.config.ts`
+- Docs: [docs/testing/playwright.md](./testing/playwright.md)
+
+`headless` era `!!process.env.CI` — localmente abria uma janela do Chromium a cada execução (herança de um problema antigo do headless-shell no WSL). Trocado para `headless: true` fixo. Validado com 2 execuções seguidas (10/10, ~28s cada, sem regressão) — o problema do headless-shell que motivou o modo com UI não se reproduziu na versão atual do Playwright/Chromium instalada.
+
+## [2026-07-10] Suíte e2e (runes) — diagnóstico de reuso indevido do dev server
+
+- App: runes (e2e)
+- Docs: [docs/testing/playwright.md](./testing/playwright.md) (seção "Erros comuns" + "Executar")
+
+A suíte e2e apresentou 5 falhas aparentemente desconexas (timeout em `waitForURL`, formulário de criação de usuário voltando com "Nome obrigatório." mesmo após `fill()`, edição de título de lista não refletida, sincronização de logout entre abas estourando o timeout). Causa: um `vite dev` de uma sessão anterior (`pnpm dev:runes`) ainda ocupava a porta 5175; como `playwright.config.ts` usa `reuseExistingServer: true`, o Playwright reaproveitou esse servidor de **dev** em vez de rodar `build && preview`, reintroduzindo a instabilidade de hidratação do HMR já conhecida (ver changelog de 2026-07-10 anterior). Sem nenhuma mudança de código, encerrar o processo (`lsof -i :5175` → `kill`) e rodar `pnpm test:e2e` de novo resultou em 10/10 passando, de forma repetida e ~4× mais rápido. Documentado um sinal de diagnóstico (ausência dos logs `[WebServer] [PLUGIN_TIMINGS]`/`[404] GET /favicon.ico` indica reuso de servidor pré-existente) para acelerar a identificação de casos futuros.
+
 ## [2026-07-10] Centralização de conteúdo nas telas de usuários (runes)
 
 - App: runes

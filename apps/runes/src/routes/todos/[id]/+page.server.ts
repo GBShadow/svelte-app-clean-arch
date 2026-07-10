@@ -127,6 +127,10 @@ export const actions: Actions = {
 		}
 
 		const item = await locals.pb.collection('todo_items').getOne<TodoItemRecord>(itemId);
+		if (item.list !== params.id) {
+			const errors: Record<string, string> = { general: FORBIDDEN_ERROR };
+			return fail(403, { errors });
+		}
 		await locals.pb.collection('todo_items').update(itemId, { done: !item.done });
 
 		return { success: true };
@@ -143,6 +147,12 @@ export const actions: Actions = {
 		if (typeof itemId !== 'string' || !itemId) {
 			const errors: Record<string, string> = { general: 'Item inválido.' };
 			return fail(400, { errors });
+		}
+
+		const item = await locals.pb.collection('todo_items').getOne<TodoItemRecord>(itemId);
+		if (item.list !== params.id) {
+			const errors: Record<string, string> = { general: FORBIDDEN_ERROR };
+			return fail(403, { errors });
 		}
 
 		await locals.pb.collection('todo_items').delete(itemId);

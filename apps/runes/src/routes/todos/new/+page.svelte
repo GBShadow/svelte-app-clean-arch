@@ -4,7 +4,7 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-lg">
+<div class="flex flex-col gap-4 max-w-lg mx-auto w-full">
 	<h1 class="text-2xl font-bold font-display">Nova lista</h1>
 
 	<form method="POST" novalidate data-testid="new-list-form" class="card bg-base-100 border border-base-300 shadow-sm">

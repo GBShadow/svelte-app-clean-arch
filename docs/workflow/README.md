@@ -8,6 +8,7 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 
 | Slug | PR | Jira |
 |------|----|------|
+| `app-hub` | _(pendente)_ | [app-hub.jira.md](./app-hub.jira.md) |
 | `data-testid-e2e` | _(pendente)_ | [data-testid-e2e.jira.md](./data-testid-e2e.jira.md) |
 | `e2e-test-fix-plan` | [e2e-test-fix-plan.pr.md](./e2e-test-fix-plan.pr.md) | [e2e-test-fix-plan.jira.md](./e2e-test-fix-plan.jira.md) |
 | `pocketbase-auth` | [pocketbase-auth.pr.md](./pocketbase-auth.pr.md) | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |

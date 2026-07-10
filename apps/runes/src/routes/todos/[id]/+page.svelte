@@ -8,7 +8,7 @@
 	let { data, form }: PageProps = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-xl">
+<div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
 	<div class="flex items-center justify-between">
 		<h1 class="text-2xl font-bold font-display">{data.list.title}</h1>
 		{#if data.list.public}

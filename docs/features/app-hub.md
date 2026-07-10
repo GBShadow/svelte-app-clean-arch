@@ -1,0 +1,66 @@
+# App Hub — Tela inicial com grid de aplicativos
+
+## Resumo
+
+Tela home (`/`) que substitui o antigo redirecionamento para `/todos`. Funciona como hub de aplicativos: exibe saudação com nome do usuário, grid responsivo de cards com ícone (lucide-svelte), nome, descrição e badge de contador de itens pendentes. Navbar simplificada com logo "❯ hub" (link para `/`), nome do usuário e logout. Cards de apps administrativos renderizados condicionalmente para admin.
+
+## App(s) afetado(s)
+
+- **runes** — `+page.svelte`, `+page.server.ts`, `+layout.svelte`, `appRegistry.ts`, `AppCard.svelte`, `AppGrid.svelte`
+
+## Camadas alteradas
+
+| Camada | Arquivos |
+|--------|----------|
+| Dependência | `apps/runes/package.json` — `lucide-svelte` |
+| Registro | `apps/runes/src/lib/appRegistry.ts` — array estático de `AppEntry` com `id`, `name`, `description`, `icon`, `route`, `adminOnly?` |
+| UI (home) | `apps/runes/src/routes/+page.svelte` — home screen com saudação + grid de cards |
+| Server (home) | `apps/runes/src/routes/+page.server.ts` — load com `pendingCount` (total de itens pendentes do usuário) |
+| Layout | `apps/runes/src/routes/+layout.svelte` — navbar com logo "❯ hub" → `/`, nome do usuário, logout; removidos links diretos para `/todos` e `/users` |
+| Componente | `apps/runes/src/lib/components/AppCard.svelte` — card com ícone (lucide-svelte), nome, descrição, badge, hover state |
+| Componente | `apps/runes/src/lib/components/AppGrid.svelte` — grid responsivo (1-2-3-4 colunas) que renderiza os cards |
+
+## Fluxo de navegação
+
+```
+/login  →  / (home)  →  /todos  (clica no card Tarefas)
+                     →  /users  (clica no card Usuários — admin apenas)
+
+Navbar:
+  ❯ hub  →  /
+  [Nome do usuário]
+  [Logout]
+```
+
+## API (se houver)
+
+Nenhuma nova API. O badge de itens pendentes é calculado no server load da home consultando o PocketBase via `createServerClient`.
+
+| Método | Rota | Request | Response |
+|--------|------|---------|----------|
+| GET | `/` | — | Home screen renderizada no servidor com `data.user` + `data.pendingCount` |
+
+## Como testar
+
+```bash
+pnpm dev:runes           # http://localhost:5175
+pnpm --filter runes test # unitários (38 testes)
+pnpm --filter runes check
+```
+
+Cenários manuais:
+1. Logar como usuário comum → home exibe saudação + card Tarefas (sem card Usuários)
+2. Logar como admin → home exibe saudação + cards Tarefas e Usuários
+3. Clicar no card Tarefas → redireciona para `/todos`
+4. Clicar no logo "❯ hub" → redireciona para `/`
+5. Acessar `/` sem autenticação → redireciona para `/login`
+
+## Decisões de design
+
+- **Registro estático de apps** (`appRegistry.ts`) em vez de dinâmico (PocketBase): mais simples, type-safe e suficiente para 3-5 apps. Migrar para dinâmico no futuro se houver dezenas de apps.
+- **Navbar minimalista** com apenas logo + nome + logout: toda navegação parte da home, evitando poluição visual conforme novos apps forem adicionados.
+- **Cards em layout horizontal** (ícone à esquerda, texto à direita) com alinhamento à esquerda: mais legível que o layout centralizado original, especialmente com descrições mais longas.
+- **Badge de itens pendentes** carregado no server load: evita chamadas client-side ao PocketBase.
+- **`adminOnly` no registro** combinado com `$derived` filtering: cards administrativos só renderizam para admin, mas a proteção de rota continua existindo como camada extra.
+- **`lucide-svelte`** escolhido por ser tree-shakeable e ter ampla cobertura de ícones (ListChecks para Tarefas, Users para Usuários, etc.).
+- **`any` no tipo do ícone**: os componentes do `lucide-svelte` v1.0.1 são Svelte 4 (class-based), incompatíveis com o tipo `Component` do Svelte 5. `any` é pragmático e não afeta runtime.

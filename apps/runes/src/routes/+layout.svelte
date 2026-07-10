@@ -23,22 +23,17 @@
 <div class="min-h-screen bg-base-200">
 	<div class="navbar bg-base-100 border-b border-base-300">
 		<div class="flex-1">
-			<a href="/todos" class="btn btn-ghost text-xl font-mono normal-case" data-testid="logo-link">
-				<span class="text-primary">&#10095;</span> todo.apps
+			<a href="/" class="btn btn-ghost text-xl font-mono normal-case" data-testid="logo-link">
+				<span class="text-primary">&#10095;</span> hub
 			</a>
 		</div>
 		<div class="flex-none flex items-center gap-4">
 			{#if data.user}
-				<a href="/todos" class="btn btn-ghost btn-sm" data-testid="nav-minhas-listas">Minhas listas</a>
-			{/if}
-			{#if data.user?.isAdmin}
-				<a href="/users" class="btn btn-ghost btn-sm" data-testid="nav-usuarios">Usuários</a>
-			{/if}
-			{#if data.user}
+				<span class="text-sm text-base-content/60 hidden sm:block">{data.user.name}</span>
 				<form method="POST" action="/logout" onsubmit={handleLogout}>
 					<button type="submit" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-logout">
 						<IconLogout class="size-4" />
-						Sair ({data.user.name})
+						Sair
 					</button>
 				</form>
 			{/if}

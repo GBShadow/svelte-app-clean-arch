@@ -6,6 +6,7 @@ Documentação de funcionalidades implementadas no monorepo.
 
 | Feature | App | Documento |
 |---------|-----|-----------|
+| App Hub — tela inicial com grid de apps | runes | [app-hub.md](./app-hub.md) |
 | Autenticação PocketBase (runes) | runes | [pocketbase-auth.md](./pocketbase-auth.md) |
 | Correção de testes e2e (Playwright) | runes (e2e) | [e2e-test-fix-plan.md](./e2e-test-fix-plan.md) |
 | CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |

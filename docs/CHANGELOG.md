@@ -2,6 +2,18 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] App Hub — tela inicial com grid de aplicativos (runes)
+
+- App: runes
+- Dependência: `apps/runes/package.json` — `lucide-svelte`
+- Registro: `apps/runes/src/lib/appRegistry.ts`
+- Componentes: `AppCard.svelte`, `AppGrid.svelte`
+- Rotas: `+page.svelte`, `+page.server.ts` (home substitui redirect para `/todos`)
+- Layout: `+layout.svelte` (navbar "❯ hub", links diretos removidos)
+- Docs: [docs/features/app-hub.md](./features/app-hub.md)
+
+Home screen (`/`) com saudação "Olá, {nome}!" e grid responsivo de cards de apps. Cards com ícone lucide-svelte, nome, descrição e badge de contador de itens pendentes do Todo. Navbar simplificada para apenas logo "❯ hub" (link para `/`), nome do usuário e logout. Cards administrativos renderizados condicionalmente (`adminOnly`). Layout das telas de todo centralizado com `mx-auto + max-w-*`.
+
 ## [2026-07-10] Tema Dracula + redesign visual (runes)
 
 - App: runes (somente UI)

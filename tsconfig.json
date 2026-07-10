@@ -2,8 +2,6 @@
 	"files": [],
 	"references": [
 		{ "path": "./packages/todo-domain" },
-		{ "path": "./apps/classic" },
-		{ "path": "./apps/remote" },
 		{ "path": "./apps/runes" }
 	]
 }

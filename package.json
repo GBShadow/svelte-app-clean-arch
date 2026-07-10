@@ -9,12 +9,10 @@
 		"check": "turbo run check",
 		"check:domain": "pnpm --filter todo-domain check",
 		"dev": "turbo run dev",
-		"dev:classic": "turbo run dev --filter=classic",
-		"dev:remote": "turbo run dev --filter=remote",
 		"dev:runes": "turbo run dev --filter=runes",
 		"test": "turbo run test",
-		"test:e2e": "turbo run test:e2e --filter=classic --filter=runes",
-		"test:e2e:install": "pnpm --filter classic test:e2e:install && pnpm --filter runes test:e2e:install"
+		"test:e2e": "turbo run test:e2e --filter=runes",
+		"test:e2e:install": "pnpm --filter runes test:e2e:install"
 	},
 	"devDependencies": {
 		"turbo": "^2.5.4"

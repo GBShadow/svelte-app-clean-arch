@@ -26,7 +26,7 @@ Bugfixes triviais de 1 linha ou mudanças sem impacto de design não precisam de
 
 1. Spec: `docs/specs/<slug>.md`
 2. Jira: `docs/workflow/<slug>.jira.md` (referencia a spec)
-3. Implementar: `architecture/runes-ports-adapters.mdc` (ou `classic-ports-adapters.mdc` se o usuário pedir classic)
+3. Implementar: `architecture/runes-ports-adapters.mdc` (`classic` e `remote` foram movidos para `deprecated/`)
 4. Feature doc: `docs/features/<slug>.md`
 5. PR: `docs/workflow/<slug>.pr.md`
 

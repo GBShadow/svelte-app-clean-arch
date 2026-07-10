@@ -1,17 +1,19 @@
 ---
-description: Manter regras sincronizadas entre Cursor (.cursor/rules) e Claude (CLAUDE.md)
+description: Manter regras sincronizadas entre Cursor (.cursor/rules), Freebuff (.agents/skills) e Claude (CLAUDE.md)
 alwaysApply: true
 ---
 
-# Sincronização de regras (Cursor + Claude)
+# Sincronização de regras (Cursor + Freebuff + Claude)
 
-Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Claude** e **README**:
+Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Freebuff**, **Claude** e **README**:
 
 | Destino | Local |
 |---------|-------|
 | Cursor | `.cursor/rules/<pasta>/<nome>.mdc` |
+| Freebuff | `.agents/skills/<nome>.md` |
 | Claude | `CLAUDE.md` (raiz) |
-| Índice | `README.md` + `docs/README.md` |
+| Índice | `README.md` + `docs/README.md` + `docs/CODE-STRUCTURE.md` |
+| Docs | `docs/features/`, `docs/specs/`, `docs/workflow/`, `docs/CHANGELOG.md` |
 
 ## Estrutura de pastas
 
@@ -40,6 +42,7 @@ docs/
 | workflow | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
 | meta | `rules-sync.mdc` | alwaysApply |
 | meta | `commit-convention.mdc` | alwaysApply — sem trailer de co-autoria em commits/PRs |
+| meta | `code-structure.mdc` | alwaysApply — manter `docs/CODE-STRUCTURE.md` atualizado |
 
 ## Proibido
 

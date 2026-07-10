@@ -1,55 +1,60 @@
 # SvelteKit Todo App — Ports & Adapters
 
-Monorepo com três apps SvelteKit demonstrando o padrão Ports & Adapters a partir do projeto de referência Vue/Express.
+Monorepo SvelteKit demonstrando o padrão Ports & Adapters, com foco no app **runes** (Svelte 5 Runes).
 
 Gerenciado com **pnpm workspaces** + **Turborepo**.
 
-## Apps
+## App ativo
 
 | App | Domínio | Server | Porta |
 |---|---|---|---|
-| `apps/classic` | Observable/Observer | REST `/api/todos` | 5173 |
-| `apps/remote` | Observable/Observer | Remote functions | 5174 |
-| `apps/runes` | Runes em `.svelte.ts` | REST `/api/todos` | 5175 |
+| `apps/runes` | Runes em `.svelte.ts` | PocketBase REST + SvelteKit | 5175 |
+
+## Apps descontinuados
+
+Os apps `classic` e `remote` foram movidos para `deprecated/`:
+
+| App | Localização | Domínio original |
+|---|---|---|
+| `classic` | `deprecated/classic` | Observable/Observer + REST `/api/todos` |
+| `remote` | `deprecated/remote` | Observable/Observer + Remote functions |
 
 ## Pacote compartilhado
 
 `packages/todo-domain` contém:
 
 - `observable/` — `TodoList extends Observable`, `Observer`
-- `gateways/` — `TodoMemoryGateway`, `TodoHttpGateway`, `TodoRemoteGateway`
-
-Domínio runes vive em `apps/runes/src/lib/domain/` (classes `.svelte.ts`).
+- `gateways/` — `TodoGateway`, `TodoMemoryGateway`, `TodoHttpGateway`, `TodoRemoteGateway`
+- `types.ts` — `TodoItemDTO`, `createId`, `SEED_TODOS`
 
 ## Documentação
 
 - [Índice geral](./docs/README.md)
-- [Arquitetura runes (default)](./docs/runes-ports-adapters.md) — Ports & Adapters com `$state`/`$derived`, passo a passo
-- [Specs](./docs/specs/) — spec-driven development, antes de implementar (`<slug>.md`)
+- [Arquitetura runes](./docs/runes-ports-adapters.md) — Ports & Adapters com `$state`/`$derived`, passo a passo
+- [Specs](./docs/specs/) — spec-driven development, antes de implementar
 - [Features](./docs/features/) — documentação por funcionalidade
-- [Workflow](./docs/workflow/) — **PR e Jira na mesma pasta** (`<slug>.pr.md`, `<slug>.jira.md`)
+- [Workflow](./docs/workflow/) — PR e Jira na mesma pasta
+- [Estrutura do Código](./docs/CODE-STRUCTURE.md) — mapa completo da estrutura do projeto
 - [Changelog](./docs/CHANGELOG.md) — histórico resumido
-- [Playwright e2e](./docs/testing/playwright.md) — testes de browser (apps classic e runes)
+- [Playwright e2e](./docs/testing/playwright.md) — testes de browser (app runes)
 
 ## Regras para agentes de IA
 
-Regras em `.cursor/rules/<pasta>/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
+Regras em `.cursor/rules/<pasta>/` e `.agents/skills/` — resumo em [`CLAUDE.md`](./CLAUDE.md).
 
-| Pasta | Arquivo | Propósito |
-|-------|---------|-----------|
-| `architecture/` | `runes-ports-adapters.mdc` | Ports & Adapters (default) |
-| `architecture/` | `classic-ports-adapters.mdc` | Ports & Adapters (Observable/Observer, sob pedido) |
-| `architecture/` | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
-| `documentation/` | `feature-documentation.mdc` | Doc features + CHANGELOG |
-| `workflow/` | `spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
-| `workflow/` | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
-| `workflow/` | `jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
-| `meta/` | `rules-sync.mdc` | Sincronizar Cursor ↔ Claude |
-| `meta/` | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
+| Local | Conteúdo |
+|-------|----------|
+| `.cursor/rules/architecture/runes-ports-adapters.mdc` | Ports & Adapters (runes) |
+| `.cursor/rules/architecture/language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
+| `.cursor/rules/documentation/feature-documentation.mdc` | Doc features + CHANGELOG |
+| `.cursor/rules/workflow/spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
+| `.cursor/rules/workflow/pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
+| `.cursor/rules/workflow/jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
+| `.cursor/rules/meta/rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
+| `.cursor/rules/meta/commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
+| `.agents/skills/` | Skills Freebuff (spec-driven, runes-ports-adapters, code-structure, etc.) |
 
-Subagente: [`.claude/agents/spec-driven.md`](./.claude/agents/spec-driven.md) conduz o fluxo spec → Jira → (pausa) → feature/PR conversacionalmente — ver [docs/specs/spec-driven-agent.md](./docs/specs/spec-driven-agent.md).
-
-Ao adicionar ou alterar regras, atualize **Cursor**, **CLAUDE.md**, **README** e **docs/README.md**.
+Ao adicionar ou alterar regras, atualize **Cursor** (`.cursor/rules/`), **Freebuff** (`.agents/skills/`), **CLAUDE.md**, **README**, **docs/README.md** e **docs/CODE-STRUCTURE.md**.
 
 ## Comandos
 
@@ -60,25 +65,22 @@ pnpm test:e2e
 pnpm build
 pnpm check
 
-pnpm dev:classic
-pnpm dev:remote
 pnpm dev:runes
 
-# ou via turbo diretamente
-pnpm turbo run dev --filter=classic
+# via turbo diretamente
 pnpm turbo run test --filter=todo-domain
 ```
 
 ### Testes e2e (Playwright)
 
-Na **primeira vez** em Linux/WSL, além de `pnpm test:e2e:install`, instale as deps do sistema (requer sudo):
+Na **primeira vez** em Linux/WSL:
 
 ```bash
-cd apps/classic && sudo pnpm exec playwright install-deps
+pnpm test:e2e:install
 ```
 
 Guia completo: [docs/testing/playwright.md](./docs/testing/playwright.md)
 
 ## Testabilidade
 
-Todos os apps podem ser testados com `TodoMemoryGateway`, sem depender de API real ou server-side.
+O app runes pode ser testado com `TodoMemoryGateway`, sem depender de API real ou server-side.

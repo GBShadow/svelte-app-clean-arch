@@ -6,21 +6,21 @@ Breve descrição do que foi implementado e por quê.
 
 ## App(s) afetado(s)
 
-classic | remote | runes
+runes
 
 ## Camadas alteradas
 
 | Camada | Arquivos |
 |--------|----------|
-| Domínio | packages/todo-domain/... |
-| Gateway | packages/todo-domain/src/gateways/... |
-| Server | apps/classic/src/lib/server/... |
-| API | apps/classic/src/routes/api/... |
-| UI | apps/classic/src/lib/components/... |
+| Domínio | `apps/runes/src/lib/domain/` ou `packages/todo-domain/` |
+| Gateway | `packages/todo-domain/src/gateways/` |
+| Server | `apps/runes/src/lib/server/` |
+| API | `apps/runes/src/routes/` |
+| UI | `apps/runes/src/lib/components/` |
 
 ## Fluxo (Ports & Adapters)
 
-Descrever caminho: UI → Container → Gateway → API → Store → Domínio.
+Descrever caminho: UI → Container (onMount + service.load) → Service (.svelte.ts) → Gateway (todo-domain) → API → Store.
 
 ## API (se houver)
 
@@ -31,8 +31,8 @@ Descrever caminho: UI → Container → Gateway → API → Store → Domínio.
 ## Como testar
 
 ```bash
-pnpm test --filter=classic
-pnpm dev:classic
+pnpm test
+pnpm dev:runes
 ```
 
 Cenários manuais e testes automatizados (incluir `TodoMemoryGateway`).

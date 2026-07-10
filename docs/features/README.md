@@ -6,7 +6,7 @@ Documentação de funcionalidades implementadas no monorepo.
 
 | Feature | App | Documento |
 |---------|-----|-----------|
-| Todo List | classic, remote (~~runes~~, ver `pocketbase-todo-sharing`) | [todo-list.md](./todo-list.md) |
+| Todo List | classic, remote (~~deprecated~~), runes | [todo-list.md](./todo-list.md) |
 | Subagente spec-driven | — (agente de processo) | [spec-driven-agent.md](./spec-driven-agent.md) |
 | Infra PocketBase (Docker + coleções) | — (infra, sem app) | [pocketbase-infra.md](./pocketbase-infra.md) |
 | Autenticação PocketBase (runes) | runes | [pocketbase-auth.md](./pocketbase-auth.md) |

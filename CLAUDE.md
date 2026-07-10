@@ -1,26 +1,36 @@
 # svelte-app-clean-arch — Guia para Claude
 
-Monorepo SvelteKit com **Ports & Adapters**: três apps (`classic`, `remote`, `runes`) + pacote compartilhado `packages/todo-domain`.
+Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado `packages/todo-domain`.
+
+> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/classic` e `deprecated/remote`. Eles não fazem mais parte do workspace ativo.
 
 ## Regra principal
 
-**Novas funcionalidades = padrão runes**, salvo pedido explícito de `classic` ou `remote`.
+**Novas funcionalidades = padrão runes**.
 
-## Regras (`.cursor/rules/` — manter sincronizadas com este arquivo)
+## Regras (`.cursor/rules/` + `.agents/skills/` — manter sincronizados)
 
 | Pasta | Arquivo | Propósito |
 |-------|---------|-----------|
-| architecture | `runes-ports-adapters.mdc` | Ports & Adapters (default) |
-| architecture | `classic-ports-adapters.mdc` | Ports & Adapters (Observable/Observer, sob pedido) |
+| architecture | `runes-ports-adapters.mdc` | Ports & Adapters (runes) |
 | architecture | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
 | documentation | `feature-documentation.mdc` | Doc em `docs/features/` + CHANGELOG |
 | workflow | `spec-driven.mdc` | Spec em `docs/specs/<slug>.md` (antes de implementar) |
 | workflow | `pr-description.mdc` | PR em `docs/workflow/<slug>.pr.md` |
 | workflow | `jira-tasks.mdc` | Jira em `docs/workflow/<slug>.jira.md` |
-| meta | `rules-sync.mdc` | Sincronizar Cursor ↔ Claude |
+| meta | `rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
 | meta | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
+| meta | `code-structure.mdc` | Manter `docs/CODE-STRUCTURE.md` atualizado |
 
 PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
+
+Skills Freebuff (`.agents/skills/`):
+- `spec-driven` — agente de processo spec-driven
+- `runes-ports-adapters` — guia de implementação runes
+- `classic-ports-adapters` — guia de implementação classic (deprecated)
+- `feature-documentation` — documentação de funcionalidades
+- `language-convention` — convenção de idioma
+- `code-structure` — manter `docs/CODE-STRUCTURE.md` atualizado
 
 ## Documentação e workflow (spec-driven)
 
@@ -34,15 +44,24 @@ PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
 
 Fluxo: **spec → Jira → implementar → feature doc → PR**, mesmo `<slug>` em todos. Bugfixes triviais podem pular a spec.
 
-Agente: `.claude/agents/spec-driven.md` conduz esse fluxo conversacionalmente — gera spec + Jira, para e aguarda confirmação de implementação, depois gera feature doc + CHANGELOG + PR. Ver `docs/specs/spec-driven-agent.md`.
-
 Índice: [docs/README.md](./docs/README.md)
+
+## Estrutura do projeto
+
+```
+apps/runes/              # App SvelteKit ativo (default)
+deprecated/
+  classic/               # App classic — descontinuado
+  remote/                # App remote — descontinuado
+packages/todo-domain/   # Domínio e gateways compartilhados
+docs/                    # Documentação
+```
 
 ## Comandos
 
 ```bash
 pnpm install && pnpm test && pnpm check
-pnpm dev:classic   # :5173
+pnpm dev:runes   # :5175
 gh pr create --body-file docs/workflow/<slug>.pr.md
 ```
 
@@ -50,11 +69,29 @@ gh pr create --body-file docs/workflow/<slug>.pr.md
 
 Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste repositório.
 
+## Atualização de Documentos ao Concluir Tarefas
+
+Ao **concluir qualquer tarefa**, verifique e atualize **todos os documentos relevantes**:
+
+1. `docs/CODE-STRUCTURE.md` — se a estrutura de arquivos/pastas mudou
+2. `CLAUDE.md` — se regras, skills ou comandos mudaram
+3. `README.md` (raiz) — se a visão geral, apps ou comandos mudaram
+4. `docs/README.md` — se o índice da documentação mudou
+5. `docs/CHANGELOG.md` — se uma feature foi concluída
+6. `docs/features/<slug>.md` + índice — se feature implementada
+7. `docs/specs/<slug>.md` + índice — se spec criada
+8. `docs/workflow/<slug>.pr.md` / `<slug>.jira.md` + índice — se PR/Jira preparados
+
+Ver regra completa em `.cursor/rules/meta/code-structure.mdc`.
+
 ## Manutenção de regras
 
-1. Atualizar `.cursor/rules/<pasta>/<nome>.mdc`
-2. Atualizar este `CLAUDE.md`
-3. Atualizar `README.md` e `docs/README.md`
+1. Atualizar `.cursor/rules/<pasta>/<nome>.mdc` (Cursor)
+2. Atualizar `.agents/skills/<nome>.md` (Freebuff)
+3. Atualizar este `CLAUDE.md`
+4. Atualizar `README.md` e `docs/README.md`
+5. Atualizar `docs/CODE-STRUCTURE.md` (estrutura do código)
+6. Atualizar `docs/CHANGELOG.md`, `docs/features/`, `docs/specs/`, `docs/workflow/` (se aplicável)
 
 ## Idioma
 
@@ -63,8 +100,3 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 ## Runes (default)
 
 UI → Container (`onMount` + `service.load()`) → `TodoListService` (`$lib/domain/*.svelte.ts`, com `$state`/`$derived`) → `TodoHttpGateway` → `/api/` → `$lib/server/*Store.ts`. Testes com `TodoMemoryGateway`.
-
-## Classic / Remote
-
-- **classic:** Observable/Observer + Container com `revision`/`bump()` + `TodoHttpGateway`
-- **remote:** Observable + `*.remote.ts` + `TodoRemoteGateway`

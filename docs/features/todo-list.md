@@ -1,6 +1,6 @@
 # Todo List
 
-> **Nota (2026-07-09):** a lista global do app **runes** descrita aqui foi removida e substituída por múltiplas listas por usuário — ver [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md). Este documento continua valendo integralmente para **classic** e **remote**, que não foram alterados.
+> **Nota (2026-07-09):** a lista global do app **runes** descrita aqui foi removida e substituída por múltiplas listas por usuário — ver [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md). Este documento continua valendo como referência histórica para **classic** e **remote** (agora em `deprecated/`), que não foram alterados.
 
 ## Resumo
 

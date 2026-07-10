@@ -1,0 +1,32 @@
+---
+description: Ao concluir qualquer tarefa, atualizar TODOS os documentos relevantes (estrutura, readmes, changelog, specs, features, workflow)
+alwaysApply: true
+---
+
+# Atualização de Documentos ao Concluir Tarefas
+
+Ao **concluir qualquer tarefa** que modifique o projeto (código, estrutura, configuração, documentação):
+
+## Checklist de documentos a verificar/atualizar
+
+1. **`docs/CODE-STRUCTURE.md`** — mapa da estrutura do código (sempre que arquivos/pastas forem adicionados, removidos ou movidos)
+2. **`CLAUDE.md`** — guia principal para IA (sempre que regras, estrutura ou comandos mudarem)
+3. **`README.md`** (raiz) — visão geral do projeto (sempre que apps, pacotes, comandos ou regras mudarem)
+4. **`docs/README.md`** — índice da documentação (sempre que novos docs forem adicionados/removidos)
+5. **`docs/CHANGELOG.md`** — histórico de funcionalidades (sempre que uma feature for concluída)
+6. **`docs/features/<slug>.md`** — documentação de funcionalidade (após implementação)
+7. **`docs/specs/<slug>.md`** — especificação (antes de implementar feature não trivial)
+8. **`docs/workflow/<slug>.pr.md`** e **`docs/workflow/<slug>.jira.md`** — PR e Jira
+
+## Regras
+
+- **Não pule docs**: qualquer mudança no projeto afeta pelo menos um dos documentos acima
+- **Mantenha a consistência**: se um doc referencia outro, verifique se o link/descrição está correto
+- **Atualize índices**: `docs/specs/README.md`, `docs/features/README.md`, `docs/workflow/README.md`
+- **Sync Cursor ↔ Freebuff ↔ Claude**: toda regra nova em `.cursor/rules/` deve ter equivalente em `.agents/skills/` e menção em `CLAUDE.md`
+
+## Ver também
+
+- `docs/CODE-STRUCTURE.md` — estrutura detalhada do projeto
+- `.cursor/rules/meta/rules-sync.mdc` — sincronização entre plataformas
+- `.agents/skills/code-structure.md` — skill Freebuff equivalente

@@ -27,7 +27,7 @@ Mesmo `<slug>` (kebab-case) para PR e Jira da mesma feature (ex: `add-filters.pr
 
 0. Spec: [../specs/](../specs/) — copie `_template.md` → `<slug>.md` e valide com o usuário
 1. Jira: copie `_template-jira.md` → `<slug>.jira.md` (referencia a spec)
-2. Implemente seguindo `.cursor/rules/architecture/runes-ports-adapters.mdc` (default; `classic-ports-adapters.mdc` se pedido explicitamente)
+2. Implemente seguindo `.cursor/rules/architecture/runes-ports-adapters.mdc`
 3. Feature doc: [../features/](../features/)
 4. PR: copie `_template-pr.md` → `<slug>.pr.md`
 5. Atualize este índice

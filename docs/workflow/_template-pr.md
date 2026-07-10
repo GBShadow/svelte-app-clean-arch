@@ -20,7 +20,7 @@ Descreva em 2–4 frases o objetivo e o impacto da mudança.
 - `packages/todo-domain/...`
 
 ### App(s)
-- `apps/classic/...` | `apps/remote/...` | `apps/runes/...`
+- `apps/runes/...`
 
 ### Testes
 - Arquivos e cenários cobertos

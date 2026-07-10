@@ -1,6 +1,8 @@
 # Arquitetura do app `runes` — Ports & Adapters com Svelte 5 Runes
 
-> Este documento explica, passo a passo, como o app `apps/runes` implementa Ports & Adapters usando **runes nativos do Svelte 5** (`$state`, `$derived`, `$props`) em vez do padrão Observable/Observer usado em `classic`/`remote`. É o padrão **default** para novas funcionalidades (ver [`CLAUDE.md`](../CLAUDE.md) e [`.cursor/rules/architecture/runes-ports-adapters.mdc`](../.cursor/rules/architecture/runes-ports-adapters.mdc)).
+> Este documento explica, passo a passo, como o app `apps/runes` implementa Ports & Adapters usando **runes nativos do Svelte 5** (`$state`, `$derived`, `$props`). É o padrão **default** para novas funcionalidades (ver [`CLAUDE.md`](../CLAUDE.md) e [`.cursor/rules/architecture/runes-ports-adapters.mdc`](../.cursor/rules/architecture/runes-ports-adapters.mdc)).
+>
+> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/` e não fazem mais parte do workspace ativo.
 
 ## Visão geral do fluxo
 
@@ -29,7 +31,7 @@ A UI (`TodoList.svelte`) recebe o `service` via `$props()` e só lê/chama méto
 
 ### 1. Domínio reativo — `$lib/domain/*.svelte.ts`
 
-Diferente do `classic` (que usa classes `Observable` + `Observer` de `todo-domain` para notificar mudanças manualmente), o `runes` modela o domínio como classes comuns cujos campos usam **runes** do Svelte 5. Isso torna as instâncias reativas nativamente, sem precisar de um mecanismo de notificação:
+O `runes` modela o domínio como classes comuns cujos campos usam **runes** do Svelte 5. Isso torna as instâncias reativas nativamente (diferente do padrão Observable/Observer usado anteriormente nos apps `classic`/`remote`, agora em `deprecated/`):
 
 **`Item.svelte.ts`** — entidade folha:
 
@@ -176,19 +178,7 @@ Dois níveis, ambos evitando rede/HTTP real:
 - **`TodoListService.test.ts`** — testa o service isoladamente (carregar, adicionar, etc.) com `TodoMemoryGateway`.
 - **`TodoList.test.ts`** (componente) — teste de integração leve do fluxo `service` + domínio, também com `TodoMemoryGateway`.
 
-## Runes vs. Classic — a diferença central
-
-| Aspecto | `classic` | `runes` |
-|---|---|---|
-| Reatividade do domínio | Manual: `Observable`/`Observer`, `notify()` | Nativa: `$state`, `$derived` |
-| Forçar re-render na UI | `revision` + `bump()` no Container | Automático (mutar `$state` já re-renderiza) |
-| Onde vive o domínio | `packages/todo-domain/src/observable/` | `apps/runes/src/lib/domain/*.svelte.ts` |
-| Gateway/porta/API/server | Iguais (reaproveitados de `todo-domain`) | Iguais (reaproveitados de `todo-domain`) |
-
-Ou seja: **gateway, porta e camada de API/servidor são idênticos entre os três apps** — a diferença real está em como o domínio notifica a UI sobre mudanças.
-
 ## Ver também
 
 - [`CLAUDE.md`](../CLAUDE.md) — regra principal e tabela de regras
 - [`.cursor/rules/architecture/runes-ports-adapters.mdc`](../.cursor/rules/architecture/runes-ports-adapters.mdc) — checklist para IA ao implementar uma feature
-- [`.cursor/rules/architecture/classic-ports-adapters.mdc`](../.cursor/rules/architecture/classic-ports-adapters.mdc) — padrão alternativo (Observable/Observer)

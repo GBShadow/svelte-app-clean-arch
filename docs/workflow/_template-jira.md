@@ -6,7 +6,7 @@
 |-------|-------|
 | Issue Type | Story |
 | Priority | Medium |
-| Labels | sveltekit, ports-adapters, classic |
+| Labels | sveltekit, ports-adapters, runes |
 | Story Points | 3 |
 | Jira Key | [JIRA-KEY] |
 | Epic | _(opcional)_ |
@@ -37,15 +37,15 @@ O que deve ser entregue ao concluir?
 - [ ] `pnpm test` e `pnpm check` sem erros
 - [ ] Documentação em `docs/features/<slug>.md`
 
-## Technical Notes (Ports & Adapters — classic)
+## Technical Notes (Ports & Adapters — runes)
 
 | Camada | Ação |
 |--------|------|
-| Domínio | `packages/todo-domain/src/observable/` |
-| Gateway | `packages/todo-domain/src/gateways/` |
-| Server | `apps/classic/src/lib/server/` |
-| API | `apps/classic/src/routes/api/` |
-| UI | `Feature.svelte` + `FeatureContainer.svelte` |
+| Domínio | `apps/runes/src/lib/domain/` (classes `.svelte.ts` com `$state`/`$derived`) |
+| Gateway | `packages/todo-domain/src/gateways/` (interface `TodoGateway`) |
+| Server | `apps/runes/src/lib/server/` |
+| API | `apps/runes/src/routes/` |
+| UI | `Feature.svelte` (presentacional) + `FeatureContainer.svelte` |
 | Testes | `*.test.ts` com `TodoMemoryGateway` |
 
 ## Links

@@ -6,14 +6,9 @@ alwaysApply: false
 
 # Runes — Ports & Adapters (default)
 
-Novas funcionalidades seguem **apps/runes** + **packages/todo-domain**, salvo pedido explícito de `classic` ou `remote`.
+Novas funcionalidades seguem **apps/runes** + **packages/todo-domain**.
 
-## Exceções por app
-
-| App | Quando usar | Domínio |
-|-----|-------------|---------|
-| `classic` | Usuário pedir classic | Observable em `todo-domain` + Container/Observer (`revision`/`bump()`) |
-| `remote` | Usuário pedir remote functions | Observable em `todo-domain` + `todos.remote.ts` |
+> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/` e não fazem mais parte do workspace ativo.
 
 ## Checklist (ordem obrigatória)
 
@@ -61,12 +56,12 @@ onMount(() => { void service.load(); });
 let { service }: { service: TodoListService } = $props();
 ```
 
-Classes de domínio usam `$state`/`$derived` nativos do Svelte 5 — **não precisa de `revision`/`bump()` manual** (diferente do padrão classic, que usa Observable).
+Classes de domínio usam `$state`/`$derived` nativos do Svelte 5 — **não precisa de `revision`/`bump()` manual** (diferente do padrão classic, que usava Observable).
 
 ## Proibido
 
 - Lógica de negócio em `+server.ts` (apenas persistência/HTTP)
 - Gateway HTTP dentro do componente presentacional (sempre no Container)
 - Pular testes com `TodoMemoryGateway`
-- Reimplementar Observable/Observer dentro de `apps/runes` (isso pertence ao padrão classic/remote)
+- Reimplementar Observable/Observer dentro de `apps/runes`
 - Implementar gateway customizado no app quando cabe em `todo-domain`

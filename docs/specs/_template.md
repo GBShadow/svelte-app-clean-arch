@@ -41,7 +41,7 @@ _(performance, acessibilidade, testes — se aplicável)_
 | API | `apps/runes/src/routes/api/...` |
 | UI | `apps/runes/src/lib/components/...` |
 
-_(Se a feature for explicitamente `classic` ou `remote`, adaptar os caminhos para `apps/classic/...` ou `apps/remote/...`.)_
+_(A partir de 2026-07-09, `classic` e `remote` foram movidos para `deprecated/`. Toda nova funcionalidade usa `apps/runes`.)_
 
 ## Contrato de API (se houver)
 

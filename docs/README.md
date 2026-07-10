@@ -4,11 +4,14 @@
 
 **Arquitetura default:** [runes-ports-adapters.md](./runes-ports-adapters.md) — como o app `runes` implementa Ports & Adapters passo a passo.
 
+> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/`. Toda nova funcionalidade deve seguir apenas o app `runes`.
+
 | Pasta | Conteúdo | Templates |
 |-------|----------|-----------|
 | [specs/](./specs/) | Spec antes de implementar | [_template.md](./specs/_template.md) |
 | [features/](./features/) | Doc por funcionalidade (pós-implementação) | [_template.md](./features/_template.md) |
 | [workflow/](./workflow/) | **PR + Jira (mesma pasta)** | [_template-pr.md](./workflow/_template-pr.md), [_template-jira.md](./workflow/_template-jira.md) |
+| [CODE-STRUCTURE.md](./CODE-STRUCTURE.md) | Mapa completo da estrutura do código | — |
 | [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
 
@@ -26,13 +29,18 @@ docs/features/add-filters.md          ← doc da feature
 
 1. **Spec** — `docs/specs/<slug>.md` (validar com o usuário antes de prosseguir)
 2. **Jira** — `docs/workflow/<slug>.jira.md`
-3. **Implementar** — `.cursor/rules/architecture/runes-ports-adapters.mdc` (default; `classic-ports-adapters.mdc` se pedido explicitamente)
+3. **Implementar** — seguir `runes-ports-adapters.mdc`
 4. **Feature** — `docs/features/<slug>.md` + CHANGELOG
 5. **PR** — `docs/workflow/<slug>.pr.md`
 
 Bugfixes triviais podem pular a etapa de spec.
 
-Agente dedicado: `.claude/agents/spec-driven.md` conduz os passos 1–2 e 4–5 conversacionalmente, parando após spec + Jira até a implementação (passo 3) ser confirmada.
+**Skills Freebuff:** `.agents/skills/` contém skills carregáveis pelo comando `skill`:
+- `spec-driven` — conduz o fluxo spec-driven conversacionalmente
+- `runes-ports-adapters` — guia de implementação runes (default)
+- `feature-documentation` — documentação de funcionalidades
+- `language-convention` — convenção de idioma
+- `code-structure` — manter `docs/CODE-STRUCTURE.md` atualizado
 
 ## Idioma
 

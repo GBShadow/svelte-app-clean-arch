@@ -2,6 +2,13 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-09] Descontinuação dos apps classic e remote
+
+- Os apps `classic` e `remote` foram movidos de `apps/` para `deprecated/`
+- Toda nova funcionalidade deve seguir apenas o app `runes`
+- Workspace configurado apenas com `apps/runes` e `packages/*`
+- Documentação, regras Cursor e skills Freebuff atualizadas
+
 ## [2026-07-09] Todo multi-lista com compartilhamento (runes)
 
 - App: runes

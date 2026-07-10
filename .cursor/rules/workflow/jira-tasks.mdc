@@ -22,7 +22,7 @@ Quando o usuário pedir **criar tarefa Jira**, **ticket**, **story** ou **issue*
 
 Issue Type, Summary, Description, Acceptance Criteria, Technical Notes (runes), Labels.
 
-Ver `architecture/runes-ports-adapters.mdc` para checklist de camadas (ou `classic-ports-adapters.mdc` se o usuário pedir classic).
+Ver `architecture/runes-ports-adapters.mdc` para checklist de camadas. (`classic` e `remote` foram movidos para `deprecated/`.)
 
 ## Após implementação
 

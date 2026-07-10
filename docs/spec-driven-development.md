@@ -26,7 +26,7 @@ Todos os arquivos de uma mesma feature compartilham o **mesmo `<slug>`** em keba
 |-------|-------|---------|----------|
 | 1. Spec | `docs/specs/` | `<slug>.md` | [`_template.md`](./specs/_template.md) |
 | 2. Jira | `docs/workflow/` | `<slug>.jira.md` | [`_template-jira.md`](./workflow/_template-jira.md) |
-| 3. Implementação | código | — | `.cursor/rules/architecture/classic-ports-adapters.mdc` |
+| 3. Implementação | código | — | `.cursor/rules/architecture/runes-ports-adapters.mdc` |
 | 4. Feature doc | `docs/features/` | `<slug>.md` | [`_template.md`](./features/_template.md) |
 | 5. PR | `docs/workflow/` | `<slug>.pr.md` | [`_template-pr.md`](./workflow/_template-pr.md) |
 
@@ -59,10 +59,10 @@ Sem credenciais de Jira integradas, este arquivo é um rascunho pronto para cola
 
 ### 3. Implementar
 
-Siga `.cursor/rules/architecture/classic-ports-adapters.mdc` — por padrão, novas funcionalidades usam o padrão **classic**:
+Siga `.cursor/rules/architecture/runes-ports-adapters.mdc` — novas funcionalidades usam o padrão **runes**:
 
 ```
-UI → Container → TodoHttpGateway → /api/ → server Store → Domínio
+UI → Container (onMount + service.load()) → Service (.svelte.ts) → Gateway (todo-domain) → API → Store
 ```
 
 Use a spec como referência de escopo: se durante a implementação surgir a necessidade de algo fora do que foi especificado, é sinal de que a spec precisa ser atualizada (ou a mudança precisa de uma spec própria), não de seguir em frente silenciosamente.
@@ -94,7 +94,7 @@ Nem toda mudança precisa de spec. Pule direto para o Jira (ou até direto para 
 
 Escreva a spec quando:
 
-- A funcionalidade envolve mais de uma camada (domínio + API + UI) ou mais de um app (`classic`/`remote`/`runes`).
+- A funcionalidade envolve mais de uma camada (domínio + API + UI).
 - Há mais de uma forma razoável de resolver o problema.
 - O critério de "pronto" não é óbvio sem discussão prévia.
 
@@ -103,7 +103,7 @@ Escreva a spec quando:
 - Regra Cursor: [`.cursor/rules/workflow/spec-driven.mdc`](../.cursor/rules/workflow/spec-driven.mdc)
 - Regra Cursor (Jira): [`.cursor/rules/workflow/jira-tasks.mdc`](../.cursor/rules/workflow/jira-tasks.mdc)
 - Regra Cursor (PR): [`.cursor/rules/workflow/pr-description.mdc`](../.cursor/rules/workflow/pr-description.mdc)
-- Regra Cursor (arquitetura): [`.cursor/rules/architecture/classic-ports-adapters.mdc`](../.cursor/rules/architecture/classic-ports-adapters.mdc)
+- Regra Cursor (arquitetura): [`.cursor/rules/architecture/runes-ports-adapters.mdc`](../.cursor/rules/architecture/runes-ports-adapters.mdc)
 - Regra Cursor (doc de feature): [`.cursor/rules/documentation/feature-documentation.mdc`](../.cursor/rules/documentation/feature-documentation.mdc)
 - Índice geral: [`docs/README.md`](./README.md)
 - [`CLAUDE.md`](../CLAUDE.md) na raiz do repositório

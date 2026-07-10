@@ -29,7 +29,7 @@ Bugfixes triviais de 1 linha ou mudanças sem impacto de design — vá direto p
 
 1. **Spec** — `docs/specs/<slug>.md`
 2. **Jira** — `docs/workflow/<slug>.jira.md` (referencia a spec)
-3. **Implementar** — `.cursor/rules/architecture/classic-ports-adapters.mdc`
+3. **Implementar** — `.cursor/rules/architecture/runes-ports-adapters.mdc`
 4. **Feature** — `docs/features/<slug>.md`
 5. **PR** — `docs/workflow/<slug>.pr.md`
 

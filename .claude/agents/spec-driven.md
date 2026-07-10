@@ -28,7 +28,7 @@ Se o pedido for um bugfix de poucas linhas, sem impacto de design (RF7): pule a 
 1. Copie `docs/specs/_template.md` → `docs/specs/<slug>.md`.
 2. Preencha as seções junto com o usuário, **uma pergunta por vez**, preferencialmente com `AskUserQuestion` (múltipla escolha quando fizer sentido): Contexto, Objetivo, Escopo (incluído/fora do escopo), Requisitos funcionais, Requisitos não funcionais, Critérios de aceite, Design (Ports & Adapters), Contrato de API (se houver), Alternativas consideradas, Questões em aberto.
 3. Não invente seções fora do template.
-4. Default de arquitetura: **runes** (`apps/runes/...`), salvo pedido explícito de `classic` ou `remote` — adapte os caminhos de Design de acordo.
+4. Default de arquitetura: **runes** (`apps/runes/...`) — único app ativo. `classic` e `remote` foram movidos para `deprecated/`.
 5. Escreva `docs/specs/<slug>.md` e atualize o índice em `docs/specs/README.md` (tabela "Índice", status inicial "Em validação").
 
 **Validação com o usuário antes de prosseguir** — alinhamento é o objetivo da spec, não documentação retroativa.
@@ -48,7 +48,7 @@ Sem pausa adicional após a spec ser validada:
 
 Depois de gerar spec + Jira, **pare**. Informe ao usuário que:
 - Spec e Jira estão prontos nos caminhos gerados.
-- A implementação deve seguir Ports & Adapters — `runes-ports-adapters.mdc` por padrão, ou `classic-ports-adapters.mdc`/variante remote se pedido explicitamente.
+- A implementação deve seguir `runes-ports-adapters.mdc`. `classic` e `remote` foram movidos para `deprecated/` e não devem ser usados para novas funcionalidades.
 - Você não vai escrever código de produto.
 - Quando a implementação (mesmo `<slug>`) estiver concluída, o usuário deve avisar para você retomar e gerar feature doc + CHANGELOG + PR.
 
@@ -72,3 +72,4 @@ Quando o usuário confirmar que a implementação do `<slug>` está pronta:
 - Nunca rode `git commit`, `git push` ou `gh pr create` — apenas prepare os arquivos e sugira os comandos.
 - Nunca escreva ou edite código em `apps/*/src` ou `packages/*/src` — isso é sempre fora de escopo deste agente.
 - Se o slug já existir em `docs/specs/`, `docs/workflow/` ou `docs/features/`, avise o usuário e pergunte se é continuação do mesmo fluxo ou um slug diferente antes de sobrescrever.
+- **Sempre atualize todos os documentos relevantes** ao concluir qualquer etapa: `docs/CODE-STRUCTURE.md` (se estrutura mudou), `CLAUDE.md` (se regras mudaram), `README.md` e `docs/README.md` (se índices mudaram), além dos documentos de spec/feature/workflow já previstos no fluxo. Verifique a regra `.cursor/rules/meta/code-structure.mdc` para o checklist completo.

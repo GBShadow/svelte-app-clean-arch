@@ -318,19 +318,21 @@ docs/
 | `.cursor/rules/architecture/runes-ports-adapters.mdc` | Ports & Adapters (runes) | Checklist de implementação |
 | `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica |
 | `.cursor/rules/architecture/language-convention.mdc` | Idioma | Código em inglês, UI em português |
+| `.cursor/rules/architecture/data-testid.mdc` | data-testid | data-testid em componentes + getByTestId em testes |
 | `.cursor/rules/documentation/feature-documentation.mdc` | Doc features | Criar/atualizar docs/features/ |
 | `.cursor/rules/workflow/spec-driven.mdc` | Spec-driven | Criar docs/specs/ |
 | `.cursor/rules/workflow/pr-description.mdc` | PR | Criar docs/workflow/<slug>.pr.md |
 | `.cursor/rules/workflow/jira-tasks.mdc` | Jira | Criar docs/workflow/<slug>.jira.md |
 | `.cursor/rules/meta/rules-sync.mdc` | Sync | Manter regras sincronizadas |
 | `.cursor/rules/meta/commit-convention.mdc` | Commits | Sem co-autoria de IA |
-| `.cursor/rules/meta/code-structure.mdc` | Estrutura | Manter `docs/CODE-STRUCTURE.md` atualizado |
+| `.cursor/rules/meta/code-structure.mdc` | Estrutura | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
 | `.agents/skills/spec-driven.md` | SDD (Freebuff) | Equivalente ao agente Claude |
 | `.agents/skills/runes-ports-adapters.md` | Runes (Freebuff) | Guia de implementação runes |
 | `.agents/skills/classic-ports-adapters.md` | Classic (Freebuff) | Guia de implementação classic (deprecated) |
 | `.agents/skills/feature-documentation.md` | Feature doc (Freebuff) | Documentação de features |
 | `.agents/skills/language-convention.md` | Idioma (Freebuff) | Convenção de idioma |
-| `.agents/skills/code-structure.md` | Estrutura (Freebuff) | Manter `docs/CODE-STRUCTURE.md` atualizado |
+| `.agents/skills/code-structure.md` | Estrutura (Freebuff) | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| `.agents/skills/data-testid.md` | data-testid (Freebuff) | data-testid em componentes + getByTestId em testes |
 | `.claude/agents/spec-driven.md` | SDD (Claude) | Agente spec-driven original |
 
 ---

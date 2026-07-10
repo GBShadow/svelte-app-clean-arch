@@ -1,13 +1,26 @@
 ---
-description: Ao concluir qualquer tarefa, atualizar TODOS os documentos relevantes (estrutura, readmes, changelog, specs, features, workflow)
+description: Ao iniciar uma tarefa, ler CODE-STRUCTURE.md como base. Ao concluir, atualizar TODOS os documentos relevantes.
 alwaysApply: true
 ---
 
-# Atualização de Documentos ao Concluir Tarefas
+# Uso e Atualização do CODE-STRUCTURE.md
 
-Ao **concluir qualquer tarefa** que modifique o projeto (código, estrutura, configuração, documentação):
+## Antes de começar qualquer tarefa
 
-## Checklist de documentos a verificar/atualizar
+**Sempre leia `docs/CODE-STRUCTURE.md` primeiro** para:
+
+- Entender a estrutura atual do projeto
+- Localizar os arquivos relevantes para a tarefa
+- Identificar a camada correta (rota, servidor, domínio, componente) onde as mudanças devem ocorrer
+- Verificar convenções de nomenclatura, idioma e arquitetura
+
+Isso evita duplicação de esforço e garante que o código siga o padrão existente.
+
+## Ao concluir qualquer tarefa
+
+Após modificar o projeto (código, estrutura, configuração, documentação):
+
+### Checklist de documentos a verificar/atualizar
 
 1. **`docs/CODE-STRUCTURE.md`** — mapa da estrutura do código (sempre que arquivos/pastas forem adicionados, removidos ou movidos)
 2. **`CLAUDE.md`** — guia principal para IA (sempre que regras, estrutura ou comandos mudarem)
@@ -18,14 +31,15 @@ Ao **concluir qualquer tarefa** que modifique o projeto (código, estrutura, con
 7. **`docs/specs/<slug>.md`** — especificação (antes de implementar feature não trivial)
 8. **`docs/workflow/<slug>.pr.md`** e **`docs/workflow/<slug>.jira.md`** — PR e Jira
 
-## Regras
+### Regras
 
+- **Leia CODE-STRUCTURE.md primeiro**: antes de implementar, entenda onde as mudanças se encaixam
 - **Não pule docs**: qualquer mudança no projeto afeta pelo menos um dos documentos acima
 - **Mantenha a consistência**: se um doc referencia outro, verifique se o link/descrição está correto
 - **Atualize índices**: `docs/specs/README.md`, `docs/features/README.md`, `docs/workflow/README.md`
 - **Sync Cursor ↔ Freebuff ↔ Claude**: toda regra nova em `.cursor/rules/` deve ter equivalente em `.agents/skills/` e menção em `CLAUDE.md`
 
-## Ver também
+### Ver também
 
 - `docs/CODE-STRUCTURE.md` — estrutura detalhada do projeto
 - `.cursor/rules/meta/rules-sync.mdc` — sincronização entre plataformas

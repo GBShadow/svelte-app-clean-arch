@@ -14,13 +14,14 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 |-------|---------|-----------|
 | architecture | `runes-ports-adapters.mdc` | Ports & Adapters (runes) |
 | architecture | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
+| architecture | `data-testid.mdc` | data-testid em componentes + getByTestId nos testes |
 | documentation | `feature-documentation.mdc` | Doc em `docs/features/` + CHANGELOG |
 | workflow | `spec-driven.mdc` | Spec em `docs/specs/<slug>.md` (antes de implementar) |
 | workflow | `pr-description.mdc` | PR em `docs/workflow/<slug>.pr.md` |
 | workflow | `jira-tasks.mdc` | Jira em `docs/workflow/<slug>.jira.md` |
 | meta | `rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
 | meta | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
-| meta | `code-structure.mdc` | Manter `docs/CODE-STRUCTURE.md` atualizado |
+| meta | `code-structure.mdc` | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
 
 PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
 
@@ -30,7 +31,13 @@ Skills Freebuff (`.agents/skills/`):
 - `classic-ports-adapters` — guia de implementação classic (deprecated)
 - `feature-documentation` — documentação de funcionalidades
 - `language-convention` — convenção de idioma
-- `code-structure` — manter `docs/CODE-STRUCTURE.md` atualizado
+- `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
+- `data-testid` — adicionar data-testid em componentes + usar getByTestId
+
+## Leitura prioritária: CODE-STRUCTURE.md
+
+**Antes de iniciar qualquer tarefa**, leia `docs/CODE-STRUCTURE.md` para entender a estrutura
+atual do projeto, localizar arquivos relevantes e identificar a camada correta para as mudanças.
 
 ## Documentação e workflow (spec-driven)
 

@@ -42,6 +42,7 @@ Bugfixes triviais podem pular a etapa de spec.
 - `language-convention` — convenção de idioma
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId em testes
+- `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 
 ## Leitura prioritária do CODE-STRUCTURE.md
 

@@ -2,6 +2,13 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-10] Timestamps obrigatórios em coleções PocketBase + limpeza de coleção órfã
+
+- Backend: `pocketbase/pb_migrations/0009_add_timestamps_to_auth.js`, `0010_remove_default_users_collection.js`
+- Regras: `.cursor/rules/architecture/pocketbase-collections.mdc`, `.agents/skills/pocketbase-collections.md`
+
+A coleção `auth` não tinha os campos `created`/`updated` (autodate) presentes nas demais coleções do projeto (`todo_lists`, `todo_items`). Corrigido com uma migration retroativa que adiciona os dois campos sem alterar migrations já aplicadas. Também removida a coleção `users` — auth collection padrão de fábrica do PocketBase, nunca referenciada por nenhuma migration, seed ou código da aplicação (o projeto usa `auth` como coleção de autenticação). Nova regra sincronizada em Cursor/Freebuff/CLAUDE.md: toda coleção PocketBase deve ter `created`/`updated`, e coleções sem uso devem ser removidas via migration.
+
 ## [2026-07-10] Suíte e2e (runes) sempre headless
 
 - App: runes (e2e)

@@ -270,7 +270,9 @@ pocketbase/
     ├── 0005_user_auth_rules.js              ← Regras de autenticação
     ├── 0006_fix_seed_admin_email_visibility.js
     ├── 0007_restrict_self_update_fields.js  ← Corrige privilege escalation
-    └── 0008_create_todo_collections.js      ← Coleções todo_lists + todo_items
+    ├── 0008_create_todo_collections.js      ← Coleções todo_lists + todo_items
+    ├── 0009_add_timestamps_to_auth.js       ← Adiciona created/updated (autodate) à coleção auth
+    └── 0010_remove_default_users_collection.js ← Remove coleção "users" padrão de fábrica (sem uso)
 ```
 
 ---
@@ -328,6 +330,7 @@ docs/
 | `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica                               |
 | `.cursor/rules/architecture/language-convention.mdc`    | Idioma                        | Código em inglês, UI em português                  |
 | `.cursor/rules/architecture/data-testid.mdc`            | data-testid                   | data-testid em componentes + getByTestId em testes |
+| `.cursor/rules/architecture/pocketbase-collections.mdc` | PocketBase                    | Toda coleção precisa dos campos `created`/`updated` |
 | `.cursor/rules/documentation/feature-documentation.mdc` | Doc features                  | Criar/atualizar docs/features/                     |
 | `.cursor/rules/workflow/spec-driven.mdc`                | Spec-driven                   | Criar docs/specs/                                  |
 | `.cursor/rules/workflow/pr-description.mdc`             | PR                            | Criar docs/workflow/<slug>.pr.md                   |
@@ -342,6 +345,7 @@ docs/
 | `.agents/skills/language-convention.md`                 | Idioma (Freebuff)             | Convenção de idioma                                |
 | `.agents/skills/code-structure.md`                      | Estrutura (Freebuff)          | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
 | `.agents/skills/data-testid.md`                         | data-testid (Freebuff)        | data-testid em componentes + getByTestId em testes |
+| `.agents/skills/pocketbase-collections.md`               | PocketBase (Freebuff)         | Toda coleção precisa dos campos `created`/`updated` |
 | `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---

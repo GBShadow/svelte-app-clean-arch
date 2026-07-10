@@ -26,7 +26,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 				jobTitle: profile.jobTitle,
 				isAdmin: authRecord.record.isAdmin,
 				mustChangePassword: authRecord.record.mustChangePassword,
-				passwordSetAt: authRecord.record.passwordSetAt || null
+				passwordSetAt: authRecord.record.passwordSetAt || null,
+				avatar: authRecord.record.avatar ?? ''
 			} satisfies AuthenticatedUser;
 		}
 	} catch {

@@ -1,14 +1,18 @@
 <script lang="ts">
+	import IconLock from '$lib/components/icons/IconLock.svelte';
+	import IconPlus from '$lib/components/icons/IconPlus.svelte';
+	import IconTrash from '$lib/components/icons/IconTrash.svelte';
+	import IconUnlock from '$lib/components/icons/IconUnlock.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-xl">
+<div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
 	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold">{data.list.title}</h1>
+		<h1 class="text-2xl font-bold font-display">{data.list.title}</h1>
 		{#if data.list.public}
-			<span class="badge badge-info" data-testid="list-public-badge">Pública</span>
+			<span class="badge badge-info font-mono" data-testid="list-public-badge">Pública</span>
 		{/if}
 	</div>
 
@@ -17,7 +21,7 @@
 	{/if}
 
 	{#if data.isOwner}
-		<div class="card bg-base-100 shadow-xl">
+		<div class="card bg-base-100 border border-base-300 shadow-sm">
 			<div class="card-body gap-4">
 				<form method="POST" action="?/updateTitle" novalidate class="flex gap-2" data-testid="update-title-form">
 					<input
@@ -32,22 +36,33 @@
 				</form>
 
 				<form method="POST" action="?/togglePublic" data-testid="toggle-public-form">
-					<button type="submit" class="btn btn-outline btn-sm" data-testid="btn-toggle-public">
-						{data.list.public ? 'Tornar privada' : 'Tornar pública'}
+					<button type="submit" class="btn btn-outline btn-sm gap-1.5" data-testid="btn-toggle-public">
+						{#if data.list.public}
+							<IconLock class="size-4" />
+							Tornar privada
+						{:else}
+							<IconUnlock class="size-4" />
+							Tornar pública
+						{/if}
 					</button>
 				</form>
 
 				<form method="POST" action="?/delete" data-testid="delete-list-form">
-					<button type="submit" class="btn btn-error btn-sm w-fit" data-testid="btn-delete-list">Excluir lista</button>
+					<button type="submit" class="btn btn-error btn-sm w-fit gap-1.5" data-testid="btn-delete-list">
+						<IconTrash class="size-4" />
+						Excluir lista
+					</button>
 				</form>
 			</div>
 		</div>
 	{/if}
 
-	<div class="card bg-base-100 shadow-xl" data-testid="todo-items-card">
+	<div class="card bg-base-100 border border-base-300 shadow-sm" data-testid="todo-items-card">
 		<div class="card-body gap-2">
 			{#if data.items.length === 0}
-				<p class="opacity-70" data-testid="no-items-msg">Nenhum item ainda.</p>
+				<p class="font-mono text-sm opacity-80" data-testid="no-items-msg">
+					Ainda sem tarefas. Adicione a primeira abaixo.
+				</p>
 			{/if}
 
 			{#each data.items as item (item.id)}
@@ -72,7 +87,10 @@
 					{#if data.isOwner}
 						<form method="POST" action="?/removeItem">
 							<input type="hidden" name="itemId" value={item.id} />
-							<button type="submit" class="btn btn-ghost btn-xs" data-testid="btn-remove-item-{item.id}">Remover</button>
+							<button type="submit" class="btn btn-ghost btn-xs gap-1" data-testid="btn-remove-item-{item.id}">
+								<IconTrash class="size-3.5" />
+								Remover
+							</button>
 						</form>
 					{/if}
 				</div>
@@ -88,7 +106,10 @@
 						class="input input-bordered flex-1"
 						required
 					/>
-					<button type="submit" class="btn btn-primary" data-testid="btn-add-item">Adicionar</button>
+					<button type="submit" class="btn btn-primary gap-1.5" data-testid="btn-add-item">
+						<IconPlus class="size-4" />
+						Adicionar
+					</button>
 				</form>
 			{/if}
 		</div>

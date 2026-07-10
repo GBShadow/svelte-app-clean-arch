@@ -1,0 +1,66 @@
+---
+description: Toda coleção PocketBase (base ou auth) deve ter os campos autodate created e updated
+alwaysApply: true
+---
+
+# Timestamps em Coleções PocketBase
+
+Toda **coleção** criada no PocketBase (`type: "base"` ou `type: "auth"`) deve ter os campos
+`created` e `updated` do tipo `autodate`.
+
+## Padrão obrigatório
+
+Ao criar uma migration de nova coleção (`pocketbase/pb_migrations/`), inclua sempre:
+
+```js
+fields: [
+  // ...demais campos
+  { type: "autodate", name: "created", onCreate: true },
+  { type: "autodate", name: "updated", onCreate: true, onUpdate: true },
+],
+```
+
+## Adicionando a uma coleção já existente
+
+Se uma coleção existente não tiver esses campos, crie uma nova migration (não edite migrations
+já aplicadas) usando `collection.fields.add(new Field({...}))`:
+
+```js
+migrate((app) => {
+  const collection = app.findCollectionByNameOrId("nome_da_colecao")
+
+  collection.fields.add(new Field({ type: "autodate", name: "created", onCreate: true }))
+  collection.fields.add(new Field({
+    type: "autodate",
+    name: "updated",
+    onCreate: true,
+    onUpdate: true,
+  }))
+
+  return app.save(collection)
+}, (app) => {
+  const collection = app.findCollectionByNameOrId("nome_da_colecao")
+
+  collection.fields.removeByName("created")
+  collection.fields.removeByName("updated")
+
+  return app.save(collection)
+})
+```
+
+## Por quê
+
+`created`/`updated` são essenciais para auditoria, ordenação padrão e depuração. A ausência
+desses campos foi identificada na coleção `auth` (ver `0009_add_timestamps_to_auth.js`) e corrigida
+retroativamente — não repita o problema em novas coleções.
+
+## Coleções não utilizadas
+
+Não deixe coleções de exemplo/padrão de fábrica do PocketBase (como a `users` que vem por padrão em
+toda instância nova) sem uso no projeto. Se uma coleção não é referenciada por nenhuma migration de
+regras, seed ou código da aplicação, remova-a via migration em vez de deixá-la órfã.
+
+## Ver também
+
+- `.agents/skills/pocketbase-collections.md` — skill Freebuff equivalente
+- `pocketbase/pb_migrations/0008_create_todo_collections.js` — exemplo de coleção já em conformidade

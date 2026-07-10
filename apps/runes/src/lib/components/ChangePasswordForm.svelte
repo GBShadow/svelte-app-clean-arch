@@ -2,7 +2,7 @@
 	let { errors = {} }: { errors?: Record<string, string> } = $props();
 </script>
 
-<form method="POST" novalidate data-testid="change-password-form" class="card bg-base-100 shadow-xl w-full max-w-sm">
+<form method="POST" novalidate data-testid="change-password-form" class="card bg-base-100 border border-base-300 shadow-sm w-full max-w-sm">
 	<div class="card-body gap-4">
 		{#if errors.general}
 			<div class="alert alert-error" role="alert" data-testid="error-change-password">{errors.general}</div>

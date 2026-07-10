@@ -13,8 +13,7 @@ export default defineConfig({
 	use: {
 		baseURL,
 		trace: 'on-first-retry',
-		// headless: true usa chromium-headless-shell; false usa Chromium completo (melhor no WSL local)
-		headless: !!process.env.CI
+		headless: true
 	},
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	webServer: {

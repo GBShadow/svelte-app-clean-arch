@@ -15,6 +15,7 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | architecture | `runes-ports-adapters.mdc` | Ports & Adapters (runes) |
 | architecture | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
 | architecture | `data-testid.mdc` | data-testid em componentes + getByTestId nos testes |
+| architecture | `pocketbase-collections.mdc` | Toda coleção PocketBase precisa dos campos `created`/`updated` |
 | documentation | `feature-documentation.mdc` | Doc em `docs/features/` + CHANGELOG |
 | workflow | `spec-driven.mdc` | Spec em `docs/specs/<slug>.md` (antes de implementar) |
 | workflow | `pr-description.mdc` | PR em `docs/workflow/<slug>.pr.md` |
@@ -33,6 +34,7 @@ Skills Freebuff (`.agents/skills/`):
 - `language-convention` — convenção de idioma
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId
+- `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 
 ## Leitura prioritária: CODE-STRUCTURE.md
 

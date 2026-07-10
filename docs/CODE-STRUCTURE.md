@@ -38,8 +38,8 @@ Porta: `5175` | Framework: Svelte 5 Runes | Estilo: Tailwind + DaisyUI
 src/routes/
 ├── +layout.server.ts          ← Load layout: expõe `locals.user`
 ├── +layout.svelte              ← Layout: navbar, logout, alerta change-password
-├── +page.server.ts             ← Redireciona / → /todos
-├── +page.svelte                ← Nunca renderizado (redirect)
+├── +page.server.ts             ← Load: home — retorna pendingCount (itens pendentes do Todo)
+├── +page.svelte                ← UI: App Hub — saudação + grid de apps (appRegistry)
 │
 ├── login/
 │   ├── +page.server.ts         ← Form action: autenticação via PocketBase
@@ -105,10 +105,14 @@ src/lib/
 │   ├── authChannel.ts          ← BroadcastChannel: sync login/logout entre abas
 │   └── authChannel.test.ts     ← Testes
 │
+├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?)
+│
 ├── components/                 ← Componentes Svelte reutilizáveis
 │   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
 │   ├── UserList.svelte         ← Tabela de listagem de usuários
-│   └── ChangePasswordForm.svelte ← Formulário de troca de senha
+│   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
+│   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
+│   └── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
 │
 └── index.ts                    ← (vazio) barrel export
 ```
@@ -138,7 +142,7 @@ e2e/
 | Arquivo                   | Função                                     |
 | ------------------------- | ------------------------------------------ |
 | `vite.config.ts`          | Vite + SvelteKit + Tailwind + Vitest       |
-| `playwright.config.ts`    | Playwright (build + preview na porta 5175) |
+| `playwright.config.ts`    | Playwright (build + preview na porta 5175, sempre headless) |
 | `tsconfig.json`           | TypeScript                                 |
 | `package.json`            | Scripts: dev, build, test, test:e2e        |
 | `.gitignore`              | Arquivos ignorados pelo git                |
@@ -266,7 +270,9 @@ pocketbase/
     ├── 0005_user_auth_rules.js              ← Regras de autenticação
     ├── 0006_fix_seed_admin_email_visibility.js
     ├── 0007_restrict_self_update_fields.js  ← Corrige privilege escalation
-    └── 0008_create_todo_collections.js      ← Coleções todo_lists + todo_items
+    ├── 0008_create_todo_collections.js      ← Coleções todo_lists + todo_items
+    ├── 0009_add_timestamps_to_auth.js       ← Adiciona created/updated (autodate) à coleção auth
+    └── 0010_remove_default_users_collection.js ← Remove coleção "users" padrão de fábrica (sem uso)
 ```
 
 ---
@@ -289,7 +295,8 @@ docs/
 │   ├── pocketbase-infra.md
 │   ├── pocketbase-auth.md
 │   ├── pocketbase-user-crud.md
-│   └── pocketbase-todo-sharing.md
+│   ├── pocketbase-todo-sharing.md
+│   └── app-hub.md
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
@@ -299,12 +306,14 @@ docs/
 │   ├── pocketbase-infra.md
 │   ├── pocketbase-auth.md
 │   ├── pocketbase-user-crud.md
-│   └── pocketbase-todo-sharing.md
+│   ├── pocketbase-todo-sharing.md
+│   └── app-hub.md
 │
 ├── workflow/                   ← PRs + Jiras
 │   ├── _template-jira.md
 │   ├── _template-pr.md
 │   ├── README.md               ← Índice de workflow
+│   ├── app-hub.jira.md
 │   └── <slug>.pr.md / <slug>.jira.md
 │
 └── testing/
@@ -321,6 +330,7 @@ docs/
 | `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica                               |
 | `.cursor/rules/architecture/language-convention.mdc`    | Idioma                        | Código em inglês, UI em português                  |
 | `.cursor/rules/architecture/data-testid.mdc`            | data-testid                   | data-testid em componentes + getByTestId em testes |
+| `.cursor/rules/architecture/pocketbase-collections.mdc` | PocketBase                    | Toda coleção precisa dos campos `created`/`updated` |
 | `.cursor/rules/documentation/feature-documentation.mdc` | Doc features                  | Criar/atualizar docs/features/                     |
 | `.cursor/rules/workflow/spec-driven.mdc`                | Spec-driven                   | Criar docs/specs/                                  |
 | `.cursor/rules/workflow/pr-description.mdc`             | PR                            | Criar docs/workflow/<slug>.pr.md                   |
@@ -335,6 +345,7 @@ docs/
 | `.agents/skills/language-convention.md`                 | Idioma (Freebuff)             | Convenção de idioma                                |
 | `.agents/skills/code-structure.md`                      | Estrutura (Freebuff)          | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
 | `.agents/skills/data-testid.md`                         | data-testid (Freebuff)        | data-testid em componentes + getByTestId em testes |
+| `.agents/skills/pocketbase-collections.md`               | PocketBase (Freebuff)         | Toda coleção precisa dos campos `created`/`updated` |
 | `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---

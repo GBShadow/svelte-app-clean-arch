@@ -47,13 +47,14 @@ Regras em `.cursor/rules/<pasta>/` e `.agents/skills/` — resumo em [`CLAUDE.md
 | `.cursor/rules/architecture/runes-ports-adapters.mdc` | Ports & Adapters (runes) |
 | `.cursor/rules/architecture/language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
 | `.cursor/rules/architecture/data-testid.mdc` | data-testid em componentes + getByTestId em testes |
+| `.cursor/rules/architecture/pocketbase-collections.mdc` | Toda coleção PocketBase precisa dos campos `created`/`updated` |
 | `.cursor/rules/documentation/feature-documentation.mdc` | Doc features + CHANGELOG |
 | `.cursor/rules/workflow/spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
 | `.cursor/rules/workflow/pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
 | `.cursor/rules/workflow/jira-tasks.mdc` | `docs/workflow/<slug>.jira.md` |
 | `.cursor/rules/meta/rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
 | `.cursor/rules/meta/commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
-| `.agents/skills/` | Skills Freebuff (7 skills: spec-driven, data-testid, code-structure, etc.) |
+| `.agents/skills/` | Skills Freebuff (8 skills: spec-driven, data-testid, code-structure, pocketbase-collections, etc.) |
 
 ## Antes de implementar
 

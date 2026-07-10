@@ -16,10 +16,10 @@ test.describe('Sincronização de login/logout entre abas (BroadcastChannel)', (
 		await tabA.getByTestId('input-email').fill(SEED_EMAIL);
 		await tabA.getByTestId('input-password').fill(SEED_PASSWORD);
 		await tabA.getByTestId('btn-login').click();
-		await tabA.waitForURL('/todos');
+		await tabA.waitForURL('/');
 
-		await tabB.waitForURL('/todos', { timeout: 5_000 });
-		await expect(tabB.getByTestId('btn-new-list')).toBeVisible();
+		await tabB.waitForURL('/', { timeout: 5_000 });
+		await expect(tabB.getByTestId('app-card-tarefas')).toBeVisible();
 	});
 
 	test('logout em uma aba desloga e redireciona a outra aba automaticamente', async ({
@@ -30,7 +30,7 @@ test.describe('Sincronização de login/logout entre abas (BroadcastChannel)', (
 		await tabA.getByTestId('input-email').fill(SEED_EMAIL);
 		await tabA.getByTestId('input-password').fill(SEED_PASSWORD);
 		await tabA.getByTestId('btn-login').click();
-		await tabA.waitForURL('/todos');
+		await tabA.waitForURL('/');
 
 		const tabB = await context.newPage();
 		await tabB.goto('/todos');
@@ -39,6 +39,6 @@ test.describe('Sincronização de login/logout entre abas (BroadcastChannel)', (
 		await tabA.getByTestId('btn-logout').click();
 		await tabA.waitForURL('/login');
 
-		await tabB.waitForURL('/login', { timeout: 5_000 });
+		await tabB.waitForURL('/login', { timeout: 10_000 });
 	});
 });

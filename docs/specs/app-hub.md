@@ -1,0 +1,160 @@
+# App Hub — Tela inicial com grid de aplicativos
+
+## Contexto
+
+Atualmente, a aplicação `apps/runes` redireciona a rota raiz `/` diretamente para `/todos`. Não existe uma tela inicial — o usuário cai direto na lista de tarefas sem ter uma visão geral dos recursos disponíveis. O layout atual já usa um container centralizado (`container mx-auto p-4`), mas a navbar tem links diretos para cada seção (`/todos`, `/users`), o que dificulta a escalabilidade conforme novas funcionalidades forem adicionadas.
+
+Com o roadmap incluindo Chat, Kanban e Planning Poker (ferramentas similares às do Jira), a aplicação precisa de uma tela central que sirva como ponto de partida para navegação.
+
+## Objetivo
+
+Criar uma **tela home** (`/`) que funcione como um hub de aplicativos, exibindo um grid responsivo de cards com ícone, nome e descrição. O layout principal deve manter o conteúdo centralizado em todas as páginas. A navbar passa a ter apenas o logo "❯ hub" como navegação principal. Toda navegação para funcionalidades específicas parte da home screen.
+
+## Escopo
+
+**Incluído:**
+
+- Modificar a rota raiz `/` para exibir a home screen em vez de redirecionar para `/todos`
+- Criar sistema de registro estático de apps (`appRegistry.ts`) com campos: `id`, `nome`, `descrição`, `ícone`, `rota`
+- Criar componente de grid responsivo de cards na home (2-3-4 colunas conforme viewport)
+- Adicionar saudação "Olá, {nome}!" seguida de "Selecione um app para começar"
+- Implementar badges/contadores nos cards (card do Todo exibe total de itens pendentes)
+- Adicionar ícones via `lucide-svelte`
+- Atualizar o layout principal para centralizar conteúdo (já parcialmente implementado com `container mx-auto p-4`)
+- Reduzir navbar para exibir apenas logo "❯ hub" + nome do usuário + logout
+- Logo da navbar passa a apontar para `/` (home) e usar o texto "hub"
+- Card de Users (gestão de usuários) renderizado condicionalmente: `data.user.isAdmin === true`
+- Manter controle de acesso por rota: hooks.server.ts continua protegendo rotas individuais
+
+**Fora do escopo:**
+
+- Implementação do Chat, Kanban ou Planning Poker — apenas os placeholders/atalhos na home
+- Registro dinâmico de apps via banco de dados (PocketBase)
+- Página inicial pública para usuários não autenticados (continuará redirecionando para `/login`)
+- Personalização por usuário (reordenar cards, favoritos, etc.)
+
+## Requisitos funcionais
+
+- RF1: A rota `/` exibe a home screen com grid de apps em vez de redirecionar para `/todos`.
+- RF2: Usuário não autenticado que acessar `/` é redirecionado para `/login` (comportamento existente do `hooks.server.ts`).
+- RF3: A home exibe uma saudação "Olá, {nome}!" seguida de "Selecione um app para começar".
+- RF4: Abaixo da saudação, um grid responsivo exibe cards para cada app registrado no `appRegistry`.
+- RF5: Cada card contém: ícone (componente lucide-svelte), nome do app, descrição curta, e um badge opcional com contador.
+- RF6: Ao clicar em um card, o usuário é redirecionado para a rota do app.
+- RF7: O badge do card do Todo exibe o **total de itens pendentes** (soma de itens não concluídos em todas as listas do usuário), buscado via server load.
+- RF8: A navbar exibe apenas: logo "❯ hub" (link para `/`), nome do usuário logado, botão de logout. Os links diretos para `/todos` e `/users` são removidos da navbar.
+- RF9: O logo da navbar usa o texto "hub" com o prefixo "❯" e linka para `/` (home).
+- RF10: O layout principal (`container mx-auto p-4`) é mantido e aplicado em todas as páginas, garantindo conteúdo centralizado.
+- RF11: O registro de apps é estático, em um arquivo `appRegistry.ts`. Apenas apps já implementados aparecem. Futuros apps (Chat, Kanban, Planning Poker) são adicionados ao registry quando implementados.
+- RF12: Cards de apps administrativos (ex: gestão de usuários) só são renderizados para admin (`data.user.isAdmin === true`). Demais apps são visíveis para todos os usuários logados. O controle de acesso por rota continua existindo como camada extra de segurança.
+- RF13: Ícones usam a biblioteca `lucide-svelte`, que é tree-shakeable e tem ampla cobertura de ícones.
+
+## Requisitos não funcionais
+
+- Grid responsivo: 1 coluna em mobile, 2 colunas em tablet, 3-4 colunas em desktop.
+- Cards com hover state e transições suaves (micro-interações).
+- Dependência `lucide-svelte` adicionada em `apps/runes/package.json`.
+- Badge do Todo carregado no server load para evitar chamadas client-side.
+- Performance: home deve ser leve, sem chamadas excessivas ao PocketBase.
+- Testes: testes unitários para `appRegistry`, testes e2e para navegação home → todo e acesso não autenticado à home.
+
+## Critérios de aceite
+
+- [ ] AC1: Dado um usuário autenticado, quando acessa `/`, então vê a home screen com saudação "Olá, {nome}!" e o grid de apps.
+- [ ] AC2: Dado um usuário autenticado, quando acessa `/`, então vê o card do Todo com ícone (lucide-svelte), nome "Tarefas" e descrição.
+- [ ] AC3: Dado um usuário autenticado na home, quando clica no card do Todo, então é redirecionado para `/todos`.
+- [ ] AC4: Dado um usuário não autenticado, quando acessa `/`, então é redirecionado para `/login`.
+- [ ] AC5: Dado um usuário autenticado, o card do Todo exibe um badge com o número total de itens pendentes em todas as listas do usuário (ou 0 se não houver).
+- [ ] AC6: Dado um usuário autenticado na home, a navbar exibe apenas o logo "❯ hub" (linkando para `/`), o nome do usuário e o botão de logout.
+- [ ] AC7: Dado um usuário autenticado, quando clica no logo "❯ hub" da navbar, é levado para `/` (home).
+- [ ] AC8: Dado um usuário autenticado, o grid de apps é responsivo: 1 card por linha em mobile, 2 em tablet, 3+ em desktop.
+- [ ] AC9: Dado um admin autenticado, vê o card "Usuários" na home. Dado um usuário comum autenticado, não vê o card "Usuários".
+- [ ] Testes cobrindo os cenários acima.
+
+## Design (Ports & Adapters — padrão runes)
+
+| Camada | Mudança prevista |
+|--------|-------------------|
+| Dependência | `apps/runes/package.json` — adicionar `lucide-svelte` |
+| Registro | `apps/runes/src/lib/appRegistry.ts` — array estático de `AppEntry` com `id`, `name`, `description`, `icon`, `route` |
+| UI (home) | `apps/runes/src/routes/+page.svelte` — substituir placeholder (nunca renderizado) pela home screen com grid de cards |
+| Server (home) | `apps/runes/src/routes/+page.server.ts` — `load` que retorna `user` + `pendingCount` (itens pendentes do Todo) |
+| Layout | `apps/runes/src/routes/+layout.svelte` — ajustar navbar: logo "❯ hub" aponta para `/`, remover links diretos, manter centralização |
+| Componente | `apps/runes/src/lib/components/AppCard.svelte` — card individual com ícone, nome, descrição, badge, hover state |
+| Componente | `apps/runes/src/lib/components/AppGrid.svelte` — grid responsivo que renderiza os cards |
+| Server | `apps/runes/src/lib/server/todoStore.ts` — adicionar função para contar itens pendentes do usuário |
+| E2E | Atualizar `apps/runes/e2e/fixtures.ts` se necessário para lidar com nova home |
+| E2E | `apps/runes/e2e/home.spec.ts` (novo) — teste de navegação home → app, acesso não autenticado |
+
+### Fluxo de navegação (após implementação)
+
+```
+/login  →  / (home)  →  /todos  (clica no card Todo)
+                     →  /chat   (futuro)
+                     →  /kanban (futuro)
+                     →  /poker  (futuro)
+
+Navbar:
+  ❯ hub  →  /
+  [Nome do usuário]
+  [Logout]
+```
+
+### Estrutura do `appRegistry.ts`
+
+```typescript
+import { ListChecks, Users, type LucideIcon } from 'lucide-svelte';
+
+interface AppEntry {
+  id: string;
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  route: string;
+  adminOnly?: boolean;   // true para apps administrativos
+}
+
+const appRegistry: AppEntry[] = [
+  {
+    id: 'todos',
+    name: 'Tarefas',
+    description: 'Gerencie suas listas de tarefas do dia a dia',
+    icon: ListChecks,
+    route: '/todos'
+  },
+  {
+    id: 'users',
+    name: 'Usuários',
+    description: 'Gerencie os usuários do sistema',
+    icon: Users,
+    route: '/users',
+    adminOnly: true
+  }
+];
+```
+
+## Contrato de API (se houver)
+
+Nenhuma nova API. O badge de itens pendentes é calculado no server load da home consultando o PocketBase (já existente via `createServerClient`).
+
+| Método | Rota | Request | Response |
+|--------|------|---------|----------|
+| GET | `/` | — | Home screen renderizada no servidor com `data.user` + `data.pendingCount` |
+
+## Alternativas consideradas
+
+- **Registro dinâmico (PocketBase)** em vez de estático: mais flexível para adicionar apps sem deploy, mas adiciona complexidade desnecessária para um número pequeno de apps (3-5) e requer schema no banco. O estático é mais simples e type-safe. Se no futuro houver dezenas de apps, migrar para dinâmico é viável.
+- **Links diretos no navbar** em vez de navegação via home: mais rápido para o usuário acessar, mas a navbar ficaria poluída com 3-5+ links. A home como hub central é mais escalável visualmente.
+- **Home pública para não autenticados** em vez de redirecionar para login: permitiria marketing/onboarding na home, mas foge do modelo atual onde tudo exige autenticação. Mantido redirecionamento para consistência.
+- **Card de Users visível para todos**: mais simples, mas polui a UI para usuários não-admin que não podem acessar a rota. Optou-se por renderização condicional (`adminOnly`) combinada com proteção de rota.
+
+## Questões em aberto
+
+- Nenhuma no momento — todas as decisões foram tomadas nas entrevistas com o usuário.
+
+## Links
+
+- Jira (após aprovação da spec): `docs/workflow/app-hub.jira.md`
+- Feature doc (pós-implementação): `docs/features/app-hub.md`
+- PR: `docs/workflow/app-hub.pr.md`
+- Depende de: [`pocketbase-auth`](./pocketbase-auth.md) (autenticação existente)

@@ -22,7 +22,7 @@ test.describe('Change Password (runes e2e)', () => {
 		await page.getByTestId('input-email').fill(SEED_EMAIL);
 		await page.getByTestId('input-password').fill(SEED_PASSWORD);
 		await page.getByTestId('btn-login').click();
-		await page.waitForURL('/todos');
+		await page.waitForURL('/');
 
 		// --- Criar usuário temporário ---
 		await page.goto('/users/new');
@@ -43,7 +43,7 @@ test.describe('Change Password (runes e2e)', () => {
 			await page.getByTestId('input-email').fill(tempUser.email);
 			await page.getByTestId('input-password').fill(tempUser.password);
 			await page.getByTestId('btn-login').click();
-			await page.waitForURL('/todos');
+			await page.waitForURL('/');
 
 			// --- Trocar senha ---
 			const newPassword = 'nova-senha-temp-654321';
@@ -61,7 +61,7 @@ test.describe('Change Password (runes e2e)', () => {
 			await page.getByTestId('input-email').fill(tempUser.email);
 			await page.getByTestId('input-password').fill(newPassword);
 			await page.getByTestId('btn-login').click();
-			await page.waitForURL('/todos');
+			await page.waitForURL('/');
 		} finally {
 			await cleanupUser(page.request, tempUser.email);
 		}
@@ -82,7 +82,7 @@ test.describe('Change Password (runes e2e)', () => {
 		await page.getByTestId('input-email').fill(SEED_EMAIL);
 		await page.getByTestId('input-password').fill(SEED_PASSWORD);
 		await page.getByTestId('btn-login').click();
-		await page.waitForURL('/todos');
+		await page.waitForURL('/');
 
 		await page.goto('/users/new');
 		await page.getByTestId('input-name').fill(wrongPwUser.name);
@@ -100,7 +100,7 @@ test.describe('Change Password (runes e2e)', () => {
 			await page.getByTestId('input-email').fill(wrongPwUser.email);
 			await page.getByTestId('input-password').fill(wrongPwUser.password);
 			await page.getByTestId('btn-login').click();
-			await page.waitForURL('/todos');
+			await page.waitForURL('/');
 
 			await page.goto('/change-password');
 			await page.getByTestId('input-current-password').fill('senha-errada');

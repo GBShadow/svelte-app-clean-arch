@@ -13,6 +13,7 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | Autenticação PocketBase (runes) | Implementada | [pocketbase-auth.md](./pocketbase-auth.md) |
 | CRUD de usuário (runes) | Implementada | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Todo multi-lista com compartilhamento (runes) | Implementada | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
+| App Hub (tela inicial) | Implementada | [app-hub.md](./app-hub.md) |
 
 ## Nova spec
 

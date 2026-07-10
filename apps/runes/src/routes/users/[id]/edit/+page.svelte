@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import UserForm from '$lib/components/UserForm.svelte';
+	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -13,10 +14,10 @@
 	const resetPasswordSuccess = $derived(form?.action === 'resetPassword' && form.success === true);
 </script>
 
-<div class="flex flex-col gap-6 max-w-lg">
-	<h1 class="text-2xl font-bold">Editar usuário</h1>
+<div class="flex flex-col gap-6 max-w-lg mx-auto w-full">
+	<h1 class="text-2xl font-bold font-display">Editar usuário</h1>
 
-	<form method="POST" action="?/update" novalidate data-testid="edit-user-form" class="card bg-base-100 shadow-xl">
+	<form method="POST" action="?/update" novalidate data-testid="edit-user-form" class="card bg-base-100 border border-base-300 shadow-sm">
 		<div class="card-body gap-4">
 			<UserForm values={updateValues} canEditEmail={data.canEditEmail} errors={updateErrors} testId="user-form-edit" />
 			<button type="submit" class="btn btn-primary mt-2" data-testid="btn-save-user">Salvar</button>
@@ -24,9 +25,9 @@
 	</form>
 
 	{#if data.canEditEmail}
-		<form method="POST" action="?/resetPassword" novalidate use:enhance class="card bg-base-100 shadow-xl" data-testid="reset-password-form">
+		<form method="POST" action="?/resetPassword" novalidate use:enhance class="card bg-base-100 border border-base-300 shadow-sm" data-testid="reset-password-form">
 			<div class="card-body gap-4">
-				<h2 class="card-title text-lg">Resetar senha</h2>
+				<h2 class="card-title text-lg font-display">Resetar senha</h2>
 				{#if resetPasswordSuccess}
 					<div class="alert alert-success" role="status" data-testid="reset-password-success">
 						Senha resetada. O usuário precisará trocá-la no próximo login.
@@ -70,10 +71,13 @@
 			</div>
 		</form>
 
-		<form method="POST" action="?/delete" novalidate class="card bg-base-100 shadow-xl" data-testid="delete-user-form">
+		<form method="POST" action="?/delete" novalidate class="card bg-base-100 border border-base-300 shadow-sm" data-testid="delete-user-form">
 			<div class="card-body">
-				<h2 class="card-title text-lg">Excluir usuário</h2>
-				<button type="submit" class="btn btn-error btn-sm w-fit" data-testid="btn-delete-user">Excluir</button>
+				<h2 class="card-title text-lg font-display">Excluir usuário</h2>
+				<button type="submit" class="btn btn-error btn-sm w-fit gap-1.5" data-testid="btn-delete-user">
+					<IconTrash class="size-4" />
+					Excluir
+				</button>
 			</div>
 		</form>
 	{/if}

@@ -1,2 +1,17 @@
 @import 'tailwindcss';
-@plugin 'daisyui';
+@plugin 'daisyui' {
+	themes: dracula --default;
+}
+
+@theme {
+	--font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+	--font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Estado vazio: convite a agir, não só ausência — ver frontend-design skill */
+.empty-state {
+	background-color: var(--color-base-100);
+	border: 1px dashed var(--color-base-300);
+	border-radius: var(--radius-box, 0.5rem);
+}

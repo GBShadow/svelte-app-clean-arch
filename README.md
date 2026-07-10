@@ -65,7 +65,8 @@ pnpm test:e2e
 pnpm build
 pnpm check
 
-pnpm dev:runes
+pnpm dev:runes        # frontend apenas (porta 5175)
+pnpm dev:full         # backend (PocketBase) + frontend juntos
 
 # via turbo diretamente
 pnpm turbo run test --filter=todo-domain

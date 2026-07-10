@@ -10,6 +10,7 @@
 		"check:domain": "pnpm --filter todo-domain check",
 		"dev": "turbo run dev",
 		"dev:runes": "turbo run dev --filter=runes",
+		"dev:full": "docker compose -f pocketbase/docker-compose.yml up -d && turbo run dev --filter=runes",
 		"test": "turbo run test",
 		"test:e2e": "turbo run test:e2e --filter=runes",
 		"test:e2e:install": "pnpm --filter runes test:e2e:install"

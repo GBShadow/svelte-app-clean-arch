@@ -61,7 +61,8 @@ docs/                    # Documentação
 
 ```bash
 pnpm install && pnpm test && pnpm check
-pnpm dev:runes   # :5175
+pnpm dev:runes   # :5175 (frontend apenas)
+pnpm dev:full    # backend (PocketBase) + frontend (runes) juntos
 gh pr create --body-file docs/workflow/<slug>.pr.md
 ```
 

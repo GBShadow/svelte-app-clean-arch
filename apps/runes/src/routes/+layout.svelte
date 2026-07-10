@@ -22,30 +22,25 @@
 <div class="min-h-screen bg-base-200">
 	<div class="navbar bg-base-100 shadow-sm">
 		<div class="flex-1">
-			<a href="/todos" class="btn btn-ghost text-xl">Todo Apps</a>
+			<a href="/todos" class="btn btn-ghost text-xl" data-testid="logo-link">Todo Apps</a>
 		</div>
 		<div class="flex-none flex items-center gap-4">
-			<div class="tabs tabs-boxed">
-				<a href="http://localhost:5173" class="tab">Classic</a>
-				<a href="http://localhost:5174" class="tab">Remote</a>
-				<a href="http://localhost:5175" class="tab tab-active">Runes</a>
-			</div>
 			{#if data.user}
-				<a href="/todos" class="btn btn-ghost btn-sm">Minhas listas</a>
+				<a href="/todos" class="btn btn-ghost btn-sm" data-testid="nav-minhas-listas">Minhas listas</a>
 			{/if}
 			{#if data.user?.isAdmin}
-				<a href="/users" class="btn btn-ghost btn-sm">Usuários</a>
+				<a href="/users" class="btn btn-ghost btn-sm" data-testid="nav-usuarios">Usuários</a>
 			{/if}
 			{#if data.user}
 				<form method="POST" action="/logout" onsubmit={handleLogout}>
-					<button type="submit" class="btn btn-ghost btn-sm">Sair ({data.user.name})</button>
+					<button type="submit" class="btn btn-ghost btn-sm" data-testid="btn-logout">Sair ({data.user.name})</button>
 				</form>
 			{/if}
 		</div>
 	</div>
 
 	{#if data.user?.mustChangePassword}
-		<div class="alert alert-warning rounded-none justify-center" role="alert">
+		<div class="alert alert-warning rounded-none justify-center" role="alert" data-testid="alert-change-password">
 			Sua senha precisa ser trocada em breve. <a href="/change-password" class="link ml-1">Trocar agora</a>
 		</div>
 	{/if}

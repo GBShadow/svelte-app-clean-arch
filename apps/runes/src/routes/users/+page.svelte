@@ -8,10 +8,10 @@
 <div class="flex flex-col gap-4">
 	<div class="flex items-center justify-between">
 		<h1 class="text-2xl font-bold">Usuários</h1>
-		<a href="/users/new" class="btn btn-primary btn-sm">Novo usuário</a>
+		<a href="/users/new" class="btn btn-primary btn-sm" data-testid="btn-new-user">Novo usuário</a>
 	</div>
 
-	<div class="card bg-base-100 shadow-xl">
+	<div class="card bg-base-100 shadow-xl" data-testid="users-list-card">
 		<div class="card-body">
 			<UserList users={data.users} />
 		</div>

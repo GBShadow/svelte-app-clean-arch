@@ -12,3 +12,5 @@ package-lock.json
 .DS_Store
 *.log
 ports_and_adapters_ca_design_patterns_frontend-master/
+**/test-results/
+playwright-report/

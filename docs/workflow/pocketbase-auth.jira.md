@@ -37,18 +37,18 @@ Usuário loga em `/login`, sessão persiste via cookie, rotas não-públicas exi
 
 ## Acceptance Criteria
 
-- [ ] AC1: Usuário não autenticado acessando `/` é redirecionado para `/login`
-- [ ] AC2: Login com credenciais válidas autentica e redireciona para `/`
-- [ ] AC3: Login com credenciais inválidas mostra erro em português, sem sair de `/login`
-- [ ] AC4: Usuário autenticado acessando `/login` é redirecionado para `/`
-- [ ] AC5: Logout limpa a sessão e redireciona para `/login`
-- [ ] AC6: `mustChangePassword = true` há mais de 10 dias bloqueia navegação fora de `/change-password`
-- [ ] AC7: `mustChangePassword = true` dentro de 10 dias permite navegação normal com aviso disponível para a UI
-- [ ] AC8: Login em uma aba tira as demais abas de `/login` automaticamente
-- [ ] AC9: Logout em uma aba desloga as demais abas automaticamente
-- [ ] Testes com `TodoMemoryGateway`/fakes cobrindo os cenários acima
-- [ ] `pnpm test` e `pnpm check` sem erros
-- [ ] Documentação em `docs/features/pocketbase-auth.md`
+- [x] AC1: Usuário não autenticado acessando `/` é redirecionado para `/login`
+- [x] AC2: Login com credenciais válidas autentica e redireciona para `/`
+- [x] AC3: Login com credenciais inválidas mostra erro em português, sem sair de `/login`
+- [x] AC4: Usuário autenticado acessando `/login` é redirecionado para `/`
+- [x] AC5: Logout limpa a sessão e redireciona para `/login`
+- [x] AC6: `mustChangePassword = true` há mais de 10 dias bloqueia navegação fora de `/change-password`
+- [x] AC7: `mustChangePassword = true` dentro de 10 dias permite navegação normal com aviso disponível para a UI
+- [x] AC8: Login em uma aba tira as demais abas de `/login` automaticamente
+- [x] AC9: Logout em uma aba desloga as demais abas automaticamente
+- [x] Testes com `TodoMemoryGateway`/fakes cobrindo os cenários acima (unitários com lógica pura + e2e Playwright com PocketBase real)
+- [x] `pnpm test` e `pnpm check` sem erros
+- [x] Documentação em `docs/features/pocketbase-auth.md`
 
 ## Technical Notes (Ports & Adapters — runes)
 
@@ -74,9 +74,9 @@ Usuário loga em `/login`, sessão persiste via cookie, rotas não-públicas exi
 
 ## Subtasks
 
-- [ ] Client PocketBase server-side + hooks
-- [ ] Login (UI + form action + Zod)
-- [ ] Logout
-- [ ] Gate de troca de senha obrigatória
-- [ ] `BroadcastChannel` (login/logout entre abas)
-- [ ] Testes + documentação + PR
+- [x] Client PocketBase server-side + hooks
+- [x] Login (UI + form action + Zod)
+- [x] Logout
+- [x] Gate de troca de senha obrigatória
+- [x] `BroadcastChannel` (login/logout entre abas)
+- [x] Testes + documentação + PR

@@ -109,6 +109,17 @@ apps/runes/
 
 Ambos os apps expõem `POST /api/test/reset` (uso exclusivo em e2e) para resetar o store em memória antes de cada teste — ver `e2e/fixtures.ts`.
 
+### Pré-requisito extra: `apps/runes` exige o PocketBase rodando
+
+Desde a autenticação PocketBase (`docs/features/pocketbase-auth.md`), todas as rotas de `apps/runes` exigem login — `e2e/fixtures.ts` loga com a conta seed antes de cada teste. Suba o backend antes de rodar `pnpm test:e2e` em `runes`:
+
+```bash
+cp .env.example .env   # se ainda não existir
+pnpm backend:dev
+```
+
+O `.env` da raiz precisa ter `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` — o fixture usa esses valores (ou os defaults de `.env.example`) para logar via `/login` antes de cada teste.
+
 ## UI mode (debug)
 
 ```bash

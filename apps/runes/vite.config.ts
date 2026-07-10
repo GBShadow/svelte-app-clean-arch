@@ -4,6 +4,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+	envDir: '../..',
 	server: {
 		port: 5175
 	},
@@ -21,7 +22,8 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
 				experimental: { async: true }
 			},
-			adapter: adapter()
+			adapter: adapter(),
+			env: { dir: '../..' }
 		})
 	],
 	test: {

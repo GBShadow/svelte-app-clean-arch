@@ -70,7 +70,7 @@ apps/runes/e2e/
 **Interfaces:**
 - Produces: coleções `chat_rooms` (`name`, `created_by`, `participants`, `created`, `updated`) e `chat_messages` (`room`, `sender`, `text`, `created`, `updated`), consumidas por todas as tasks seguintes que usam `locals.pb.collection('chat_rooms'|'chat_messages')`.
 
-- [ ] **Step 1: Escrever a migration**
+- [x] **Step 1: Escrever a migration**
 
 ```js
 migrate((app) => {
@@ -148,12 +148,12 @@ migrate((app) => {
 })
 ```
 
-- [ ] **Step 2: Aplicar e verificar**
+- [x] **Step 2: Aplicar e verificar**
 
 Run: `pnpm backend:reset`
 Expected: log sem erros; PocketBase sobe e aplica todas as migrations, incluindo `0011`. Confirme abrindo `http://127.0.0.1:8090/_/` e vendo `chat_rooms`/`chat_messages` na lista de coleções.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add pocketbase/pb_migrations/0011_create_chat_collections.js
@@ -171,7 +171,7 @@ git commit -m "feat(pocketbase): adicionar coleções chat_rooms e chat_messages
 **Interfaces:**
 - Produces: campo `avatar` na coleção `auth` (consumido por `hooks.server.ts`, `/profile`, `Avatar.svelte`); `user.listRule`/`viewRule` abertas (consumidas por `/chat/new`).
 
-- [ ] **Step 1: Migration do avatar**
+- [x] **Step 1: Migration do avatar**
 
 ```js
 migrate((app) => {
@@ -193,7 +193,7 @@ migrate((app) => {
 })
 ```
 
-- [ ] **Step 2: Migration da listagem de `user`**
+- [x] **Step 2: Migration da listagem de `user`**
 
 ```js
 migrate((app) => {
@@ -210,12 +210,12 @@ migrate((app) => {
 })
 ```
 
-- [ ] **Step 3: Aplicar e verificar**
+- [x] **Step 3: Aplicar e verificar**
 
 Run: `pnpm backend:reset`
 Expected: sem erros; no admin UI (`http://127.0.0.1:8090/_/`), a coleção `auth` tem o campo `avatar`, e a coleção `user` tem `List rule`/`View rule` = `@request.auth.id != ''`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add pocketbase/pb_migrations/0012_add_avatar_to_auth.js pocketbase/pb_migrations/0013_open_user_listing_for_authenticated.js
@@ -233,7 +233,7 @@ git commit -m "feat(pocketbase): adicionar avatar em auth e abrir listagem de us
 **Interfaces:**
 - Produces: `ChatRoomAccessInfo = { createdBy: string; participantIds: string[] }`, `isParticipant(room, userId): boolean`, `isCreator(room, userId): boolean`, `nextCreatorAfter(participantIds: string[], leavingId: string): string | null`. Consumido por `/chat/[roomId]/+page.server.ts` (Task 11).
 
-- [ ] **Step 1: Escrever os testes (falhando)**
+- [x] **Step 1: Escrever os testes (falhando)**
 
 ```ts
 import { describe, expect, test } from 'vitest';
@@ -274,12 +274,12 @@ describe('nextCreatorAfter', () => {
 });
 ```
 
-- [ ] **Step 2: Rodar e confirmar falha**
+- [x] **Step 2: Rodar e confirmar falha**
 
 Run: `pnpm --filter runes test -- src/lib/domain/chatRoomAccess.test.ts`
 Expected: FAIL com "Cannot find module './chatRoomAccess'" (ou similar).
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 ```ts
 export type ChatRoomAccessInfo = {
@@ -301,12 +301,12 @@ export function nextCreatorAfter(participantIds: string[], leavingId: string): s
 }
 ```
 
-- [ ] **Step 4: Rodar e confirmar sucesso**
+- [x] **Step 4: Rodar e confirmar sucesso**
 
 Run: `pnpm --filter runes test -- src/lib/domain/chatRoomAccess.test.ts`
 Expected: PASS (7 testes).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/runes/src/lib/domain/chatRoomAccess.ts apps/runes/src/lib/domain/chatRoomAccess.test.ts
@@ -324,7 +324,7 @@ git commit -m "feat(runes): adicionar chatRoomAccess (autorização e transferê
 **Interfaces:**
 - Produces: `createRoomSchema`, `sendMessageSchema`, `avatarSchema` (com `File`). Consumidos por `/chat/new`, `/chat/[roomId]`, `/profile`.
 
-- [ ] **Step 1: Escrever os testes (falhando)**
+- [x] **Step 1: Escrever os testes (falhando)**
 
 ```ts
 import { describe, expect, test } from 'vitest';
@@ -380,12 +380,12 @@ describe('avatarSchema', () => {
 });
 ```
 
-- [ ] **Step 2: Rodar e confirmar falha**
+- [x] **Step 2: Rodar e confirmar falha**
 
 Run: `pnpm --filter runes test -- src/lib/validation/chatSchemas.test.ts`
 Expected: FAIL com "Cannot find module './chatSchemas'".
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 ```ts
 import { z } from 'zod';
@@ -419,12 +419,12 @@ export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 ```
 
-- [ ] **Step 4: Rodar e confirmar sucesso**
+- [x] **Step 4: Rodar e confirmar sucesso**
 
 Run: `pnpm --filter runes test -- src/lib/validation/chatSchemas.test.ts`
 Expected: PASS (9 testes).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/runes/src/lib/validation/chatSchemas.ts apps/runes/src/lib/validation/chatSchemas.test.ts
@@ -442,7 +442,7 @@ git commit -m "feat(runes): adicionar schemas de validação do chat (sala, mens
 **Interfaces:**
 - Produces: `ChatRoomRecord`, `ChatMessageRecord`, `AuthParticipant` (types); `findAuthRecordByEmail(pb, email)`. Consumidos por todas as rotas de `/chat/*` e `/profile`.
 
-- [ ] **Step 1: Criar os types**
+- [x] **Step 1: Criar os types**
 
 ```ts
 export type AuthParticipant = {
@@ -476,7 +476,7 @@ export type ChatMessageRecord = {
 };
 ```
 
-- [ ] **Step 2: Criar o helper de lookup**
+- [x] **Step 2: Criar o helper de lookup**
 
 ```ts
 import type PocketBase from 'pocketbase';
@@ -486,12 +486,12 @@ export async function findAuthRecordByEmail(pb: PocketBase, email: string) {
 }
 ```
 
-- [ ] **Step 3: Verificar tipos**
+- [x] **Step 3: Verificar tipos**
 
 Run: `pnpm --filter runes check`
 Expected: sem novos erros de tipo (esses arquivos ainda não são importados por ninguém).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/lib/server/chatRecord.ts apps/runes/src/lib/server/authLookup.ts
@@ -510,7 +510,7 @@ git commit -m "feat(runes): adicionar types de chat e helper de lookup por e-mai
 - Consumes: campo `avatar` da coleção `auth` (Task 2).
 - Produces: `AuthenticatedUser.avatar: string`, disponível em `locals.user.avatar` e, via `+layout.server.ts` (já expõe `locals.user`), em `data.user.avatar` no client.
 
-- [ ] **Step 1: Adicionar o campo ao type**
+- [x] **Step 1: Adicionar o campo ao type**
 
 Em `apps/runes/src/lib/server/authUser.ts`, adicionar `avatar: string;` ao final do type:
 
@@ -527,7 +527,7 @@ export type AuthenticatedUser = {
 };
 ```
 
-- [ ] **Step 2: Popular o campo em `hooks.server.ts`**
+- [x] **Step 2: Popular o campo em `hooks.server.ts`**
 
 Em `apps/runes/src/hooks.server.ts`, dentro do bloco que monta `event.locals.user`, adicionar `avatar: authRecord.record.avatar ?? ''` ao objeto:
 
@@ -544,12 +544,12 @@ Em `apps/runes/src/hooks.server.ts`, dentro do bloco que monta `event.locals.use
 			} satisfies AuthenticatedUser;
 ```
 
-- [ ] **Step 3: Verificar tipos**
+- [x] **Step 3: Verificar tipos**
 
 Run: `pnpm --filter runes check`
 Expected: sem erros.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/lib/server/authUser.ts apps/runes/src/hooks.server.ts
@@ -567,7 +567,7 @@ git commit -m "feat(runes): expor avatar em AuthenticatedUser"
 - Consumes: `PUBLIC_POCKETBASE_URL` (já existe em `$env/static/public`).
 - Produces: `<Avatar userId avatar name size? />`, usado por `/chat`, `/chat/[roomId]` e `/profile`.
 
-- [ ] **Step 1: Implementar o componente**
+- [x] **Step 1: Implementar o componente**
 
 ```svelte
 <script lang="ts">
@@ -611,12 +611,12 @@ git commit -m "feat(runes): expor avatar em AuthenticatedUser"
 {/if}
 ```
 
-- [ ] **Step 2: Verificar tipos**
+- [x] **Step 2: Verificar tipos**
 
 Run: `pnpm --filter runes check`
 Expected: sem erros.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/runes/src/lib/components/Avatar.svelte
@@ -635,7 +635,7 @@ git commit -m "feat(runes): adicionar componente Avatar com placeholder de inici
 - Consumes: `avatarSchema` (Task 4), `Avatar.svelte` (Task 7), `locals.pb`, `locals.user` (Task 6).
 - Produces: rota `/profile` com action `uploadAvatar`.
 
-- [ ] **Step 1: `+page.server.ts`**
+- [x] **Step 1: `+page.server.ts`**
 
 ```ts
 import { fail } from '@sveltejs/kit';
@@ -675,7 +675,7 @@ export const actions: Actions = {
 };
 ```
 
-- [ ] **Step 2: `+page.svelte`**
+- [x] **Step 2: `+page.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -726,12 +726,12 @@ export const actions: Actions = {
 </div>
 ```
 
-- [ ] **Step 3: Verificar manualmente**
+- [x] **Step 3: Verificar manualmente**
 
 Run: `pnpm dev:full` (backend + frontend), acesse `/profile`, envie uma imagem válida.
 Expected: sem erro; ao recarregar, o avatar enviado aparece no lugar do placeholder de iniciais.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/routes/profile
@@ -750,7 +750,7 @@ git commit -m "feat(runes): adicionar tela de perfil com upload de avatar"
 - Consumes: `ChatRoomRecord`, `ChatMessageRecord` (Task 5), `Avatar.svelte` (Task 7).
 - Produces: rota `/chat` (`data.rooms: { room: ChatRoomRecord; lastMessage: ChatMessageRecord | null }[]`, `data.userId: string`).
 
-- [ ] **Step 1: `+page.server.ts`**
+- [x] **Step 1: `+page.server.ts`**
 
 ```ts
 import type { PageServerLoad } from './$types';
@@ -786,7 +786,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 ```
 
-- [ ] **Step 2: `+page.svelte`**
+- [x] **Step 2: `+page.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -848,12 +848,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 </div>
 ```
 
-- [ ] **Step 3: Verificar manualmente**
+- [x] **Step 3: Verificar manualmente**
 
 Run: `pnpm dev:full`, acesse `/chat` autenticado.
 Expected: mostra `no-rooms-msg` (ainda não há salas).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/routes/chat/+page.server.ts apps/runes/src/routes/chat/+page.svelte
@@ -872,7 +872,7 @@ git commit -m "feat(runes): adicionar listagem de salas de chat"
 - Consumes: `createRoomSchema` (Task 4), `findAuthRecordByEmail` (Task 5), `fieldErrorsFrom` (existente em `$lib/validation/formErrors.ts`).
 - Produces: rota `/chat/new`.
 
-- [ ] **Step 1: `+page.server.ts`**
+- [x] **Step 1: `+page.server.ts`**
 
 ```ts
 import { fail, redirect } from '@sveltejs/kit';
@@ -934,7 +934,7 @@ export const actions: Actions = {
 };
 ```
 
-- [ ] **Step 2: `+page.svelte`**
+- [x] **Step 2: `+page.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -983,12 +983,12 @@ export const actions: Actions = {
 </div>
 ```
 
-- [ ] **Step 3: Verificar manualmente**
+- [x] **Step 3: Verificar manualmente**
 
 Run: `pnpm dev:full`, acesse `/chat/new` com um usuário não-admin.
 Expected: lista de outros usuários aparece (confirma que a migration da Task 2 abriu a listagem); criar sala redireciona para `/chat/{id}` (404 esperado até a Task 11).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/routes/chat/new
@@ -1005,7 +1005,7 @@ git commit -m "feat(runes): adicionar criação de sala de chat"
 **Interfaces:**
 - Produces: `createBrowserClient(token: string, record: RecordModel | null): PocketBase`. Consumido pela Task 13 (`/chat/[roomId]/+page.svelte`).
 
-- [ ] **Step 1: Implementar**
+- [x] **Step 1: Implementar**
 
 ```ts
 import PocketBase, { type RecordModel } from 'pocketbase';
@@ -1018,12 +1018,12 @@ export function createBrowserClient(token: string, record: RecordModel | null): 
 }
 ```
 
-- [ ] **Step 2: Verificar tipos**
+- [x] **Step 2: Verificar tipos**
 
 Run: `pnpm --filter runes check`
 Expected: sem erros.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/runes/src/lib/client/pocketbaseClient.ts
@@ -1042,7 +1042,7 @@ git commit -m "feat(runes): adicionar factory de PocketBase client-side autentic
 - Consumes: `type ChatMessageRecord` de `$lib/server/chatRecord` (import type-only).
 - Produces: `class ChatMessagesFeed`, `type ChatMessageSubscribe = (roomId: string, onMessage: (m: ChatMessageRecord) => void) => () => void`. Consumido pela Task 13.
 
-- [ ] **Step 1: Escrever os testes (falhando)**
+- [x] **Step 1: Escrever os testes (falhando)**
 
 ```ts
 import { describe, expect, test, vi } from 'vitest';
@@ -1106,12 +1106,12 @@ describe('ChatMessagesFeed', () => {
 });
 ```
 
-- [ ] **Step 2: Rodar e confirmar falha**
+- [x] **Step 2: Rodar e confirmar falha**
 
 Run: `pnpm --filter runes test -- src/lib/domain/ChatMessagesFeed.test.ts`
 Expected: FAIL com "Cannot find module './ChatMessagesFeed.svelte'".
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 ```ts
 import type { ChatMessageRecord } from '$lib/server/chatRecord';
@@ -1157,12 +1157,12 @@ export class ChatMessagesFeed {
 }
 ```
 
-- [ ] **Step 4: Rodar e confirmar sucesso**
+- [x] **Step 4: Rodar e confirmar sucesso**
 
 Run: `pnpm --filter runes test -- src/lib/domain/ChatMessagesFeed.test.ts`
 Expected: PASS (5 testes).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/runes/src/lib/domain/ChatMessagesFeed.svelte.ts apps/runes/src/lib/domain/ChatMessagesFeed.test.ts
@@ -1181,7 +1181,7 @@ git commit -m "feat(runes): adicionar ChatMessagesFeed (domínio reativo com ded
 - Consumes: `chatRoomAccess` (Task 3), `sendMessageSchema` (Task 4), `findAuthRecordByEmail(email)` (Task 5, **signature changed by a post-Task-10 fix** — it no longer takes a `pb` parameter; it internally uses a superuser-scoped client from the new `apps/runes/src/lib/server/pocketbaseAdmin.ts`, since `auth.listRule`/`viewRule` stay restricted to self/admin and a regular user's session client cannot resolve another user's email otherwise), `createBrowserClient` (Task 11), `ChatMessagesFeed` (Task 12), `Avatar.svelte` (Task 7).
 - Produces: rota `/chat/[roomId]` completa (load + 4 actions).
 
-- [ ] **Step 1: `+page.server.ts`**
+- [x] **Step 1: `+page.server.ts`**
 
 ```ts
 import { error, fail, redirect } from '@sveltejs/kit';
@@ -1337,7 +1337,7 @@ export const actions: Actions = {
 };
 ```
 
-- [ ] **Step 2: `+page.svelte`**
+- [x] **Step 2: `+page.svelte`**
 
 ```svelte
 <script lang="ts">
@@ -1476,12 +1476,12 @@ export const actions: Actions = {
 </div>
 ```
 
-- [ ] **Step 3: Verificar manualmente (realtime entre duas abas)**
+- [x] **Step 3: Verificar manualmente (realtime entre duas abas)**
 
 Run: `pnpm dev:full`
 Expected: criar uma sala em `/chat/new`, abrir a mesma sala em duas abas logadas como usuários diferentes, enviar mensagem em uma aba e ver aparecer na outra sem reload; a própria mensagem enviada não aparece duplicada.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/src/routes/chat/[roomId]
@@ -1498,7 +1498,7 @@ git commit -m "feat(runes): adicionar visualização de sala com mensagens em te
 **Interfaces:**
 - Consumes: ícone `MessageCircle` de `lucide-svelte` (já é dependência do projeto).
 
-- [ ] **Step 1: Adicionar a entrada**
+- [x] **Step 1: Adicionar a entrada**
 
 ```ts
 import { ListChecks, MessageCircle, Users } from 'lucide-svelte';
@@ -1538,12 +1538,12 @@ export const appRegistry: AppEntry[] = [
 ];
 ```
 
-- [ ] **Step 2: Verificar manualmente**
+- [x] **Step 2: Verificar manualmente**
 
 Run: `pnpm dev:full`, acesse `/`.
 Expected: card "Chat" aparece no App Hub e leva a `/chat`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/runes/src/lib/appRegistry.ts
@@ -1562,7 +1562,7 @@ git commit -m "feat(runes): adicionar Chat ao App Hub"
 - Consumes: `cleanupRecords` (já existe em `cleanup.ts`), fixture `test`/`expect` de `./fixtures`.
 - Produces: `cleanupChatRoom(request, name)`.
 
-- [ ] **Step 1: Adicionar `cleanupChatRoom` a `cleanup.ts`**
+- [x] **Step 1: Adicionar `cleanupChatRoom` a `cleanup.ts`**
 
 Adicionar ao final do arquivo `apps/runes/e2e/cleanup.ts`:
 
@@ -1573,7 +1573,7 @@ export async function cleanupChatRoom(request: APIRequestContext, name: string):
 }
 ```
 
-- [ ] **Step 2: Escrever o teste e2e**
+- [x] **Step 2: Escrever o teste e2e**
 
 ```ts
 import { test, expect } from './fixtures';
@@ -1610,12 +1610,12 @@ test.describe('Chat (runes e2e)', () => {
 });
 ```
 
-- [ ] **Step 3: Rodar e confirmar sucesso**
+- [x] **Step 3: Rodar e confirmar sucesso**
 
 Run: `pnpm --filter runes test:e2e -- chat.spec.ts`
 Expected: PASS (2 testes). Backend precisa estar rodando (`pnpm backend:dev` ou `pnpm dev:full`).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/runes/e2e/cleanup.ts apps/runes/e2e/chat.spec.ts
@@ -1628,22 +1628,22 @@ git commit -m "test(e2e): adicionar fluxo de criação de sala e envio de mensag
 
 **Files:** nenhum (task de validação)
 
-- [ ] **Step 1: Rodar toda a suíte de testes**
+- [x] **Step 1: Rodar toda a suíte de testes**
 
 Run: `pnpm test`
 Expected: todos os testes passam, incluindo os novos de `chatRoomAccess`, `chatSchemas` e `ChatMessagesFeed`.
 
-- [ ] **Step 2: Rodar checagem de tipos**
+- [x] **Step 2: Rodar checagem de tipos**
 
 Run: `pnpm check`
 Expected: sem erros de tipo em nenhum app/pacote.
 
-- [ ] **Step 3: Rodar e2e completo**
+- [x] **Step 3: Rodar e2e completo**
 
 Run: `pnpm --filter runes test:e2e`
 Expected: todos os specs e2e passam, incluindo os novos de chat, sem quebrar os existentes (`todo-list-management`, `user-crud`, etc.).
 
-- [ ] **Step 4: Revisar `docs/CODE-STRUCTURE.md`**
+- [x] **Step 4: Revisar `docs/CODE-STRUCTURE.md`**
 
 Atualizar a seção do app `runes` com as novas rotas (`/chat`, `/chat/new`, `/chat/[roomId]`, `/profile`), os novos arquivos de domínio/validação/server/client, e a nova migration em `pocketbase/pb_migrations/`. Ver `.cursor/rules/meta/code-structure.mdc`.
 

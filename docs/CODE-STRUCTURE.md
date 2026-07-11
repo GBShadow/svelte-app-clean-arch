@@ -71,6 +71,20 @@ src/routes/
 │   └── [id]/edit/
 │       ├── +page.server.ts     ← Load + Actions: update/resetPassword/delete
 │       └── +page.svelte        ← UI: formulário de edição + reset senha + excluir
+│
+├── profile/
+│   ├── +page.server.ts         ← Load + Action uploadAvatar: upload de avatar do usuário atual
+│   └── +page.svelte            ← UI: avatar atual + formulário de upload
+│
+├── chat/
+│   ├── +page.server.ts         ← Load: salas do usuário (com preview da última mensagem)
+│   ├── +page.svelte            ← UI: listagem de salas
+│   ├── new/
+│   │   ├── +page.server.ts     ← Load (usuários) + Action: criar sala
+│   │   └── +page.svelte        ← UI: formulário de criação (nome opcional + participantes)
+│   └── [roomId]/
+│       ├── +page.server.ts     ← Load + Actions: sendMessage/leaveRoom/addParticipant/removeParticipant
+│       └── +page.svelte        ← UI: mensagens em tempo real (ChatMessagesFeed) + participantes
 ```
 
 ### 2.2 Camadas de Código
@@ -79,13 +93,21 @@ src/routes/
 src/lib/
 ├── server/                     ← Server-only (excluído do vitest)
 │   ├── pocketbase.ts           ← createServerClient: cria cliente PocketBase autenticado
-│   ├── authUser.ts             ← Type: AuthenticatedUser
+│   ├── pocketbaseAdmin.ts      ← getAdminClient: cliente PocketBase superusuário (lookup de auth/impersonate)
+│   ├── authUser.ts             ← Type: AuthenticatedUser (inclui avatar)
+│   ├── authLookup.ts           ← findAuthRecordByEmail: busca registro auth por e-mail (via admin client)
+│   ├── authExpand.ts           ← fetchAuthParticipants: resolve participantes (nome/avatar) via admin client
 │   ├── userRecord.ts           ← Type: UserRecord
-│   └── todoRecord.ts           ← Types: TodoListRecord, TodoItemRecord
+│   ├── todoRecord.ts           ← Types: TodoListRecord, TodoItemRecord
+│   └── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
 │
 ├── domain/                     ← Lógica de negócio pura
 │   ├── todoListAccess.ts       ← canView, canWrite: controle de acesso a listas
-│   └── todoListAccess.test.ts  ← Testes
+│   ├── todoListAccess.test.ts  ← Testes
+│   ├── chatRoomAccess.ts       ← isParticipant, isCreator, nextCreatorAfter: acesso e transferência de criador
+│   ├── chatRoomAccess.test.ts  ← Testes
+│   ├── ChatMessagesFeed.svelte.ts ← Classe reativa: mescla histórico (load) + eventos realtime, com dedup
+│   └── ChatMessagesFeed.test.ts  ← Testes
 │
 ├── validation/                 ← Schemas Zod + form errors
 │   ├── authSchemas.ts          ← loginSchema
@@ -94,6 +116,8 @@ src/lib/
 │   ├── todoSchemas.test.ts     ← Testes
 │   ├── userSchemas.ts          ← createUserSchema, updateUserSchema, changePasswordSchema, etc.
 │   ├── userSchemas.test.ts     ← Testes
+│   ├── chatSchemas.ts          ← createRoomSchema, sendMessageSchema, avatarSchema
+│   ├── chatSchemas.test.ts     ← Testes
 │   ├── formErrors.ts           ← fieldErrorsFrom: converte ZodError → Record<string, string>
 │   └── formErrors.test.ts      ← Testes
 │
@@ -103,16 +127,18 @@ src/lib/
 │
 ├── client/                     ← Lógica client-side
 │   ├── authChannel.ts          ← BroadcastChannel: sync login/logout entre abas
-│   └── authChannel.test.ts     ← Testes
+│   ├── authChannel.test.ts     ← Testes
+│   └── pocketbaseClient.ts     ← createBrowserClient: cliente PocketBase client-side autenticado (subscriptions realtime)
 │
-├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?)
+├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?) — inclui "Chat"
 │
 ├── components/                 ← Componentes Svelte reutilizáveis
 │   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
 │   ├── UserList.svelte         ← Tabela de listagem de usuários
 │   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
-│   └── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
+│   ├── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
+│   └── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
 │
 └── index.ts                    ← (vazio) barrel export
 ```
@@ -129,12 +155,13 @@ src/hooks.server.ts             ← handle: auth refresh, route protection, cook
 e2e/
 ├── env.ts                      ← Constantes do seed + guard fail-fast (assertSeedAdmin)
 ├── fixtures.ts                 ← Login automático como admin (com guard) antes de cada teste
-├── cleanup.ts                  ← Limpeza de registros via API PocketBase (user+auth, listas)
+├── cleanup.ts                  ← Limpeza de registros via API PocketBase (user+auth, listas, salas de chat)
 ├── auth-cross-tab.spec.ts      ← Sync login/logout entre abas (BroadcastChannel)
 ├── todo-crud-basico.spec.ts    ← CRUD básico lista + item
 ├── change-password.spec.ts     ← Troca de senha (usuário temporário)
 ├── user-crud.spec.ts           ← CRUD usuário (admin)
-└── todo-list-management.spec.ts ← Gerenciamento completo de lista
+├── todo-list-management.spec.ts ← Gerenciamento completo de lista
+└── chat.spec.ts                ← Criação de sala, envio de mensagem, saída da sala
 ```
 
 ### 2.5 Configuração
@@ -272,7 +299,10 @@ pocketbase/
     ├── 0007_restrict_self_update_fields.js  ← Corrige privilege escalation
     ├── 0008_create_todo_collections.js      ← Coleções todo_lists + todo_items
     ├── 0009_add_timestamps_to_auth.js       ← Adiciona created/updated (autodate) à coleção auth
-    └── 0010_remove_default_users_collection.js ← Remove coleção "users" padrão de fábrica (sem uso)
+    ├── 0010_remove_default_users_collection.js ← Remove coleção "users" padrão de fábrica (sem uso)
+    ├── 0011_create_chat_collections.js      ← Coleções chat_rooms + chat_messages
+    ├── 0012_add_avatar_to_auth.js           ← Adiciona campo avatar (file) à coleção auth
+    └── 0013_open_user_listing_for_authenticated.js ← Abre listagem de "user" para qualquer autenticado
 ```
 
 ---

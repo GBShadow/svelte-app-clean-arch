@@ -4,6 +4,7 @@ import type { Actions, PageServerLoad } from './$types';
 import type { ChatMessageRecord, ChatRoomRecord } from '$lib/server/chatRecord';
 import { isCreator, isParticipant, nextCreatorAfter } from '$lib/domain/chatRoomAccess';
 import { findAuthRecordByEmail } from '$lib/server/authLookup';
+import { fetchAuthParticipants } from '$lib/server/authExpand';
 import { sendMessageSchema } from '$lib/validation/chatSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
@@ -14,11 +15,16 @@ const FORBIDDEN_ERROR = 'Você não tem permissão para esta ação.';
 const MESSAGES_PAGE_SIZE = 50;
 
 async function getRoom(pb: PocketBase, id: string): Promise<ChatRoomRecord> {
+	let room: ChatRoomRecord;
 	try {
-		return await pb.collection('chat_rooms').getOne<ChatRoomRecord>(id, { expand: 'participants' });
+		room = await pb.collection('chat_rooms').getOne<ChatRoomRecord>(id);
 	} catch {
 		throw error(404, 'Sala não encontrada.');
 	}
+
+	const participants = await fetchAuthParticipants(room.participants);
+	room.expand = { participants };
+	return room;
 }
 
 function requireParticipant(room: ChatRoomRecord, userId: string) {
@@ -41,8 +47,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.collection('chat_messages')
 		.getList<ChatMessageRecord>(1, MESSAGES_PAGE_SIZE, {
 			filter: locals.pb.filter('room = {:roomId}', { roomId: room.id }),
-			sort: '-created',
-			expand: 'sender'
+			sort: '-created'
 		});
 	const messages = messagesPage.items.slice().reverse();
 

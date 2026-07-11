@@ -1,13 +1,25 @@
 import type { PageServerLoad } from './$types';
 import type { ChatMessageRecord, ChatRoomRecord } from '$lib/server/chatRecord';
+import { fetchAuthParticipants } from '$lib/server/authExpand';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const userId = locals.pb.authStore.record?.id ?? '';
 
 	const rooms = await locals.pb.collection('chat_rooms').getFullList<ChatRoomRecord>({
-		filter: locals.pb.filter('participants.id ?= {:userId}', { userId }),
-		expand: 'participants'
+		filter: locals.pb.filter('participants.id ?= {:userId}', { userId })
 	});
+
+	const participantIds = [...new Set(rooms.flatMap((room) => room.participants))];
+	const participants = await fetchAuthParticipants(participantIds);
+	const participantsById = new Map(participants.map((p) => [p.id, p]));
+
+	for (const room of rooms) {
+		room.expand = {
+			participants: room.participants
+				.map((id) => participantsById.get(id))
+				.filter((p): p is (typeof participants)[number] => p !== undefined)
+		};
+	}
 
 	const roomsWithPreview = await Promise.all(
 		rooms.map(async (room) => {

@@ -20,7 +20,7 @@
 				(event) => {
 					if (event.action === 'create') onMessage(event.record);
 				},
-				{ filter: `room = "${roomId}"`, expand: 'sender' }
+				{ filter: `room = "${roomId}"` }
 			)
 			.catch(() => {});
 
@@ -42,6 +42,9 @@
 		(data.room.expand?.participants ?? []).filter((p) => p.id !== data.userId)
 	);
 	const isRoomCreator = $derived(data.room.created_by === data.userId);
+	const participantsById = $derived(
+		new Map((data.room.expand?.participants ?? []).map((p) => [p.id, p]))
+	);
 </script>
 
 <div class="flex flex-col gap-4 max-w-2xl mx-auto w-full">
@@ -100,15 +103,16 @@
 	<div class="card bg-base-100 border border-base-300 shadow-sm flex-1" data-testid="chat-messages-card">
 		<div class="card-body gap-2">
 			{#each feed.messages as message (message.id)}
+				{@const sender = participantsById.get(message.sender)}
 				<div class="flex items-start gap-2" data-testid="chat-message-{message.id}">
 					<Avatar
 						userId={message.sender}
-						avatar={message.expand?.sender?.avatar ?? ''}
-						name={message.expand?.sender?.name ?? ''}
+						avatar={sender?.avatar ?? ''}
+						name={sender?.name ?? ''}
 						size="size-6"
 					/>
 					<div>
-						<p class="text-xs opacity-60">{message.expand?.sender?.name}</p>
+						<p class="text-xs opacity-60">{sender?.name ?? ''}</p>
 						<p data-testid="chat-message-text-{message.id}">{message.text}</p>
 					</div>
 				</div>

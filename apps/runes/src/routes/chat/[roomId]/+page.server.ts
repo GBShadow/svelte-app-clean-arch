@@ -104,7 +104,10 @@ export const actions: Actions = {
 			update.created_by = nextCreatorAfter(room.participants, userId) ?? remaining[0];
 		}
 
-		await locals.pb.collection('chat_rooms').update(room.id, update);
+		// chat_rooms.updateRule agora é restrita ao criador (ver migration 0014); um
+		// participante comum saindo da sala precisa do cliente superusuário para gravar.
+		const admin = await getAdminClient();
+		await admin.collection('chat_rooms').update(room.id, update);
 		throw redirect(303, '/chat');
 	},
 

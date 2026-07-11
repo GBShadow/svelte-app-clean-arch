@@ -302,7 +302,8 @@ pocketbase/
     ├── 0010_remove_default_users_collection.js ← Remove coleção "users" padrão de fábrica (sem uso)
     ├── 0011_create_chat_collections.js      ← Coleções chat_rooms + chat_messages
     ├── 0012_add_avatar_to_auth.js           ← Adiciona campo avatar (file) à coleção auth
-    └── 0013_open_user_listing_for_authenticated.js ← Abre listagem de "user" para qualquer autenticado
+    ├── 0013_open_user_listing_for_authenticated.js ← Abre listagem de "user" para qualquer autenticado
+    └── 0014_restrict_chat_room_update_rule.js ← Restringe updateRule de chat_rooms ao criador (corrige IDOR)
 ```
 
 ---

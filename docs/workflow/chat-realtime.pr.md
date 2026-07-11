@@ -20,6 +20,7 @@ Adiciona salas de chat 1:1 e em grupo ao `apps/runes`, com mensagens de texto si
 - `pocketbase/pb_migrations/0011_create_chat_collections.js` — coleções `chat_rooms`/`chat_messages` + API Rules
 - `pocketbase/pb_migrations/0012_add_avatar_to_auth.js` — campo `avatar` (file, máx. 2MB, jpg/png/webp) em `auth`
 - `pocketbase/pb_migrations/0013_open_user_listing_for_authenticated.js` — abre listagem de `user` para qualquer autenticado (picker de participantes)
+- `pocketbase/pb_migrations/0014_restrict_chat_room_update_rule.js` — restringe `chat_rooms.updateRule` ao criador (corrige IDOR: um participante comum, via chamada direta à API do PocketBase, conseguia sobrescrever `participants`/`created_by` e se autopromover a criador da sala)
 
 ### App(s)
 - `apps/runes/src/lib/domain/chatRoomAccess.ts` — autorização e transferência de criador (funções puras)
@@ -29,7 +30,7 @@ Adiciona salas de chat 1:1 e em grupo ao `apps/runes`, com mensagens de texto si
 - `apps/runes/src/lib/server/authUser.ts`, `apps/runes/src/hooks.server.ts` — `avatar` em `AuthenticatedUser`/`locals.user`
 - `apps/runes/src/lib/client/pocketbaseClient.ts` — cliente PocketBase client-side autenticado (subscriptions realtime)
 - `apps/runes/src/lib/components/Avatar.svelte` — avatar com placeholder de iniciais
-- `apps/runes/src/routes/profile/`, `chat/`, `chat/new/`, `chat/[roomId]/` — rotas novas (load + actions)
+- `apps/runes/src/routes/profile/`, `chat/`, `chat/new/`, `chat/[roomId]/` — rotas novas (load + actions); `leaveRoom` grava via cliente superusuário, já que a `updateRule` de `chat_rooms` agora restringe update ao criador
 - `apps/runes/src/lib/appRegistry.ts` — entrada "Chat" no App Hub
 
 ### Testes

@@ -11,8 +11,8 @@
 		"dev": "turbo run dev",
 		"dev:runes": "turbo run dev --filter=runes",
 		"dev:full": "docker compose -f pocketbase/docker-compose.yml ps 2>/dev/null | grep -q 'Up' || docker compose -f pocketbase/docker-compose.yml up -d && turbo run dev --filter=runes",
-		"backend:reset": "docker compose -f pocketbase/docker-compose.yml down -v && docker compose -f pocketbase/docker-compose.yml up -d",
-		"dev:reset": "docker compose -f pocketbase/docker-compose.yml down -v && docker compose -f pocketbase/docker-compose.yml up -d && turbo run dev --filter=runes",
+		"backend:reset": "docker compose -f pocketbase/docker-compose.yml down -v && docker compose -f pocketbase/docker-compose.yml up -d --build",
+		"dev:reset": "docker compose -f pocketbase/docker-compose.yml down -v && docker compose -f pocketbase/docker-compose.yml up -d --build && turbo run dev --filter=runes",
 		"test": "turbo run test",
 		"test:e2e": "pnpm --filter=runes build && pnpm --filter=runes exec playwright test --project=chromium",
 		"test:e2e:install": "pnpm --filter runes test:e2e:install"

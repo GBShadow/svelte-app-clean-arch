@@ -16,6 +16,7 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | architecture | `language-convention.mdc` | Idioma: código em inglês, UI/erros em português |
 | architecture | `data-testid.mdc` | data-testid em componentes + getByTestId nos testes |
 | architecture | `pocketbase-collections.mdc` | Toda coleção PocketBase precisa dos campos `created`/`updated` |
+| architecture | `pocketbase-api-rules.mdc` | API Rules (`update`/`delete`) devem restringir campos, não só posse/participação — assumir chamada direta à API |
 | documentation | `feature-documentation.mdc` | Doc em `docs/features/` + CHANGELOG |
 | workflow | `spec-driven.mdc` | Spec em `docs/specs/<slug>.md` (antes de implementar) |
 | workflow | `pr-description.mdc` | PR em `docs/workflow/<slug>.pr.md` |
@@ -23,8 +24,11 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | meta | `rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
 | meta | `commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
 | meta | `code-structure.mdc` | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| meta | `lessons-learned.mdc` | Todo problema não trivial resolvido deve ser registrado (regra, feature doc ou memória), não só corrigido |
 
 PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
+
+No Claude Code, `spec-driven` é um **agente** (`.claude/agents/spec-driven.md`), não uma skill nativa — invocar via ferramenta `Agent` com `subagent_type: "spec-driven"`. Existe também um wrapper em `.claude/skills/spec-driven/SKILL.md` que delega para esse agente, para o caso de a skill ser acionada diretamente (ex.: `Skill(spec-driven)`/`/spec-driven`).
 
 Skills Freebuff (`.agents/skills/`):
 - `spec-driven` — agente de processo spec-driven
@@ -35,6 +39,8 @@ Skills Freebuff (`.agents/skills/`):
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
+- `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
+- `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 
 ## Leitura prioritária: CODE-STRUCTURE.md
 

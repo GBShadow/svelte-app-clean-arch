@@ -1,0 +1,71 @@
+---
+description: API Rules do PocketBase (list/view/create/update/delete) devem ser seguras assumindo chamada direta à API, restringindo campos e não só posse/participação
+alwaysApply: true
+---
+
+# API Rules do PocketBase
+
+Uma API Rule (`listRule`/`viewRule`/`createRule`/`updateRule`/`deleteRule`) do PocketBase decide
+**se** a requisição é aceita para aquele registro — ela não restringe, por si só, **quais campos**
+podem ser alterados. Uma rule baseada em "o usuário está relacionado a este registro?" (ex.:
+`participants.id ?= @request.auth.id`) é suficiente para `list`/`view`, mas em `update` costuma ser
+permissiva demais: qualquer relacionado pode enviar um body arbitrário.
+
+## O problema (caso real: `chat_rooms`, corrigido na `0014_restrict_chat_room_update_rule.js`)
+
+A migration `0011_create_chat_collections.js` definiu:
+
+```js
+updateRule: "created_by = @request.auth.id || participants.id ?= @request.auth.id"
+```
+
+A intenção era: o criador administra a sala (nome, participantes) e qualquer participante consegue
+sair (removendo a si mesmo de `participants`). Na prática, a rule permite que **qualquer
+participante** — não só o criador — envie um `PATCH` alterando `participants` e `created_by` para
+qualquer valor, se autopromovendo a criador (IDOR + escalonamento de privilégio). O código do
+SvelteKit (`+page.server.ts`) já validava `isCreator`/`isParticipant` antes de chamar
+`locals.pb.collection(...).update(...)`, mas essa checagem só protege quem passa pela UI — a API do
+PocketBase é uma superfície própria, diretamente alcançável com o token de sessão do usuário
+(especialmente quando a feature já expõe um cliente PocketBase autenticado no browser, como o
+realtime de chat faz via `pocketbaseClient.ts`).
+
+## Regra obrigatória
+
+Ao escrever ou revisar uma API Rule de `update`/`delete` (ou `create` que aceite campos sensíveis),
+pergunte: **"se eu chamasse a API do PocketBase direto, sem passar pelo app, o que essa rule
+permitiria eu fazer?"** Se a resposta inclui alterar campos que só uma checagem de aplicação
+deveria proteger (posse, papel/role, campos "somente leitura" pós-criação), a rule está permissiva
+demais. Corrija com uma das duas abordagens:
+
+1. **Rule com validação por campo**, quando expressável na linguagem de filtro do PocketBase — ex.
+   `@request.body.<campo>:changed = false` para bloquear alteração de um campo específico, ou
+   `:each` para validar cada item de uma relação multi-valor (ver `0007_restrict_self_update_fields.js`
+   para um exemplo já existente no projeto, na coleção `auth`).
+2. **Rule restrita ao ator mais privilegiado** (ex.: só o criador) quando a validação por campo não
+   é praticável, movendo a mutação legítima mais restrita (ex.: um participante comum saindo da
+   sala) para o **cliente superusuário** (`getAdminClient()` em `pocketbaseAdmin.ts`) no
+   `+page.server.ts`, com a autorização já validada em código antes da chamada — mesmo padrão usado
+   em `authExpand.ts`/`authLookup.ts` e na correção da `0014`.
+
+Nunca assuma que uma checagem de autorização em `+page.server.ts` "cobre" uma rule permissiva — a
+API do PocketBase roda em paralelo ao SvelteKit e é alcançável diretamente por qualquer usuário
+autenticado que conheça a URL (ou que já tenha um token de sessão exposto ao browser, como qualquer
+feature com realtime client-side).
+
+## Ao adicionar uma nova migration com update/delete rule
+
+- Liste os *actors* possíveis para o registro (dono/criador, participante comum, admin) e o que
+  cada um deveria poder alterar.
+- Se dois actors têm permissões diferentes sobre o mesmo registro, a rule deve refletir o actor
+  **mais restrito** capaz de usar `update` via sessão do usuário; a mutação do actor menos
+  privilegiado (quando legítima) vai pelo cliente superusuário, não pela rule.
+- Teste manualmente com uma chamada HTTP direta (`curl`) autenticado como o actor menos
+  privilegiado, tentando alterar um campo que ele não deveria — deve falhar (`403`/`404`).
+
+## Ver também
+
+- `.agents/skills/pocketbase-api-rules.md` — skill Freebuff equivalente
+- `.cursor/rules/architecture/pocketbase-collections.mdc` — convenção de `created`/`updated`
+- `pocketbase/pb_migrations/0007_restrict_self_update_fields.js` — exemplo de rule com validação por campo (`:changed`)
+- `pocketbase/pb_migrations/0014_restrict_chat_room_update_rule.js` — correção do caso real descrito acima
+- `docs/features/chat-realtime.md` — seção "Decisões de design" com o relato completo do incidente

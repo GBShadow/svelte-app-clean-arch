@@ -6,4 +6,5 @@ export type AuthenticatedUser = {
 	isAdmin: boolean;
 	mustChangePassword: boolean;
 	passwordSetAt: string | null;
+	avatar: string;
 };

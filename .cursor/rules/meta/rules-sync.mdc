@@ -38,6 +38,7 @@ docs/
 | architecture | `language-convention.mdc` | alwaysApply — código em inglês, UI/erros em português |
 | architecture | `data-testid.mdc` | alwaysApply — data-testid em componentes + getByTestId em testes |
 | architecture | `pocketbase-collections.mdc` | alwaysApply — toda coleção PocketBase precisa dos campos `created`/`updated` |
+| architecture | `pocketbase-api-rules.mdc` | alwaysApply — API Rules de update/delete devem restringir campos, não só posse/participação |
 | documentation | `feature-documentation.mdc` | alwaysApply |
 | workflow | `spec-driven.mdc` | `docs/specs/<slug>.md` |
 | workflow | `pr-description.mdc` | `docs/workflow/<slug>.pr.md` |
@@ -45,6 +46,7 @@ docs/
 | meta | `rules-sync.mdc` | alwaysApply |
 | meta | `commit-convention.mdc` | alwaysApply — sem trailer de co-autoria em commits/PRs |
 | meta | `code-structure.mdc` | alwaysApply — ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| meta | `lessons-learned.mdc` | alwaysApply — todo problema não trivial resolvido deve ser registrado, não só corrigido |
 
 ## Proibido
 

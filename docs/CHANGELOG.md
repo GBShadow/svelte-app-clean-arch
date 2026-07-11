@@ -2,6 +2,17 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-11] Chat em tempo real com avatar de usuário (runes)
+
+- Backend: `pocketbase/pb_migrations/0011_create_chat_collections.js` (`chat_rooms`/`chat_messages`), `0012_add_avatar_to_auth.js` (campo `avatar` em `auth`), `0013_open_user_listing_for_authenticated.js` (listagem de `user` para qualquer autenticado)
+- Domínio: `apps/runes/src/lib/domain/chatRoomAccess.ts` (autorização/transferência de criador), `ChatMessagesFeed.svelte.ts` (feed reativo com dedup)
+- Server: `apps/runes/src/lib/server/chatRecord.ts`, `authLookup.ts`, `authExpand.ts`, `pocketbaseAdmin.ts` (cliente PocketBase superusuário)
+- App: `apps/runes` — rotas `/profile`, `/chat`, `/chat/new`, `/chat/[roomId]`, componente `Avatar.svelte`, entrada "Chat" no App Hub (`appRegistry.ts`)
+- Testes: `chatRoomAccess.test.ts`, `ChatMessagesFeed.test.ts`, `chatSchemas.test.ts`, `e2e/chat.spec.ts`
+- Docs: [docs/features/chat-realtime.md](./features/chat-realtime.md)
+
+Salas de chat 1:1 e em grupo com mensagens de texto (até 2000 caracteres, imutáveis) e atualização em tempo real via subscription client-side do PocketBase SDK — primeira vez neste projeto que um cliente PocketBase autenticado é instanciado no browser, autenticado com um token de curta duração (`impersonate`, 10 min) devolvido pelo `load` em vez da sessão completa do usuário. Qualquer participante sai da sala; só o criador adiciona/remove outros participantes (auto-remoção via `removeParticipant` é bloqueada, orientando a usar "Sair da sala"); se o criador sai, o papel é transferido para o participante restante mais antigo. Usuário autenticado define um avatar (jpg/png/webp, até 2MB) em `/profile`, exibido ao lado do nome em toda tela de chat (placeholder de iniciais quando ausente). Dupla validação de participação (API Rules do PocketBase + checagem server-side no SvelteKit), seguindo o padrão de `pocketbase-todo-sharing`. Durante a implementação, o `expand` de participantes/remetente via `locals.pb` se mostrou inviável (a `viewRule` de `auth`, restrita a "próprio registro ou admin", também barra registros expandidos) — resolvido com `authExpand.ts`, reaproveitando o cliente superusuário já introduzido para `authLookup.ts`.
+
 ## [2026-07-10] Timestamps obrigatórios em coleções PocketBase + limpeza de coleção órfã
 
 - Backend: `pocketbase/pb_migrations/0009_add_timestamps_to_auth.js`, `0010_remove_default_users_collection.js`

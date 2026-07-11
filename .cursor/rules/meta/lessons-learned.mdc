@@ -1,0 +1,43 @@
+---
+description: Todo problema não trivial resolvido (bug, vulnerabilidade, suposição errada do plano) deve ser registrado, não só corrigido
+alwaysApply: true
+---
+
+# Registrar problemas resolvidos
+
+Corrigir um problema não trivial (bug encontrado em revisão, vulnerabilidade, suposição do
+plano/spec que se mostrou errada durante a implementação, comportamento inesperado de uma
+dependência) sem registrar **por que** aconteceu e **como evitar/detectar de novo** joga fora o
+aprendizado — o mesmo erro tende a se repetir em outra feature ou em outra sessão.
+
+Não é preciso registrar qualquer ajuste trivial (typo, formatação, lint). O critério é: alguém
+lendo só o commit/diff, sem o contexto desta conversa, ficaria sem entender por que aquilo era um
+problema ou como reconhecer o mesmo padrão em outro lugar? Se sim, registre.
+
+## Onde registrar, conforme o alcance do problema
+
+1. **Padrão generalizável** (pode se repetir em outras coleções/rotas/módulos do projeto) → nova
+   regra ou atualização de regra existente em `.cursor/rules/<pasta>/<nome>.mdc` +
+   `.agents/skills/<nome>.md` equivalente + entrada em `CLAUDE.md` (tabela de regras e lista de
+   skills). Ver `.cursor/rules/meta/rules-sync.mdc` para manter os três sincronizados. Exemplo:
+   `pocketbase-api-rules.mdc`, criado após o IDOR de `chat_rooms.updateRule`.
+2. **Específico de uma feature** (decisão de design, trade-off, workaround descoberto durante a
+   implementação, ajuste em relação ao plano original) → seção "Decisões de design" do
+   `docs/features/<slug>.md` da feature em questão. Ver exemplos já registrados em
+   `docs/features/chat-realtime.md` (token de curta duração via `impersonate`, `authExpand.ts`,
+   teste e2e ajustado em relação ao plano, correção do `updateRule`).
+3. **Como a IA deve se comportar em sessões futuras neste projeto** (não é sobre o código em si,
+   mas sobre abordagem/processo) → memória persistente (`type: feedback` ou `type: project`),
+   incluindo o *porquê* e o *como aplicar*, para que a próxima sessão não repita a mesma
+   investigação do zero.
+
+Um mesmo incidente pode exigir mais de um desses três — o IDOR de `chat_rooms` registrou os três:
+regra nova (padrão generalizável), "Decisões de design" na feature doc (specífico da feature) e
+memória persistente (comportamento da IA neste projeto).
+
+## Ver também
+
+- `.agents/skills/lessons-learned.md` — skill Freebuff equivalente
+- `.cursor/rules/meta/rules-sync.mdc` — sincronizar Cursor ↔ Freebuff ↔ Claude ao criar/editar regras
+- `.cursor/rules/architecture/pocketbase-api-rules.mdc` — exemplo de regra nascida de um incidente
+- `docs/features/chat-realtime.md` — exemplo de "Decisões de design" com relato de incidentes

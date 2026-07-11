@@ -8,6 +8,7 @@ Documentação de funcionalidades implementadas no monorepo.
 |---------|-----|-----------|
 | App Hub — tela inicial com grid de apps | runes | [app-hub.md](./app-hub.md) |
 | Autenticação PocketBase (runes) | runes | [pocketbase-auth.md](./pocketbase-auth.md) |
+| Chat em tempo real com avatar (runes) | runes | [chat-realtime.md](./chat-realtime.md) |
 | Correção de testes e2e (Playwright) | runes (e2e) | [e2e-test-fix-plan.md](./e2e-test-fix-plan.md) |
 | CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Infra PocketBase (Docker + coleções) | — (infra, sem app) | [pocketbase-infra.md](./pocketbase-infra.md) |

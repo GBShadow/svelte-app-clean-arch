@@ -43,6 +43,8 @@ Bugfixes triviais podem pular a etapa de spec.
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId em testes
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
+- `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
+- `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 
 ## Leitura prioritária do CODE-STRUCTURE.md
 

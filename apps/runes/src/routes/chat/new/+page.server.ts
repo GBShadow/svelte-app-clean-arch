@@ -28,7 +28,7 @@ export const actions: Actions = {
 		let authIds: string[];
 		try {
 			const authRecords = await Promise.all(
-				parsed.data.participantIds.map((email) => findAuthRecordByEmail(locals.pb, email))
+				parsed.data.participantIds.map((email) => findAuthRecordByEmail(email))
 			);
 			authIds = authRecords.map((r) => r.id);
 		} catch {

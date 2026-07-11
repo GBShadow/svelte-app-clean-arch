@@ -70,7 +70,7 @@ Usuário autenticado consegue conversar em salas de chat de texto (1:1 ou grupo)
 | PocketBase | Migration abre `user.listRule`/`viewRule` para `@request.auth.id != ''` (picker de participantes do RF4); `auth.listRule`/`viewRule` permanecem restritas |
 | Domínio (função pura) | `apps/runes/src/lib/domain/chatRoomAccess.ts` (`isParticipant`, `isCreator`, `nextCreatorAfter`) + testes, padrão `todoListAccess.ts` |
 | Domínio reativo (client) | `apps/runes/src/lib/domain/ChatMessagesFeed.svelte.ts` (`$state`, `subscribe` injetável, dedup por `id`) + testes com fake |
-| Server | `apps/runes/src/lib/server/chatRecord.ts` (types), `authLookup.ts` (`findAuthRecordByEmail`, extraído do padrão duplicado em `users/[id]/edit`), `userAvatar.ts` (validação de upload) |
+| Server | `apps/runes/src/lib/server/chatRecord.ts` (types), `authLookup.ts` (`findAuthRecordByEmail(email)`), `pocketbaseAdmin.ts` (cliente PocketBase superusuário — `auth.listRule` continua restrita, então a resolução e-mail→id de outro usuário exige um client com privilégio elevado, não o `locals.pb` da sessão), `userAvatar.ts` (validação de upload) |
 | API | `apps/runes/src/routes/chat/+page.server.ts`, `chat/new/+page.server.ts`, `chat/[roomId]/+page.server.ts` (mutações via `locals.pb` direto), `profile/+page.server.ts` |
 | Client | `apps/runes/src/lib/client/pocketbaseClient.ts` (factory: PocketBase browser-side com `PUBLIC_POCKETBASE_URL` já existente + `pb.authStore.save(token, model)` a partir do token devolvido pelo `load` — primeira vez que um client PocketBase autenticado é instanciado no browser neste projeto) |
 | UI | `ChatRoomList.svelte` (renderiza `data.rooms`, sem container), `ChatRoomView.svelte` (usa `ChatMessagesFeed` via `onMount`), `AvatarUpload.svelte`, `Avatar.svelte` |
@@ -92,7 +92,7 @@ Usuário autenticado consegue conversar em salas de chat de texto (1:1 ou grupo)
 - [ ] `chatRoomAccess.ts` (funções puras de autorização/transferência de criador) + testes
 - [ ] `ChatMessagesFeed.svelte.ts` (domínio reativo client-side, dedup) + testes com `subscribe` fake
 - [ ] `pocketbaseClient.ts` (factory client-side autenticado)
-- [ ] Types (`chatRecord.ts`), `authLookup.ts` (resolução e-mail → id de `auth`), `userAvatar.ts` (validação de upload) + validação Zod
+- [ ] Types (`chatRecord.ts`), `authLookup.ts` (resolução e-mail → id de `auth`) + `pocketbaseAdmin.ts` (cliente superusuário), `userAvatar.ts` (validação de upload) + validação Zod
 - [ ] Rotas `/chat`, `/chat/new`, `/chat/[roomId]`, `/profile` (load + actions)
 - [ ] UI (listagem de salas, view da sala, upload de avatar, componente Avatar)
 - [ ] Novo card "Chat" no App Hub (`appRegistry`)

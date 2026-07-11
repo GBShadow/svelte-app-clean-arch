@@ -31,7 +31,8 @@ pocketbase/pb_migrations/
 apps/runes/src/lib/
   server/authUser.ts                    (modificado: + avatar)
   server/chatRecord.ts                  (novo)
-  server/authLookup.ts                  (novo)
+  server/authLookup.ts                  (novo; alterado após Task 10 — ver nota abaixo)
+  server/pocketbaseAdmin.ts             (novo, adicionado por fix pós-Task 10 — cliente PocketBase superusuário para lookup de e-mail em `auth`)
   domain/chatRoomAccess.ts              (novo)
   domain/chatRoomAccess.test.ts         (novo)
   domain/ChatMessagesFeed.svelte.ts     (novo)
@@ -1177,7 +1178,7 @@ git commit -m "feat(runes): adicionar ChatMessagesFeed (domínio reativo com ded
 - Create: `apps/runes/src/routes/chat/[roomId]/+page.svelte`
 
 **Interfaces:**
-- Consumes: `chatRoomAccess` (Task 3), `sendMessageSchema` (Task 4), `findAuthRecordByEmail` (Task 5), `createBrowserClient` (Task 11), `ChatMessagesFeed` (Task 12), `Avatar.svelte` (Task 7).
+- Consumes: `chatRoomAccess` (Task 3), `sendMessageSchema` (Task 4), `findAuthRecordByEmail(email)` (Task 5, **signature changed by a post-Task-10 fix** — it no longer takes a `pb` parameter; it internally uses a superuser-scoped client from the new `apps/runes/src/lib/server/pocketbaseAdmin.ts`, since `auth.listRule`/`viewRule` stay restricted to self/admin and a regular user's session client cannot resolve another user's email otherwise), `createBrowserClient` (Task 11), `ChatMessagesFeed` (Task 12), `Avatar.svelte` (Task 7).
 - Produces: rota `/chat/[roomId]` completa (load + 4 actions).
 
 - [ ] **Step 1: `+page.server.ts`**
@@ -1298,7 +1299,7 @@ export const actions: Actions = {
 
 		let authRecord;
 		try {
-			authRecord = await findAuthRecordByEmail(locals.pb, email);
+			authRecord = await findAuthRecordByEmail(email);
 		} catch {
 			return fail(400, { errors: { email: 'Usuário não encontrado.' } });
 		}

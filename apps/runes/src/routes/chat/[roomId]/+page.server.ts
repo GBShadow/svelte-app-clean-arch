@@ -6,6 +6,9 @@ import { isCreator, isParticipant, nextCreatorAfter } from '$lib/domain/chatRoom
 import { findAuthRecordByEmail } from '$lib/server/authLookup';
 import { sendMessageSchema } from '$lib/validation/chatSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
+import { getAdminClient } from '$lib/server/pocketbaseAdmin';
+
+const REALTIME_TOKEN_TTL_SECONDS = 600;
 
 const FORBIDDEN_ERROR = 'Você não tem permissão para esta ação.';
 const MESSAGES_PAGE_SIZE = 50;
@@ -43,12 +46,15 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		});
 	const messages = messagesPage.items.slice().reverse();
 
+	const admin = await getAdminClient();
+	const impersonated = await admin.collection('auth').impersonate(userId, REALTIME_TOKEN_TTL_SECONDS);
+
 	return {
 		room,
 		messages,
 		userId,
-		pbToken: locals.pb.authStore.token,
-		pbRecord: locals.pb.authStore.record
+		pbToken: impersonated.authStore.token,
+		pbRecord: impersonated.authStore.record
 	};
 };
 
@@ -146,6 +152,13 @@ export const actions: Actions = {
 		const targetId = formData.get('userId');
 		if (typeof targetId !== 'string' || !targetId) {
 			const errors: Record<string, string> = { general: 'Usuário inválido.' };
+			return fail(400, { errors });
+		}
+
+		if (targetId === userId) {
+			const errors: Record<string, string> = {
+				general: 'Use a opção "Sair da sala" para remover a si mesmo.'
+			};
 			return fail(400, { errors });
 		}
 

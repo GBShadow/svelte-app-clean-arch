@@ -78,15 +78,20 @@
 						</li>
 					{/each}
 				</ul>
-				<form method="POST" action="?/addParticipant" novalidate class="flex gap-2" data-testid="add-participant-form">
-					<input
-						type="email"
-						name="email"
-						placeholder="E-mail do participante"
-						data-testid="input-add-participant"
-						class="input input-bordered input-sm flex-1"
-					/>
-					<button type="submit" class="btn btn-sm" data-testid="btn-add-participant">Adicionar</button>
+				<form method="POST" action="?/addParticipant" novalidate class="flex flex-col gap-2" data-testid="add-participant-form">
+					<div class="flex gap-2">
+						<input
+							type="email"
+							name="email"
+							placeholder="E-mail do participante"
+							data-testid="input-add-participant"
+							class="input input-bordered input-sm flex-1"
+						/>
+						<button type="submit" class="btn btn-sm" data-testid="btn-add-participant">Adicionar</button>
+					</div>
+					{#if form?.errors?.email}
+						<span class="text-error text-sm" data-testid="error-add-participant-email">{form.errors.email}</span>
+					{/if}
 				</form>
 			</div>
 		</div>
@@ -115,7 +120,7 @@
 		method="POST"
 		action="?/sendMessage"
 		novalidate
-		class="flex gap-2"
+		class="flex flex-col gap-2"
 		data-testid="send-message-form"
 		use:enhance={() => {
 			return async ({ update }) => {
@@ -123,14 +128,19 @@
 			};
 		}}
 	>
-		<input
-			type="text"
-			name="text"
-			placeholder="Escreva uma mensagem..."
-			data-testid="input-message"
-			class="input input-bordered flex-1"
-			required
-		/>
-		<button type="submit" class="btn btn-primary" data-testid="btn-send-message">Enviar</button>
+		<div class="flex gap-2">
+			<input
+				type="text"
+				name="text"
+				placeholder="Escreva uma mensagem..."
+				data-testid="input-message"
+				class="input input-bordered flex-1"
+				required
+			/>
+			<button type="submit" class="btn btn-primary" data-testid="btn-send-message">Enviar</button>
+		</div>
+		{#if form?.errors?.text}
+			<span class="text-error text-sm" data-testid="error-message-text">{form.errors.text}</span>
+		{/if}
 	</form>
 </div>

@@ -78,3 +78,8 @@ export async function cleanupUser(request: APIRequestContext, email: string): Pr
 export async function cleanupTodoList(request: APIRequestContext, title: string): Promise<void> {
 	await cleanupRecords(request, 'todo_lists', 'title = {:title}', { title });
 }
+
+/** Removes a temporary chat room. Messages cascade with the room. */
+export async function cleanupChatRoom(request: APIRequestContext, name: string): Promise<void> {
+	await cleanupRecords(request, 'chat_rooms', 'name = {:name}', { name });
+}

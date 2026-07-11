@@ -1,4 +1,4 @@
-import { ListChecks, Users } from 'lucide-svelte';
+import { ListChecks, MessageCircle, Users } from 'lucide-svelte';
 
 export interface AppEntry {
 	id: string;
@@ -16,6 +16,13 @@ export const appRegistry: AppEntry[] = [
 		description: 'Gerencie suas listas de tarefas do dia a dia',
 		icon: ListChecks,
 		route: '/todos'
+	},
+	{
+		id: 'chat',
+		name: 'Chat',
+		description: 'Converse em tempo real com outros usuários',
+		icon: MessageCircle,
+		route: '/chat'
 	},
 	{
 		id: 'users',

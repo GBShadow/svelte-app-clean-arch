@@ -8,10 +8,12 @@ alwaysApply: false
 Quando o usuário pedir **spec**, **especificação**, **nova funcionalidade** (não trivial) ou **spec-driven**:
 
 1. Copiar [`docs/specs/_template.md`](../../docs/specs/_template.md) → `docs/specs/<slug>.md`
-2. Preencher junto com o usuário: contexto, objetivo, escopo, requisitos funcionais/não funcionais, critérios de aceite, design Ports & Adapters, contrato de API
-3. **Validar com o usuário antes de implementar** — alinhamento é o objetivo da spec, não documentação retroativa
-4. Atualizar índice em `docs/specs/README.md`
-5. Só então seguir o fluxo normal: Jira → implementação → feature doc → PR (mesmo `<slug>`)
+2. **Revisão Obrigatória:** Ler `CLAUDE.md`, `docs/CODE-STRUCTURE.md` e regras de banco (`pocketbase-*.mdc`).
+3. Preencher junto com o usuário: contexto, objetivo, escopo, requisitos funcionais/não funcionais, critérios de aceite.
+4. **Segurança e Modelagem:** Analisar preventivamente XSS, IDOR, escalação e vazamentos via realtime. Definir as coleções com `created`/`updated` e API rules de bloqueio.
+5. **Validar com o usuário antes de implementar** — alinhamento é o objetivo da spec, não documentação retroativa.
+6. Atualizar índice em `docs/specs/README.md`.
+7. Só então seguir o fluxo normal: Jira → implementação → feature doc → PR (mesmo `<slug>`).
 
 ## Quando pular a spec
 

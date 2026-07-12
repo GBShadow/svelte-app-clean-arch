@@ -25,7 +25,14 @@ Use quando o usuário pedir:
 
 Mesmo `<slug>` (kebab-case) em todos os arquivos.
 
-## Passo 0 — Detectar bugfix trivial
+## Passo 0 — Revisão Obrigatória de Arquitetura e Segurança
+
+Antes de iniciar qualquer especificação, você DEVE:
+1. Ler o arquivo `CLAUDE.md` e `docs/CODE-STRUCTURE.md` para entender a arquitetura real e atual do projeto (ex: não usamos `/api` REST para DB interno nem `MemoryGateways`; usamos `locals.pb` direto nas form actions).
+2. Ler `.cursor/rules/architecture/pocketbase-collections.mdc` e `.cursor/rules/architecture/pocketbase-api-rules.mdc` para aplicar a modelagem do DB na spec (toda coleção requer `created`/`updated` e regras estritas de field level).
+3. Analisar a segurança da funcionalidade: prever XSS em campos de texto, vazamentos de dados por realtime/subscriptions, IDOR e escalação de privilégios. Adicionar os bloqueios correspondentes nos Requisitos Não Funcionais (RNF) e Critérios de Aceite (AC).
+
+## Passo 0.5 — Detectar bugfix trivial
 
 Se o pedido for um bugfix de poucas linhas, sem impacto de design: pule a etapa de spec e vá direto para o Passo 2 (Jira). Avise o usuário que está pulando a spec e por quê.
 
@@ -34,8 +41,9 @@ Se o pedido for um bugfix de poucas linhas, sem impacto de design: pule a etapa 
 1. Copie `docs/specs/_template.md` → `docs/specs/<slug>.md`.
 2. Preencha as seções junto com o usuário: Contexto, Objetivo, Escopo (incluído/fora do escopo), Requisitos funcionais, Requisitos não funcionais, Critérios de aceite, Design (Ports & Adapters — app `runes`), Contrato de API (se houver), Alternativas consideradas, Questões em aberto.
 3. Não invente seções fora do template.
-4. Arquitetura: **runes** (`apps/runes/...`) — único app ativo.
-5. Escreva `docs/specs/<slug>.md` e atualize o índice em `docs/specs/README.md`.
+4. Arquitetura: **runes** (`apps/runes/...`) — siga o modelo "Form Actions chamando locals.pb" e "Domínio puramente isolado", conforme visto em projetos prévios reais.
+5. Modelagem de Dados: Liste cada nova tabela/coleção, campos necessários (com `created`/`updated`) e as regras da API (view/update/create/deleteRule) que evitam vazamentos.
+6. Escreva `docs/specs/<slug>.md` e atualize o índice em `docs/specs/README.md`.
 
 ## Passo 2 — Jira
 

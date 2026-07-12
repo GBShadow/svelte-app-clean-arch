@@ -85,6 +85,10 @@ src/routes/
 │   └── [roomId]/
 │       ├── +page.server.ts     ← Load + Actions: sendMessage/leaveRoom/addParticipant/removeParticipant
 │       └── +page.svelte        ← UI: mensagens em tempo real (ChatMessagesFeed) + participantes
+│
+├── kanban/
+│   ├── +page.server.ts         ← Load + Actions: criar/mover/deletar cartões e colunas + comentários
+│   └── +page.svelte            ← UI: quadro Kanban interativo (KanbanBoard) com Drag and Drop
 ```
 
 ### 2.2 Camadas de Código
@@ -99,7 +103,9 @@ src/lib/
 │   ├── authExpand.ts           ← fetchAuthParticipants: resolve participantes (nome/avatar) via admin client
 │   ├── userRecord.ts           ← Type: UserRecord
 │   ├── todoRecord.ts           ← Types: TodoListRecord, TodoItemRecord
-│   └── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
+│   ├── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
+│   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord, KanbanCardCommentRecord, etc.
+│   └── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
 │
 ├── domain/                     ← Lógica de negócio pura
 │   ├── todoListAccess.ts       ← canView, canWrite: controle de acesso a listas
@@ -107,7 +113,11 @@ src/lib/
 │   ├── chatRoomAccess.ts       ← isParticipant, isCreator, nextCreatorAfter: acesso e transferência de criador
 │   ├── chatRoomAccess.test.ts  ← Testes
 │   ├── ChatMessagesFeed.svelte.ts ← Classe reativa: mescla histórico (load) + eventos realtime, com dedup
-│   └── ChatMessagesFeed.test.ts  ← Testes
+│   ├── ChatMessagesFeed.test.ts  ← Testes
+│   ├── kanbanAccess.ts         ← canCreateCard, canUpdateCard, canDeleteCard, etc. e reordenação de posições
+│   ├── kanbanAccess.test.ts    ← Testes
+│   ├── KanbanBoard.svelte.ts   ← Classe reativa: gerência de cards/colunas realtime com dedup
+│   └── KanbanBoard.test.ts     ← Testes
 │
 ├── validation/                 ← Schemas Zod + form errors
 │   ├── authSchemas.ts          ← loginSchema
@@ -118,6 +128,8 @@ src/lib/
 │   ├── userSchemas.test.ts     ← Testes
 │   ├── chatSchemas.ts          ← createRoomSchema, sendMessageSchema, avatarSchema
 │   ├── chatSchemas.test.ts     ← Testes
+│   ├── kanbanSchemas.ts        ← createCardSchema, createColumnSchema, addCommentSchema, etc.
+│   ├── kanbanSchemas.test.ts   ← Testes
 │   ├── formErrors.ts           ← fieldErrorsFrom: converte ZodError → Record<string, string>
 │   └── formErrors.test.ts      ← Testes
 │
@@ -138,7 +150,9 @@ src/lib/
 │   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
 │   ├── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
-│   └── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
+│   ├── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
+│   └── kanban/
+│       └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
 │
 └── index.ts                    ← (vazio) barrel export
 ```
@@ -161,7 +175,8 @@ e2e/
 ├── change-password.spec.ts     ← Troca de senha (usuário temporário)
 ├── user-crud.spec.ts           ← CRUD usuário (admin)
 ├── todo-list-management.spec.ts ← Gerenciamento completo de lista
-└── chat.spec.ts                ← Criação de sala, envio de mensagem, saída da sala
+├── chat.spec.ts                ← Criação de sala, envio de mensagem, saída da sala
+└── kanban.spec.ts              ← Teste E2E de cartões, colunas, comentários e histórico do Kanban
 ```
 
 ### 2.5 Configuração

@@ -16,6 +16,10 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | App Hub (tela inicial) | Implementada | [app-hub.md](./app-hub.md) |
 | Chat em tempo real com avatar (runes) | Implementada | [chat-realtime.md](./chat-realtime.md) |
 | Push notifications de chat (runes) | Spec aprovada | [chat-notifications.md](./chat-notifications.md) |
+| Planning Poker & Integração Kanban | Spec aprovada | [planning-poker.md](./planning-poker.md) |
+| Kanban | Implementada | [kanban.md](./kanban.md) |
+
+> **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.
 
 ## Nova spec
 

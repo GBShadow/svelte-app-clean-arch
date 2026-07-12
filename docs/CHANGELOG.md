@@ -2,6 +2,28 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-12] Planning Poker em tempo real colaborativo (runes)
+
+- Backend: `pocketbase/pb_migrations/0016_create_poker_collections.js` (tabelas `poker_rooms`, `poker_tasks`, `poker_participants` e `poker_votes` com regras seguras e quebra de circularidade)
+- Domínio: `apps/runes/src/lib/domain/planningPokerAccess.ts` (controle de acesso, cálculos matemáticos), `PlanningPokerRoom.svelte.ts` (estado reativo realtime)
+- Server: `apps/runes/src/lib/server/pokerRecord.ts` (tipos), e rotas com actions `vote`, `reveal`, `resetVotes`, `setTask`, `createTask`, `setFinalPoints`, `changeRole`, `removeParticipant`, `leaveRoom` e `exportToKanban`
+- App: `apps/runes` — rotas `/poker`, `/poker/[roomId]`, componentes modulares em `lib/components/planning-poker` (`CardDeck.svelte`, `ParticipantsList.svelte`, `VoteResults.svelte`, `TaskList.svelte`, `TaskEditor.svelte`)
+- Testes: `planningPokerAccess.test.ts`, `PlanningPokerRoom.test.ts`, `pokerSchemas.test.ts`, `e2e/planning-poker.spec.ts`
+- Docs: [docs/features/planning-poker.md](./features/planning-poker.md)
+
+Implementação completa do Planning Poker em tempo real. O módulo gerencia a criação de salas e auto-join seguro, backlog de tarefas, rodadas de votação síncronas com baralho Fibonacci, sigilo de votos via API Rules no PocketBase (bloqueio contra vazamentos realtime), revelação consensual, re-rodadas e exportação para o Kanban.
+
+## [2026-07-12] Quadro Kanban reativo e seguro (runes)
+
+- Backend: `pocketbase/pb_migrations/0015_create_kanban_collections.js` (`kanban_columns`, `kanban_cards`, `kanban_card_comments`, `kanban_card_history` com relacionamento para coleção `user`)
+- Domínio: `apps/runes/src/lib/domain/kanbanAccess.ts` (controle de acesso e ordenamento contíguo), `KanbanBoard.svelte.ts` (quadro reativo realtime)
+- Server: `apps/runes/src/lib/server/kanbanRecord.ts` (tipos), `kanbanHistory.ts` (log imutável de auditoria)
+- App: `apps/runes` — rotas `/kanban`, componente `RichTextEditor.svelte` (Tiptap), registro no hub (`appRegistry.ts`)
+- Testes: `kanbanAccess.test.ts`, `KanbanBoard.test.ts`, `kanbanSchemas.test.ts`, `e2e/kanban.spec.ts`
+- Docs: [docs/features/kanban.md](./features/kanban.md)
+
+Implementação completa do quadro Kanban reativo. O quadro gerencia colunas ("Aguardando", "Fazendo", "Feito" e colunas personalizadas criadas por administradores), com drag and drop reativo de cards e colunas (usando `svelte-dnd-action` com acessibilidade total). Cards contêm títulos, descrições ricas com Tiptap, múltiplos responsáveis de forma segura, comentários em texto simples e log de histórico imutável. Escritas diretas pelo cliente no PocketBase são bloqueadas por segurança via API Rules (`null`), forçando todas as mutações a passarem por Server Actions no SvelteKit com sanitização de HTML contra stored XSS. Posições de cards e colunas são recalculadas como inteiros contíguos de `0` a `N-1` para evitar fragmentação.
+
 ## [2026-07-11] Chat em tempo real com avatar de usuário (runes)
 
 - Backend: `pocketbase/pb_migrations/0011_create_chat_collections.js` (`chat_rooms`/`chat_messages`), `0012_add_avatar_to_auth.js` (campo `avatar` em `auth`), `0013_open_user_listing_for_authenticated.js` (listagem de `user` para qualquer autenticado)

@@ -83,3 +83,18 @@ export async function cleanupTodoList(request: APIRequestContext, title: string)
 export async function cleanupChatRoom(request: APIRequestContext, name: string): Promise<void> {
 	await cleanupRecords(request, 'chat_rooms', 'name = {:name}', { name });
 }
+
+/** Removes a temporary kanban card. Comments and history cascade with the card. */
+export async function cleanupKanbanCard(request: APIRequestContext, title: string): Promise<void> {
+	await cleanupRecords(request, 'kanban_cards', 'title = {:title}', { title });
+}
+
+/** Removes a temporary kanban column. */
+export async function cleanupKanbanColumn(request: APIRequestContext, name: string): Promise<void> {
+	await cleanupRecords(request, 'kanban_columns', 'name = {:name}', { name });
+}
+
+/** Removes a temporary poker room. Tasks, participants and votes cascade with the room. */
+export async function cleanupPokerRoom(request: APIRequestContext, name: string): Promise<void> {
+	await cleanupRecords(request, 'poker_rooms', 'name = {:name}', { name });
+}

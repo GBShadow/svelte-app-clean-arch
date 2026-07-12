@@ -19,6 +19,8 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 | `pocketbase-todo-sharing` | [pocketbase-todo-sharing.pr.md](./pocketbase-todo-sharing.pr.md) | [pocketbase-todo-sharing.jira.md](./pocketbase-todo-sharing.jira.md) |
 | `pocketbase-user-crud` | [pocketbase-user-crud.pr.md](./pocketbase-user-crud.pr.md) | [pocketbase-user-crud.jira.md](./pocketbase-user-crud.jira.md) |
 | `spec-driven-agent` | [spec-driven-agent.pr.md](./spec-driven-agent.pr.md) | [spec-driven-agent.jira.md](./spec-driven-agent.jira.md) |
+| `planning-poker` | _(pendente)_ | [planning-poker.jira.md](./planning-poker.jira.md) |
+| `kanban` | [kanban.pr.md](./kanban.pr.md) | [kanban.jira.md](./kanban.jira.md) |
 
 ## Convenção de nomes
 

@@ -42,10 +42,12 @@ Skills Freebuff (`.agents/skills/`):
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 
-## Leitura prioritária: CODE-STRUCTURE.md
+## Leitura prioritária e Segurança
 
-**Antes de iniciar qualquer tarefa**, leia `docs/CODE-STRUCTURE.md` para entender a estrutura
-atual do projeto, localizar arquivos relevantes e identificar a camada correta para as mudanças.
+**Antes de iniciar qualquer tarefa ou especificação**, você DEVE OBRIGATORIAMENTE:
+1. Ler `docs/CODE-STRUCTURE.md` para entender a estrutura atual do projeto e a arquitetura real.
+2. Analisar todos os impactos de segurança do que será desenvolvido (ex: XSS em campos de texto rico, vazamento de dados via PocketBase realtime subscriptions e IDOR).
+3. Nunca ignorar as regras do banco de dados (ler regras `.cursor/rules/architecture/pocketbase-*.mdc` antes de desenhar entidades do PocketBase).
 
 ## Documentação e workflow (spec-driven)
 

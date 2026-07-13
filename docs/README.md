@@ -14,6 +14,7 @@
 | [CODE-STRUCTURE.md](./CODE-STRUCTURE.md) | Mapa completo da estrutura do código | — |
 | [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
+| [TECH-DEBT.md](./TECH-DEBT.md) | Documento vivo de débitos técnicos identificados (e não corrigidos na hora) | — |
 
 ## Convenção workflow
 
@@ -45,6 +46,7 @@ Bugfixes triviais podem pular a etapa de spec.
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
+- `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md` (documento vivo)
 
 ## Leitura prioritária do CODE-STRUCTURE.md
 

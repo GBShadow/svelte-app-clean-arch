@@ -56,7 +56,8 @@ Regras em `.cursor/rules/<pasta>/` e `.agents/skills/` — resumo em [`CLAUDE.md
 | `.cursor/rules/meta/rules-sync.mdc` | Sincronizar Cursor ↔ Freebuff ↔ Claude |
 | `.cursor/rules/meta/commit-convention.mdc` | Sem trailer de co-autoria em commits/PRs |
 | `.cursor/rules/meta/lessons-learned.mdc` | Todo problema não trivial resolvido deve ser registrado, não só corrigido |
-| `.agents/skills/` | Skills Freebuff (10 skills: spec-driven, data-testid, code-structure, pocketbase-collections, pocketbase-api-rules, lessons-learned, etc.) |
+| `.cursor/rules/meta/tech-debt.mdc` | Débito técnico identificado e não corrigido na hora deve ser registrado em [`docs/TECH-DEBT.md`](./docs/TECH-DEBT.md) (documento vivo) |
+| `.agents/skills/` | Skills Freebuff (spec-driven, data-testid, code-structure, pocketbase-collections, pocketbase-api-rules, lessons-learned, tech-debt, etc.) |
 
 ## Antes de implementar
 

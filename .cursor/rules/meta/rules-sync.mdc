@@ -1,19 +1,20 @@
 ---
-description: Manter regras sincronizadas entre Cursor (.cursor/rules), Freebuff (.agents/skills) e Claude (CLAUDE.md)
+description: Manter regras sincronizadas entre Cursor (.cursor/rules), Freebuff (.agents/skills), Claude (CLAUDE.md) e Antigravity (AGENTS.md)
 alwaysApply: true
 ---
 
-# Sincronização de regras (Cursor + Freebuff + Claude)
+# Sincronização de regras (Cursor + Freebuff + Claude + Antigravity)
 
-Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Freebuff**, **Claude** e **README**:
+Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Freebuff**, **Claude**, **Antigravity** e **README**:
 
 | Destino | Local |
 |---------|-------|
 | Cursor | `.cursor/rules/<pasta>/<nome>.mdc` |
 | Freebuff | `.agents/skills/<nome>.md` |
 | Claude | `CLAUDE.md` (raiz) |
+| Antigravity | `AGENTS.md` (raiz) — mesmo conteúdo relevante do `CLAUDE.md`, adaptado para outra IA |
 | Índice | `README.md` + `docs/README.md` + `docs/CODE-STRUCTURE.md` |
-| Docs | `docs/features/`, `docs/specs/`, `docs/workflow/`, `docs/CHANGELOG.md` |
+| Docs | `docs/features/`, `docs/specs/`, `docs/workflow/`, `docs/CHANGELOG.md`, `docs/TECH-DEBT.md` (débitos identificados/resolvidos) |
 
 ## Estrutura de pastas
 
@@ -47,6 +48,7 @@ docs/
 | meta | `commit-convention.mdc` | alwaysApply — sem trailer de co-autoria em commits/PRs |
 | meta | `code-structure.mdc` | alwaysApply — ler CODE-STRUCTURE.md antes; atualizar docs depois |
 | meta | `lessons-learned.mdc` | alwaysApply — todo problema não trivial resolvido deve ser registrado, não só corrigido |
+| meta | `tech-debt.mdc` | alwaysApply — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md` (documento vivo) |
 
 ## Proibido
 

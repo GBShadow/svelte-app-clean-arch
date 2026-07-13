@@ -330,6 +330,7 @@ docs/
 ├── CODE-STRUCTURE.md           ← ⬅️ ESTE ARQUIVO — mapa da estrutura
 ├── README.md                   ← Índice geral da documentação
 ├── CHANGELOG.md                ← Histórico de funcionalidades
+├── TECH-DEBT.md                ← Documento vivo de débitos técnicos identificados (e não corrigidos na hora)
 ├── spec-driven-development.md  ← Guia completo do fluxo SDD
 ├── runes-ports-adapters.md     ← Arquitetura do app runes
 ├── sveltekit-ports-adapters.plan.md ← Plano original do projeto
@@ -392,6 +393,8 @@ docs/
 | `.agents/skills/code-structure.md`                      | Estrutura (Freebuff)          | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
 | `.agents/skills/data-testid.md`                         | data-testid (Freebuff)        | data-testid em componentes + getByTestId em testes |
 | `.agents/skills/pocketbase-collections.md`               | PocketBase (Freebuff)         | Toda coleção precisa dos campos `created`/`updated` |
+| `.cursor/rules/meta/tech-debt.mdc`                      | Débito técnico                | Registrar débito identificado (não corrigido) em `docs/TECH-DEBT.md` |
+| `.agents/skills/tech-debt.md`                           | Débito técnico (Freebuff)     | Equivalente à regra acima                          |
 | `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---

@@ -1,0 +1,63 @@
+---
+description: Todo débito técnico identificado (e não corrigido na hora) deve ser registrado em docs/TECH-DEBT.md, um documento vivo mantido continuamente
+alwaysApply: true
+---
+
+# Registrar débito técnico em `docs/TECH-DEBT.md`
+
+Identificar um problema real durante uma spec, code review, implementação ou investigação — e
+decidir não corrigi-lo agora — sem registrar em lugar nenhum é o mesmo que perder a informação: na
+próxima sessão (sua ou de outra IA/pessoa), ninguém mais sabe que aquele risco existe. Este projeto
+mantém um documento vivo, [`docs/TECH-DEBT.md`](../../../docs/TECH-DEBT.md), para esse propósito
+específico: débitos **identificados mas deliberadamente adiados**, não problemas já corrigidos.
+
+## Diferença de `lessons-learned.mdc`
+
+- **`lessons-learned.mdc`** → problema não trivial que **foi corrigido** nesta sessão. Registra o
+  *porquê* aconteceu e *como evitar de novo* (regra, feature doc ou memória).
+- **`tech-debt.mdc`** (este arquivo) → problema identificado que **não foi corrigido agora** — foi
+  conscientemente adiado por escopo, prioridade ou tempo. Registra em `docs/TECH-DEBT.md` para que
+  alguém trabalhe nele no futuro.
+
+Um mesmo item pode migrar de um para o outro: nasce como débito técnico adiado e, quando
+finalmente corrigido, a entrada em `docs/TECH-DEBT.md` migra para "Resolvidos" — e, se o padrão for
+generalizável, também vira uma entrada em `lessons-learned.mdc`.
+
+## Quando registrar
+
+Sempre que, durante o trabalho neste repositório, você (ou outra IA seguindo esta regra)
+identificar algo assim e não for corrigi-lo na mesma sessão:
+
+- Um bug latente ou uma simplificação arriscada aceita por falta de tempo/escopo.
+- Um gap de segurança (IDOR, XSS, vazamento de dados) que não é bloqueante para a tarefa atual mas
+  precisa de acompanhamento — ver `.cursor/rules/architecture/pocketbase-api-rules.mdc`.
+- Uma inconsistência entre uma spec (`docs/specs/`) e o código implementado.
+- Uma dependência desatualizada, um teste faltando, um padrão duplicado que deveria virar
+  abstração compartilhada.
+- Uma decisão de "fazer o simples agora, revisitar depois" tomada conscientemente durante uma
+  revisão ou implementação.
+
+Não registre: ajustes triviais (typo, lint, formatação); ou itens que já têm dono e prazo claros em
+uma spec/Jira aberta (`docs/specs/<slug>.md` / `docs/workflow/<slug>.jira.md`) — esses já estão
+rastreados lá, não duplique.
+
+## Como registrar
+
+Siga o formato e o processo descritos no próprio `docs/TECH-DEBT.md` (seção "Como registrar um
+item"): título curto, data + contexto de origem, local no código, descrição, impacto e sugestão de
+resolução. Procure um item relacionado antes de criar um novo — atualize em vez de duplicar.
+
+## Ao trabalhar em uma área com débito conhecido
+
+Ao iniciar uma tarefa que toca arquivos/rotas/coleções já listados em `docs/TECH-DEBT.md`,
+considere resolver o item junto (se o escopo permitir) ou, no mínimo, mencionar ao usuário que o
+débito existe antes de prosseguir. Ao resolver, mova a entrada para "Resolvidos" com a data e o
+PR/commit.
+
+## Ver também
+
+- `docs/TECH-DEBT.md` — o documento vivo em si
+- `.agents/skills/tech-debt.md` — skill Freebuff equivalente
+- `.cursor/rules/meta/lessons-learned.mdc` — complementar: registrar o que já foi corrigido
+- `.cursor/rules/meta/rules-sync.mdc` — sincronizar Cursor ↔ Freebuff ↔ Claude ↔ Antigravity ao
+  criar/editar regras

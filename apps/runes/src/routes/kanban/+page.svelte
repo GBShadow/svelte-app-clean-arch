@@ -13,8 +13,17 @@
 		KanbanCardCommentRecord,
 		KanbanCardHistoryRecord
 	} from '$lib/server/kanbanRecord';
-	import { dndzone, type DndEvent } from 'svelte-dnd-action';
-	import { Plus, X, Search, Calendar, Award, User, Tag, Edit, Trash, Settings } from 'lucide-svelte';
+	import { dndzone, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
+	import Plus from 'lucide-svelte/icons/plus';
+	import X from 'lucide-svelte/icons/x';
+	import Search from 'lucide-svelte/icons/search';
+	import Calendar from 'lucide-svelte/icons/calendar';
+	import Award from 'lucide-svelte/icons/award';
+	import User from 'lucide-svelte/icons/user';
+	import Tag from 'lucide-svelte/icons/tag';
+	import Edit from 'lucide-svelte/icons/edit';
+	import Trash from 'lucide-svelte/icons/trash';
+	import Settings from 'lucide-svelte/icons/settings';
 
 	let { data, form }: PageProps = $props();
 
@@ -94,10 +103,27 @@
 		})
 	);
 
-	// Agrupa cards por coluna
-	const cardsByColumn = $derived((columnId: string) => {
-		return filteredCards.filter((card) => card.column === columnId);
+	// Agrupa cards por coluna em arrays LOCAIS por zona (não um filtro derivado de um pool
+	// compartilhado). O svelte-dnd-action exige que cada dndzone controle seu próprio array via
+	// consider/finalize; usar um $derived filtrando um estado compartilhado faz cada zona reagir
+	// à mutação da outra durante o arraste, confundindo o rastreamento interno da lib e fazendo o
+	// evento finalize correto disparar na zona errada (ver docs/TECH-DEBT.md / feature doc do kanban).
+	let localColumnCards = $state<Record<string, KanbanCardRecord[]>>({});
+
+	$effect(() => {
+		const grouped: Record<string, KanbanCardRecord[]> = {};
+		for (const column of board.columns) {
+			grouped[column.id] = [];
+		}
+		for (const card of filteredCards) {
+			(grouped[card.column] ??= []).push(card);
+		}
+		localColumnCards = grouped;
 	});
+
+	function cardsByColumn(columnId: string): KanbanCardRecord[] {
+		return localColumnCards[columnId] ?? [];
+	}
 
 	// Tags únicas para usar no filtro
 	const uniqueTags = $derived(
@@ -149,27 +175,19 @@
 	const usersMap = $derived(new Map(data.users.map((u) => [u.id, u])));
 
 	// Drag & Drop Handlers para Cards
+	// Cada zona (coluna) atualiza SOMENTE seu próprio array local em localColumnCards — nunca o
+	// board.cards compartilhado — para não interferir no rastreamento interno do svelte-dnd-action.
 	function handleCardConsider(columnId: string, e: CustomEvent<DndEvent<KanbanCardRecord>>) {
-		// Atualiza localmente durante o arraste
-		const updatedCards = board.cards.map((c) => {
-			const found = e.detail.items.find((item) => item.id === c.id);
-			if (found) {
-				return { ...found, column: columnId };
-			}
-			return c;
-		});
-		// Só mutamos o estado interno reativo sem salvar no banco ainda
-		board.sync(board.columns, updatedCards, board.comments, board.history);
+		localColumnCards = { ...localColumnCards, [columnId]: e.detail.items };
 	}
 
 	async function handleCardFinalize(columnId: string, e: CustomEvent<DndEvent<KanbanCardRecord>>) {
-		const { trigger, id } = e.detail.info;
-		if ((trigger as string) === 'droppedIntoZone' || (trigger as string) === 'dragged') {
-			const movedCard = e.detail.items.find((item) => item.id === id);
-			if (!movedCard) return;
+		localColumnCards = { ...localColumnCards, [columnId]: e.detail.items };
 
-			// Encontra o index final
+		const { trigger, id } = e.detail.info;
+		if (trigger === TRIGGERS.DROPPED_INTO_ZONE) {
 			const newPosition = e.detail.items.findIndex((item) => item.id === id);
+			if (newPosition === -1) return;
 
 			// Submete o Form Action usando fetch
 			const form = new FormData();

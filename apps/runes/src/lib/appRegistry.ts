@@ -1,4 +1,8 @@
-import { ListChecks, MessageCircle, Users, Kanban, Dices } from 'lucide-svelte';
+import ListChecks from 'lucide-svelte/icons/list-checks';
+import MessageCircle from 'lucide-svelte/icons/message-circle';
+import Users from 'lucide-svelte/icons/users';
+import Kanban from 'lucide-svelte/icons/kanban';
+import Dices from 'lucide-svelte/icons/dices';
 
 export interface AppEntry {
 	id: string;

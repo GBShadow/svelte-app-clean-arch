@@ -1,7 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type PocketBase from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
-import type { ChatMessageRecord, ChatRoomRecord } from '$lib/server/chatRecord';
+import type { AuthParticipant, ChatMessageRecord, ChatRoomRecord } from '$lib/server/chatRecord';
 import { isCreator, isParticipant, nextCreatorAfter } from '$lib/domain/chatRoomAccess';
 import { findAuthRecordByEmail } from '$lib/server/authLookup';
 import { fetchAuthParticipants } from '$lib/server/authExpand';
@@ -51,12 +51,42 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		});
 	const messages = messagesPage.items.slice().reverse();
 
+	// Identificar remetentes órfãos (aqueles que enviaram mensagens mas não são participantes ativos)
+	const activeParticipantIds = new Set(room.participants);
+	const orphanSenderIds = [...new Set(messages.map((m) => m.sender))].filter(
+		(id) => !activeParticipantIds.has(id)
+	);
+
+	const orphanSenders: AuthParticipant[] = [];
+	if (orphanSenderIds.length > 0) {
+		const admin = await getAdminClient();
+		const results = await Promise.allSettled(
+			orphanSenderIds.map((id) =>
+				admin.collection('auth').getOne<AuthParticipant>(id, { fields: 'id,name,avatar' })
+			)
+		);
+		for (let i = 0; i < results.length; i++) {
+			const res = results[i];
+			const id = orphanSenderIds[i];
+			if (res.status === 'fulfilled') {
+				orphanSenders.push(res.value);
+			} else {
+				orphanSenders.push({
+					id,
+					name: 'Usuário removido',
+					avatar: ''
+				});
+			}
+		}
+	}
+
 	const admin = await getAdminClient();
 	const impersonated = await admin.collection('auth').impersonate(userId, REALTIME_TOKEN_TTL_SECONDS);
 
 	return {
 		room,
 		messages,
+		orphanSenders,
 		userId,
 		pbToken: impersonated.authStore.token,
 		pbRecord: impersonated.authStore.record

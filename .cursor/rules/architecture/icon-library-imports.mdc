@@ -1,0 +1,60 @@
+---
+description: Ícones de bibliotecas (lucide-svelte, etc.) devem ser importados por sub-path, nunca via barrel — barrel força o Vite a compilar o pacote inteiro
+alwaysApply: true
+---
+
+# Import de bibliotecas de ícones
+
+Bibliotecas de ícones como `lucide-svelte` exportam **centenas ou milhares** de componentes a
+partir de um único arquivo barrel (`lucide-svelte` → `dist/lucide-svelte.js` reexportando todo
+`dist/icons/index.js`). Um import nomeado a partir do barrel:
+
+```ts
+import { Plus, X } from 'lucide-svelte'; // ❌ evitar
+```
+
+obriga o Vite a resolver o **módulo inteiro** do pacote — não só os nomes usados. Isso acontece
+tanto no SSR (cada transform do Svelte compiler processa todos os ~1700 ícones) quanto no
+`optimizeDeps` do client (o chunk pré-otimizado inclui todos os ícones, não só os importados).
+
+## Sintomas observados (caso real: lucide-svelte, apps/runes)
+
+- Log `Sourcemap for ".../dist/icons/<qualquer-ícone>.svelte" points to a source file outside its
+  package: ...` repetido para **ícones nunca usados no app** (ex.: `zoom-out.svelte`,
+  `weight.svelte`) — sinal de que o pacote inteiro está sendo processado, não só o que foi
+  importado.
+- Primeiro carregamento de qualquer página que toque o import muito mais lento (medido: ~10-12s
+  com barrel vs ~3-4s com sub-path, via `server.ssrLoadModule` isolado).
+
+## Regra obrigatória
+
+Importar cada ícone pelo seu sub-path (`lucide-svelte` expõe `exports: "./icons/*"`):
+
+```ts
+import Plus from 'lucide-svelte/icons/plus'; // ✅
+import X from 'lucide-svelte/icons/x';
+```
+
+O nome do arquivo é o kebab-case do nome do ícone (`BarChart3` → `bar-chart-3`, `LogOut` →
+`log-out`). Para nomes legados/alias (`HelpCircle`, `CheckCircle`, `Edit`, `Edit2`, ...), o
+sub-path continua funcionando — `lucide-svelte/icons/help-circle` é um pequeno arquivo que
+reexporta o ícone canônico (`circle-question-mark.svelte`), sem puxar o pacote inteiro.
+
+Vale para qualquer biblioteca de ícones com o mesmo formato de barrel gigante (ex.: `@tabler/icons-svelte`).
+
+## Diagnóstico relacionado: config órfã mascarando o sintoma real
+
+Neste caso, o log de sourcemap só aparecia porque `resolve.preserveSymlinks: true` estava
+configurado em `apps/runes/vite.config.ts` — resíduo órfão de quando o app dependia do pacote de
+workspace `todo-domain` (removido junto de `ssr.noExternal: ['todo-domain']`, mas essa linha
+ficou). Sem `preserveSymlinks`, o log desaparece, mas **a lentidão do barrel import continua** —
+foram duas causas distintas para o mesmo relato.
+
+Sempre que remover uma dependência de workspace, revisar `vite.config.ts` (e configs equivalentes)
+em busca de opções (`resolve.preserveSymlinks`, `ssr.noExternal`, `optimizeDeps.include/exclude`)
+que só existiam por causa dela — config órfã não quebra o build, mas pode mascarar ou amplificar
+sintomas de outros problemas depois.
+
+## Ver também
+
+- `.agents/skills/icon-library-imports.md` — skill Freebuff equivalente

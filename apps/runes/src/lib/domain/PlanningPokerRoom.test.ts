@@ -9,6 +9,7 @@ describe('PlanningPokerRoom Reactive State Class', () => {
 		created_by: 'user-admin',
 		current_task: 'task-1',
 		revealed: false,
+		status: 'open',
 		created: '',
 		updated: ''
 	};
@@ -46,6 +47,7 @@ describe('PlanningPokerRoom Reactive State Class', () => {
 			description: 'Description Alpha',
 			final_points: null,
 			status: 'backlog',
+			is_global_backlog: false,
 			exported_card: null,
 			created: '',
 			updated: ''

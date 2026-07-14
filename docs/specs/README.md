@@ -15,8 +15,10 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | Todo multi-lista com compartilhamento (runes) | Implementada | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
 | App Hub (tela inicial) | Implementada | [app-hub.md](./app-hub.md) |
 | Chat em tempo real com avatar (runes) | Implementada | [chat-realtime.md](./chat-realtime.md) |
+| Preservar Remetente do Chat (runes) | Spec em aprovação | [chat-sender-preservar.md](./chat-sender-preservar.md) |
 | Push notifications de chat (runes) | Spec aprovada | [chat-notifications.md](./chat-notifications.md) |
-| Planning Poker & Integração Kanban | Spec aprovada | [planning-poker.md](./planning-poker.md) |
+| Planning Poker & Integração Kanban | Implementada | [planning-poker.md](./planning-poker.md) |
+| Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | [poker-backlog-global.md](./poker-backlog-global.md) |
 | Kanban | Implementada | [kanban.md](./kanban.md) |
 
 > **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.

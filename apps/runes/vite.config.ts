@@ -8,9 +8,6 @@ export default defineConfig({
 	server: {
 		port: 5175
 	},
-	resolve: {
-		preserveSymlinks: true
-	},
 	plugins: [
 		tailwindcss(),
 		sveltekit({

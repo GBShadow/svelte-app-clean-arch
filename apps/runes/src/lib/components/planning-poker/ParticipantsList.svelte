@@ -1,6 +1,12 @@
 <script lang="ts">
 	import Avatar from '$lib/components/Avatar.svelte';
-	import { Users, Shield, User, HelpCircle, Check, LogOut, Trash2 } from 'lucide-svelte';
+	import Users from 'lucide-svelte/icons/users';
+	import Shield from 'lucide-svelte/icons/shield';
+	import User from 'lucide-svelte/icons/user';
+	import HelpCircle from 'lucide-svelte/icons/help-circle';
+	import Check from 'lucide-svelte/icons/check';
+	import LogOut from 'lucide-svelte/icons/log-out';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import type { PokerParticipantRecord, PokerVoteRecord } from '$lib/server/pokerRecord';
 
 	let {

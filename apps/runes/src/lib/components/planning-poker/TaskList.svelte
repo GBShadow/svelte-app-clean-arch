@@ -1,14 +1,22 @@
 <script lang="ts">
-	import { List, Play, CheckCircle, ExternalLink, Send, ClipboardList } from 'lucide-svelte';
+	import List from 'lucide-svelte/icons/list';
+	import Play from 'lucide-svelte/icons/play';
+	import CheckCircle from 'lucide-svelte/icons/check-circle';
+	import ExternalLink from 'lucide-svelte/icons/external-link';
+	import Send from 'lucide-svelte/icons/send';
+	import ClipboardList from 'lucide-svelte/icons/clipboard-list';
 	import type { PokerTaskRecord } from '$lib/server/pokerRecord';
 
 	let {
 		tasks = [],
 		currentTaskId = '',
 		isAdmin = false,
+		roomStatus = 'open',
 		onSelectTask,
 		onSetPoints,
-		onExport
+		onExport,
+		onRemoveFromVoting,
+		onEditTask
 	} = $props();
 
 	let filterStatus = $state<'all' | 'backlog' | 'voting' | 'estimated' | 'exported'>('all');
@@ -63,10 +71,10 @@
 		</h3>
 
 		<!-- Filtro de Status -->
-		<div class="join bg-base-100 border border-base-300 p-0.5 rounded-xl">
+		<div class="flex flex-wrap gap-1 bg-base-100 border border-base-300 p-0.5 rounded-xl">
 			{#each ['all', 'backlog', 'voting', 'estimated', 'exported'] as status}
 				<button
-					class="btn btn-xs join-item capitalize font-semibold px-2.5
+					class="btn btn-xs capitalize font-semibold px-2.5
 						{filterStatus === status ? 'btn-primary' : 'btn-ghost text-base-content/60'}"
 					onclick={() => (filterStatus = status as any)}
 				>
@@ -130,7 +138,7 @@
 
 							<!-- Ações -->
 							{#if isAdmin}
-								{#if task.status === 'backlog'}
+								{#if task.status === 'backlog' && roomStatus === 'open'}
 									<button
 										class="btn btn-ghost btn-xs btn-circle text-primary"
 										onclick={() => onSelectTask(task.id)}
@@ -138,6 +146,28 @@
 										data-testid="btn-vote-task-{task.id}"
 									>
 										<Play class="w-3.5 h-3.5" />
+									</button>
+								{/if}
+
+								{#if task.status === 'voting' && roomStatus === 'open'}
+									<button
+										class="btn btn-ghost btn-xs text-error font-semibold"
+										onclick={() => onRemoveFromVoting(task.id)}
+										title="Remover da votação"
+										data-testid="btn-remove-voting-{task.id}"
+									>
+										Remover Votação
+									</button>
+								{/if}
+
+								{#if (task.status === 'backlog' || task.status === 'voting') && roomStatus === 'open'}
+									<button
+										class="btn btn-ghost btn-xs text-base-content/50 hover:text-base-content"
+										onclick={() => onEditTask(task)}
+										title="Editar título/descrição"
+										data-testid="btn-edit-task-{task.id}"
+									>
+										Editar
 									</button>
 								{/if}
 

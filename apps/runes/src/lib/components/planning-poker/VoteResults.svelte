@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { BarChart3, Coffee, HelpCircle, Award } from 'lucide-svelte';
+	import BarChart3 from 'lucide-svelte/icons/bar-chart-3';
+	import Coffee from 'lucide-svelte/icons/coffee';
+	import HelpCircle from 'lucide-svelte/icons/help-circle';
+	import Award from 'lucide-svelte/icons/award';
 
 	let {
 		average = 0,

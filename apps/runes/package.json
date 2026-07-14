@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@tiptap/core": "^3.27.3",
+		"@tiptap/extension-list": "^3.27.3",
 		"@tiptap/pm": "^3.27.3",
 		"@tiptap/starter-kit": "^3.27.3",
 		"lucide-svelte": "^1.0.1",
@@ -30,6 +31,7 @@
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.2",
 		"@testing-library/svelte": "^5.3.1",
 		"@types/sanitize-html": "^2.16.1",

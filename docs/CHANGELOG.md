@@ -2,6 +2,14 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-14] Correções no Kanban (drag and drop) e no editor Tiptap (listas + TaskList)
+
+- App: `apps/runes` — rotas `/kanban`, `/poker`, `/poker/[roomId]`, `/poker/backlog`, componente `RichTextEditor.svelte`
+- Corrigido: cards do Kanban revertendo para a coluna original ao arrastar (causa raiz: array de cards compartilhado entre zonas do `svelte-dnd-action`, ver Decisão de design nº 5 em [docs/features/kanban.md](./features/kanban.md))
+- Corrigido: listas (marcador/numeração) do editor Tiptap sem estilo visual (plugin `@tailwindcss/typography` ausente, ver Decisão de design nº 6 em [docs/features/kanban.md](./features/kanban.md))
+- Adicionado: suporte a lista de tarefas (`TaskList`/`TaskItem`) no editor Tiptap compartilhado (Kanban e Planning Poker)
+- Novo: `apps/runes/src/lib/server/richTextSanitize.ts` — allowlist compartilhada de `sanitize-html` para preservar o estado de conclusão da lista de tarefas
+
 ## [2026-07-12] Planning Poker em tempo real colaborativo (runes)
 
 - Backend: `pocketbase/pb_migrations/0016_create_poker_collections.js` (tabelas `poker_rooms`, `poker_tasks`, `poker_participants` e `poker_votes` com regras seguras e quebra de circularidade)

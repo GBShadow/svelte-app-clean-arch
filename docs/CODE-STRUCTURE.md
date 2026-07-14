@@ -105,7 +105,8 @@ src/lib/
 │   ├── todoRecord.ts           ← Types: TodoListRecord, TodoItemRecord
 │   ├── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
 │   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord, KanbanCardCommentRecord, etc.
-│   └── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
+│   ├── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
+│   └── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
 │
 ├── domain/                     ← Lógica de negócio pura
 │   ├── todoListAccess.ts       ← canView, canWrite: controle de acesso a listas

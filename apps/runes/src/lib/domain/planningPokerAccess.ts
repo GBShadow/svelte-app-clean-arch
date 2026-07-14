@@ -3,8 +3,12 @@ export type ParticipantRole = 'admin' | 'voter' | 'spectator';
 /**
  * Verifica se um participante pode votar na rodada atual.
  */
-export function canVote(role: ParticipantRole, revealed: boolean): boolean {
-	return role !== 'spectator' && !revealed;
+export function canVote(
+	role: ParticipantRole,
+	revealed: boolean,
+	roomStatus: 'open' | 'finalized' = 'open'
+): boolean {
+	return role !== 'spectator' && !revealed && roomStatus === 'open';
 }
 
 /**
@@ -73,4 +77,91 @@ export function checkIfAllVotersVoted(
 	// Verifica se existe um voto para cada participante ativo
 	const votedUserIds = new Set(votes.map((v) => v.user));
 	return activeVoters.every((p) => votedUserIds.has(p.user || (p as any).userId || p.id));
+}
+
+/**
+ * Verifica se um usuário pode criar ou editar tarefas no backlog global.
+ */
+export function canEditGlobalTask(user: { isAdmin: boolean }, task: { room: string | null }): boolean {
+	return user.isAdmin && !task.room;
+}
+
+/**
+ * Verifica se um usuário pode excluir tarefas no backlog global.
+ */
+export function canDeleteGlobalTask(user: { isAdmin: boolean }, task: { room: string | null }): boolean {
+	return user.isAdmin && !task.room;
+}
+
+/**
+ * Verifica se o participante pode vincular tarefas globais à sala.
+ */
+export function canLinkGlobalTasks(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' }
+): boolean {
+	return canManageRoom(participant.role) && room.status === 'open';
+}
+
+/**
+ * Verifica se o participante pode finalizar a sala.
+ */
+export function canFinalizeRoom(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' }
+): boolean {
+	return canManageRoom(participant.role) && room.status === 'open';
+}
+
+/**
+ * Verifica se o participante pode exportar tarefas da sala para o Kanban.
+ */
+export function canExportFromRoom(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' }
+): boolean {
+	return canManageRoom(participant.role) && room.status === 'finalized';
+}
+
+/**
+ * Verifica se o participante pode remover uma tarefa da votação.
+ */
+export function canRemoveFromVoting(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' },
+	task: { status: 'backlog' | 'voting' | 'estimated' | 'exported' }
+): boolean {
+	return canManageRoom(participant.role) && room.status === 'open' && task.status === 'voting';
+}
+
+/**
+ * Verifica se o participante pode editar título e descrição de uma tarefa da sala.
+ */
+export function canEditTaskInRoom(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' },
+	task: { status: 'backlog' | 'voting' | 'estimated' | 'exported' }
+): boolean {
+	return (
+		canManageRoom(participant.role) &&
+		room.status === 'open' &&
+		(task.status === 'backlog' || task.status === 'voting')
+	);
+}
+
+/**
+ * Verifica se novas tarefas locais podem ser criadas na sala.
+ */
+export function canCreateTaskInRoom(room: { status: 'open' | 'finalized' }): boolean {
+	return room.status === 'open';
+}
+
+/**
+ * Verifica se o participante pode selecionar a tarefa em votação.
+ */
+export function canSetTask(
+	participant: { role: ParticipantRole },
+	room: { status: 'open' | 'finalized' }
+): boolean {
+	return canManageRoom(participant.role) && room.status === 'open';
 }

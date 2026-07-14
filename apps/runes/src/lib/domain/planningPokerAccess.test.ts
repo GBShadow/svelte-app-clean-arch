@@ -5,7 +5,16 @@ import {
 	canManageRoom,
 	averageOfNumericVotes,
 	calculateVoteDistribution,
-	checkIfAllVotersVoted
+	checkIfAllVotersVoted,
+	canEditGlobalTask,
+	canDeleteGlobalTask,
+	canLinkGlobalTasks,
+	canFinalizeRoom,
+	canExportFromRoom,
+	canRemoveFromVoting,
+	canEditTaskInRoom,
+	canCreateTaskInRoom,
+	canSetTask
 } from './planningPokerAccess';
 
 describe('Planning Poker Access Rules', () => {
@@ -115,6 +124,54 @@ describe('Planning Poker Access Rules', () => {
 			];
 			const votes = [{ user: 'u1' }];
 			expect(checkIfAllVotersVoted(participants, votes)).toBe(true);
+		});
+	});
+
+	describe('novas regras de backlog global e ciclo de vida', () => {
+		it('canVote deve rejeitar se a sala estiver finalizada', () => {
+			expect(canVote('voter', false, 'finalized')).toBe(false);
+			expect(canVote('voter', false, 'open')).toBe(true);
+		});
+
+		it('canEditGlobalTask e canDeleteGlobalTask devem exigir admin e task não vinculada', () => {
+			expect(canEditGlobalTask({ isAdmin: true }, { room: null })).toBe(true);
+			expect(canEditGlobalTask({ isAdmin: false }, { room: null })).toBe(false);
+			expect(canEditGlobalTask({ isAdmin: true }, { room: 'room123' })).toBe(false);
+
+			expect(canDeleteGlobalTask({ isAdmin: true }, { room: null })).toBe(true);
+			expect(canDeleteGlobalTask({ isAdmin: false }, { room: null })).toBe(false);
+			expect(canDeleteGlobalTask({ isAdmin: true }, { room: 'room123' })).toBe(false);
+		});
+
+		it('canLinkGlobalTasks, canFinalizeRoom, canExportFromRoom e canRemoveFromVoting', () => {
+			expect(canLinkGlobalTasks({ role: 'admin' }, { status: 'open' })).toBe(true);
+			expect(canLinkGlobalTasks({ role: 'voter' }, { status: 'open' })).toBe(false);
+			expect(canLinkGlobalTasks({ role: 'admin' }, { status: 'finalized' })).toBe(false);
+
+			expect(canFinalizeRoom({ role: 'admin' }, { status: 'open' })).toBe(true);
+			expect(canFinalizeRoom({ role: 'voter' }, { status: 'open' })).toBe(false);
+			expect(canFinalizeRoom({ role: 'admin' }, { status: 'finalized' })).toBe(false);
+
+			expect(canExportFromRoom({ role: 'admin' }, { status: 'finalized' })).toBe(true);
+			expect(canExportFromRoom({ role: 'admin' }, { status: 'open' })).toBe(false);
+			expect(canExportFromRoom({ role: 'voter' }, { status: 'finalized' })).toBe(false);
+
+			expect(canRemoveFromVoting({ role: 'admin' }, { status: 'open' }, { status: 'voting' })).toBe(true);
+			expect(canRemoveFromVoting({ role: 'admin' }, { status: 'open' }, { status: 'backlog' })).toBe(false);
+			expect(canRemoveFromVoting({ role: 'admin' }, { status: 'finalized' }, { status: 'voting' })).toBe(false);
+		});
+
+		it('canEditTaskInRoom, canCreateTaskInRoom e canSetTask', () => {
+			expect(canEditTaskInRoom({ role: 'admin' }, { status: 'open' }, { status: 'backlog' })).toBe(true);
+			expect(canEditTaskInRoom({ role: 'admin' }, { status: 'open' }, { status: 'voting' })).toBe(true);
+			expect(canEditTaskInRoom({ role: 'admin' }, { status: 'open' }, { status: 'estimated' })).toBe(false);
+			expect(canEditTaskInRoom({ role: 'admin' }, { status: 'finalized' }, { status: 'backlog' })).toBe(false);
+
+			expect(canCreateTaskInRoom({ status: 'open' })).toBe(true);
+			expect(canCreateTaskInRoom({ status: 'finalized' })).toBe(false);
+
+			expect(canSetTask({ role: 'admin' }, { status: 'open' })).toBe(true);
+			expect(canSetTask({ role: 'admin' }, { status: 'finalized' })).toBe(false);
 		});
 	});
 });

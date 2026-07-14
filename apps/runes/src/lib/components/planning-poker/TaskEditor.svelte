@@ -1,15 +1,30 @@
 <script lang="ts">
 	import RichTextEditor from '$lib/components/kanban/RichTextEditor.svelte';
-	import { Plus, X } from 'lucide-svelte';
+	import Plus from 'lucide-svelte/icons/plus';
+	import X from 'lucide-svelte/icons/x';
 
 	let {
 		show = $bindable(false),
 		errors = {},
-		onCreateTask
+		task = null,
+		onCreateTask,
+		onSaveTask = undefined
 	} = $props();
 
 	let title = $state('');
 	let description = $state('');
+
+	$effect(() => {
+		if (show) {
+			if (task) {
+				title = task.title;
+				description = task.description || '';
+			} else {
+				title = '';
+				description = '';
+			}
+		}
+	});
 
 	function handleClose() {
 		show = false;
@@ -19,7 +34,11 @@
 
 	function handleSubmit() {
 		if (!title.trim()) return;
-		onCreateTask({ title, description });
+		if (task) {
+			onSaveTask?.({ id: task.id, title, description });
+		} else {
+			onCreateTask({ title, description });
+		}
 		handleClose();
 	}
 </script>
@@ -30,7 +49,7 @@
 			<div class="flex justify-between items-center mb-6">
 				<h3 class="font-bold text-lg text-base-content flex items-center gap-2">
 					<Plus class="w-5 h-5 text-primary" />
-					Nova Tarefa para Votar
+					{task ? 'Editar Tarefa' : 'Nova Tarefa para Votar'}
 				</h3>
 				<button class="btn btn-ghost btn-circle btn-sm" onclick={handleClose}>
 					<X class="w-4 h-4" />
@@ -98,7 +117,7 @@
 						disabled={!title.trim()}
 						data-testid="btn-save-poker-task"
 					>
-						Criar Tarefa
+						{task ? 'Salvar' : 'Criar Tarefa'}
 					</button>
 				</div>
 			</form>

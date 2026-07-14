@@ -1,10 +1,29 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
-import { voteSchema, createTaskSchema, changeRoleSchema, setFinalPointsSchema } from '$lib/validation/pokerSchemas';
+import {
+	voteSchema,
+	createTaskSchema,
+	changeRoleSchema,
+	setFinalPointsSchema,
+	editTaskSchema,
+	linkGlobalTasksSchema
+} from '$lib/validation/pokerSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
-import { canVote, canReveal, canManageRoom } from '$lib/domain/planningPokerAccess';
+import {
+	canVote,
+	canReveal,
+	canManageRoom,
+	canSetTask,
+	canCreateTaskInRoom,
+	canLinkGlobalTasks,
+	canFinalizeRoom,
+	canExportFromRoom,
+	canRemoveFromVoting,
+	canEditTaskInRoom
+} from '$lib/domain/planningPokerAccess';
 import sanitizeHtml from 'sanitize-html';
+import { TASK_LIST_SANITIZE_ATTRIBUTES, TASK_LIST_SANITIZE_TAGS } from '$lib/server/richTextSanitize';
 import type {
 	PokerRoomRecord,
 	PokerParticipantRecord,
@@ -94,12 +113,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			sort: 'name'
 		});
 
+		// 7. Busca tarefas globais disponíveis para vinculação (room nulo)
+		const globalTasks = await locals.pb.collection('poker_tasks').getFullList<PokerTaskRecord>({
+			filter: 'is_global_backlog = true && room = null',
+			sort: 'created'
+		});
+
 		return {
 			room,
 			participants,
 			tasks,
 			votes,
 			users,
+			globalTasks,
 			pbToken: locals.pb.authStore.token,
 			pbRecord: locals.pb.authStore.record
 		};
@@ -134,7 +160,7 @@ export const actions: Actions = {
 
 			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
 
-			if (!canVote(participant.role, room.revealed)) {
+			if (!canVote(participant.role, room.revealed, room.status)) {
 				return fail(403, { errors: { general: 'Você não pode votar nesta rodada.' } });
 			}
 
@@ -306,8 +332,10 @@ export const actions: Actions = {
 					})
 				);
 
-			if (!canManageRoom(participant.role)) {
-				return fail(403, { errors: { general: 'Permissão negada.' } });
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+
+			if (!canSetTask(participant, room)) {
+				return fail(403, { errors: { general: 'Permissão negada ou sala finalizada.' } });
 			}
 
 			// Atualiza a task da sala
@@ -374,6 +402,11 @@ export const actions: Actions = {
 		const adminPb = await getAdminClient();
 
 		try {
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+			if (!canCreateTaskInRoom(room)) {
+				return fail(403, { errors: { general: 'Esta sala foi finalizada.' } });
+			}
+
 			// Qualquer participante pode criar task no backlog
 			await adminPb.collection('poker_participants').getFirstListItem<PokerParticipantRecord>(
 				adminPb.filter('room = {:roomId} && user = {:userId} && has_left = false', {
@@ -384,9 +417,10 @@ export const actions: Actions = {
 
 			// Sanitiza HTML
 			const cleanDescription = sanitizeHtml(validation.data.description, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'span', 'img']),
+				allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'span', 'img', ...TASK_LIST_SANITIZE_TAGS]),
 				allowedAttributes: {
 					...sanitizeHtml.defaults.allowedAttributes,
+					...TASK_LIST_SANITIZE_ATTRIBUTES,
 					'*': ['class', 'style']
 				}
 			});
@@ -587,8 +621,10 @@ export const actions: Actions = {
 					})
 				);
 
-			if (!canManageRoom(myParticipant.role)) {
-				return fail(403, { errors: { general: 'Apenas administradores podem exportar tasks.' } });
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+
+			if (!canExportFromRoom(myParticipant, room)) {
+				return fail(403, { errors: { general: 'Permissão negada ou sala não finalizada.' } });
 			}
 
 			// Busca a coluna Backlog (Aguardando) do Kanban
@@ -636,6 +672,205 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Erro ao exportar para o Kanban:', err);
 			return fail(500, { errors: { general: 'Erro ao exportar tasks.' } });
+		}
+
+		return { success: true };
+	},
+
+	linkGlobalTasks: async ({ params, request, locals }) => {
+		const { roomId } = params;
+		const formData = await request.formData();
+		const taskIds = formData.getAll('taskIds') as string[];
+
+		if (taskIds.length === 0) {
+			return fail(400, { errors: { general: 'Selecione pelo menos uma tarefa para vincular.' } });
+		}
+
+		const adminPb = await getAdminClient();
+
+		try {
+			const myParticipant = await adminPb
+				.collection('poker_participants')
+				.getFirstListItem<PokerParticipantRecord>(
+					adminPb.filter('room = {:roomId} && user = {:userId} && has_left = false', {
+						roomId,
+						userId: locals.user?.id
+					})
+				);
+
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+
+			if (!canLinkGlobalTasks(myParticipant, room)) {
+				return fail(403, { errors: { general: 'Ação não permitida ou sala finalizada.' } });
+			}
+
+			// Atualiza cada task global para vincular à sala
+			for (const taskId of taskIds) {
+				const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
+				if (task.is_global_backlog && !task.room) {
+					await adminPb.collection('poker_tasks').update(taskId, {
+						room: roomId
+					});
+				}
+			}
+		} catch (err) {
+			console.error('Erro ao vincular tarefas globais:', err);
+			return fail(500, { errors: { general: 'Falha ao vincular tarefas.' } });
+		}
+
+		return { success: true };
+	},
+
+	editTask: async ({ params, request, locals }) => {
+		const { roomId } = params;
+		const formData = await request.formData();
+		const taskId = formData.get('taskId') as string;
+		const title = formData.get('title') as string;
+		const description = formData.get('description') as string;
+
+		const validation = editTaskSchema.safeParse({ taskId, title, description });
+		if (!validation.success) {
+			return fail(400, { errors: fieldErrorsFrom(validation.error) });
+		}
+
+		const adminPb = await getAdminClient();
+
+		try {
+			const myParticipant = await adminPb
+				.collection('poker_participants')
+				.getFirstListItem<PokerParticipantRecord>(
+					adminPb.filter('room = {:roomId} && user = {:userId} && has_left = false', {
+						roomId,
+						userId: locals.user?.id
+					})
+				);
+
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+			const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(validation.data.taskId);
+
+			if (!canEditTaskInRoom(myParticipant, room, task)) {
+				return fail(403, { errors: { general: 'Ação não permitida ou sala finalizada.' } });
+			}
+
+			// Sanitiza HTML
+			const cleanDescription = sanitizeHtml(validation.data.description, {
+				allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'span', 'img', ...TASK_LIST_SANITIZE_TAGS]),
+				allowedAttributes: {
+					...sanitizeHtml.defaults.allowedAttributes,
+					...TASK_LIST_SANITIZE_ATTRIBUTES,
+					'*': ['class', 'style']
+				}
+			});
+
+			await adminPb.collection('poker_tasks').update(validation.data.taskId, {
+				title: validation.data.title,
+				description: cleanDescription
+			});
+		} catch (err) {
+			console.error('Erro ao editar task:', err);
+			return fail(500, { errors: { general: 'Não foi possível salvar a task.' } });
+		}
+
+		return { success: true };
+	},
+
+	removeTaskFromVoting: async ({ params, request, locals }) => {
+		const { roomId } = params;
+		const formData = await request.formData();
+		const taskId = formData.get('taskId') as string;
+
+		const adminPb = await getAdminClient();
+
+		try {
+			const myParticipant = await adminPb
+				.collection('poker_participants')
+				.getFirstListItem<PokerParticipantRecord>(
+					adminPb.filter('room = {:roomId} && user = {:userId} && has_left = false', {
+						roomId,
+						userId: locals.user?.id
+					})
+				);
+
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+			const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
+
+			if (!canRemoveFromVoting(myParticipant, room, task)) {
+				return fail(403, { errors: { general: 'Ação não permitida ou sala finalizada.' } });
+			}
+
+			// 1. Limpa o campo current_task da sala (se a tarefa removida for a atual)
+			if (room.current_task === taskId) {
+				await adminPb.collection('poker_rooms').update(roomId, {
+					current_task: null,
+					revealed: false
+				});
+			}
+
+			// 2. Retorna a task para backlog
+			await adminPb.collection('poker_tasks').update(taskId, {
+				status: 'backlog'
+			});
+
+			// 3. Exclui permanentemente todos os votos associados a essa tarefa
+			const votes = await adminPb.collection('poker_votes').getFullList<PokerVoteRecord>({
+				filter: adminPb.filter('room = {:roomId} && task = {:taskId}', { roomId, taskId })
+			});
+			await Promise.all(votes.map((v) => adminPb.collection('poker_votes').delete(v.id)));
+
+			// 4. Reseta o status has_voted para false de todos os participantes ativos da sala
+			const participants = await adminPb
+				.collection('poker_participants')
+				.getFullList<PokerParticipantRecord>({
+					filter: adminPb.filter('room = {:roomId} && has_left = false', { roomId })
+				});
+			await Promise.all(
+				participants.map((p) =>
+					adminPb.collection('poker_participants').update(p.id, {
+						has_voted: false
+					})
+				)
+			);
+		} catch (err) {
+			console.error('Erro ao remover tarefa da votação:', err);
+			return fail(500, { errors: { general: 'Não foi possível remover a tarefa da votação.' } });
+		}
+
+		return { success: true };
+	},
+
+	finalize: async ({ params, locals }) => {
+		const { roomId } = params;
+		const adminPb = await getAdminClient();
+
+		try {
+			const myParticipant = await adminPb
+				.collection('poker_participants')
+				.getFirstListItem<PokerParticipantRecord>(
+					adminPb.filter('room = {:roomId} && user = {:userId} && has_left = false', {
+						roomId,
+						userId: locals.user?.id
+					})
+				);
+
+			const room = await adminPb.collection('poker_rooms').getOne<PokerRoomRecord>(roomId);
+
+			if (!canFinalizeRoom(myParticipant, room)) {
+				return fail(403, { errors: { general: 'Ação não permitida ou sala já finalizada.' } });
+			}
+
+			const updateData: Partial<PokerRoomRecord> = {
+				status: 'finalized'
+			};
+
+			if (room.current_task) {
+				updateData.current_task = null;
+				updateData.revealed = false;
+			}
+
+			await adminPb.collection('poker_rooms').update(roomId, updateData);
+		} catch (err) {
+			console.error('Erro ao finalizar a sala:', err);
+			return fail(500, { errors: { general: 'Não foi possível finalizar a sala.' } });
 		}
 
 		return { success: true };

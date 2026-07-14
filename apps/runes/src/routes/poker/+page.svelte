@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type { ActionData, PageProps } from './$types';
 	import { enhance } from '$app/forms';
-	import { Plus, ArrowRight, Dices, User } from 'lucide-svelte';
+	import Plus from 'lucide-svelte/icons/plus';
+	import ArrowRight from 'lucide-svelte/icons/arrow-right';
+	import Dices from 'lucide-svelte/icons/dices';
+	import User from 'lucide-svelte/icons/user';
 
 	let { data, form }: PageProps = $props();
 
@@ -29,14 +32,23 @@
 				Estime o esforço de tarefas colaborativamente e em tempo real com seu time
 			</p>
 		</div>
-		<button
-			class="btn btn-primary"
-			onclick={openModal}
-			data-testid="btn-open-create-room"
-		>
-			<Plus class="w-4 h-4 mr-2" />
-			Nova Sala
-		</button>
+		<div class="flex items-center gap-2">
+			<a
+				href="/poker/backlog"
+				class="btn btn-outline"
+				data-testid="btn-go-backlog"
+			>
+				Backlog Global
+			</a>
+			<button
+				class="btn btn-primary"
+				onclick={openModal}
+				data-testid="btn-open-create-room"
+			>
+				<Plus class="w-4 h-4 mr-2" />
+				Nova Sala
+			</button>
+		</div>
 	</div>
 
 	<!-- Lista de Salas -->
@@ -115,6 +127,28 @@
 						<span class="text-xs text-error mt-1">{(form?.errors as any)?.name}</span>
 					{/if}
 				</div>
+
+				<!-- Seleção de Tarefas do Backlog Global -->
+				{#if data.globalTasks && data.globalTasks.length > 0}
+					<div class="form-control w-full mt-4">
+						<label class="label text-xs font-semibold uppercase tracking-wider text-base-content/60">
+							Vincular tarefas do Backlog Global (Opcional)
+						</label>
+						<div class="max-h-40 overflow-y-auto space-y-2 border border-base-300 rounded-lg p-3 bg-base-200">
+							{#each data.globalTasks as task}
+								<label class="flex items-start gap-2.5 cursor-pointer hover:bg-base-300 p-1 rounded-sm">
+									<input
+										type="checkbox"
+										name="taskIds"
+										value={task.id}
+										class="checkbox checkbox-xs mt-0.5 checkbox-primary"
+									/>
+									<span class="text-xs font-semibold text-base-content/90">{task.title}</span>
+								</label>
+							{/each}
+						</div>
+					</div>
+				{/if}
 
 				{#if (form?.errors as any)?.general}
 					<div class="alert alert-error text-xs p-3">

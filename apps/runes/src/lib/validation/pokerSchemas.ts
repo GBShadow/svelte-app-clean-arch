@@ -53,3 +53,33 @@ export const changeRoleSchema = z.object({
 		message: 'Papel inválido.'
 	})
 });
+
+export const editTaskSchema = z.object({
+	taskId: z.string().min(1, 'Task inválida.'),
+	title: z
+		.string()
+		.min(1, 'O título da task é obrigatório.')
+		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
+	description: z.string().optional().default('')
+});
+
+export const createGlobalTaskSchema = z.object({
+	title: z
+		.string()
+		.min(1, 'O título da task é obrigatório.')
+		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
+	description: z.string().optional().default('')
+});
+
+export const editGlobalTaskSchema = z.object({
+	taskId: z.string().min(1, 'Task inválida.'),
+	title: z
+		.string()
+		.min(1, 'O título da task é obrigatório.')
+		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
+	description: z.string().optional().default('')
+});
+
+export const linkGlobalTasksSchema = z.object({
+	taskIds: z.array(z.string().min(1)).min(1, 'Selecione pelo menos uma tarefa.')
+});

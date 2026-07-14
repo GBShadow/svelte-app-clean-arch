@@ -17,6 +17,7 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | architecture  | `data-testid.mdc`            | data-testid em componentes + getByTestId nos testes                                                             |
 | architecture  | `pocketbase-collections.mdc` | Toda coleção PocketBase precisa dos campos `created`/`updated`                                                  |
 | architecture  | `pocketbase-api-rules.mdc`   | API Rules (`update`/`delete`) devem restringir campos, não só posse/participação — assumir chamada direta à API |
+| architecture  | `icon-library-imports.mdc`   | Ícones (lucide-svelte etc.) importados por sub-path, nunca via barrel — barrel compila o pacote inteiro         |
 | documentation | `feature-documentation.mdc`  | Doc em `docs/features/` + CHANGELOG                                                                             |
 | workflow      | `spec-driven.mdc`            | Spec em `docs/specs/<slug>.md` (antes de implementar)                                                           |
 | workflow      | `pr-description.mdc`         | PR em `docs/workflow/<slug>.pr.md`                                                                              |
@@ -42,6 +43,7 @@ Skills Freebuff (`.agents/skills/`):
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
+- `icon-library-imports` — ícones (lucide-svelte etc.) importados por sub-path, nunca via barrel
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md` (documento vivo)
 - `verify-before-accept` — disciplina de evidência: lidere com o teste, cubra o caminho real, verifique seus próprios fixes

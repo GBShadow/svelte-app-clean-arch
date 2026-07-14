@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { POKER_CARDS } from '$lib/validation/pokerSchemas';
-	import { Dices } from 'lucide-svelte';
+	import Dices from 'lucide-svelte/icons/dices';
 
 	let {
 		selectedValue = $bindable(''),

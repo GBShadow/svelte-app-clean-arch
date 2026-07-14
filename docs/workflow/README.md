@@ -21,6 +21,9 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 | `spec-driven-agent` | [spec-driven-agent.pr.md](./spec-driven-agent.pr.md) | [spec-driven-agent.jira.md](./spec-driven-agent.jira.md) |
 | `planning-poker` | _(pendente)_ | [planning-poker.jira.md](./planning-poker.jira.md) |
 | `kanban` | [kanban.pr.md](./kanban.pr.md) | [kanban.jira.md](./kanban.jira.md) |
+| `chat-sender-preservar` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | [chat-sender-preservar.jira.md](./chat-sender-preservar.jira.md) |
+| `poker-backlog-global` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | [poker-backlog-global.jira.md](./poker-backlog-global.jira.md) |
+| `kanban-fixes-e-poker-backlog` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | _(ver chat-sender-preservar/poker-backlog-global)_ |
 
 ## Convenção de nomes
 

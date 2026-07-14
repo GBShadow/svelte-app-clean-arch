@@ -2,6 +2,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import StarterKit from '@tiptap/starter-kit';
+	import { TaskList, TaskItem } from '@tiptap/extension-list';
+	import ListTodo from 'lucide-svelte/icons/list-todo';
 
 	let { value = $bindable(''), placeholder = 'Descrição da tarefa...' } = $props();
 
@@ -12,7 +14,7 @@
 		if (!element) return;
 		editor = new Editor({
 			element,
-			extensions: [StarterKit],
+			extensions: [StarterKit, TaskList, TaskItem.configure({ nested: true })],
 			content: value,
 			onUpdate: ({ editor }) => {
 				value = editor.getHTML();
@@ -69,6 +71,14 @@
 				onclick={() => editor?.chain().focus().toggleOrderedList().run()}
 			>
 				1. Lista
+			</button>
+			<button
+				type="button"
+				class="btn btn-ghost btn-xs {editor.isActive('taskList') ? 'bg-base-300 font-bold' : ''}"
+				onclick={() => editor?.chain().focus().toggleTaskList().run()}
+				aria-label="Lista de tarefas"
+			>
+				<ListTodo class="size-4" />
 			</button>
 			<div class="divider divider-horizontal m-0 px-1"></div>
 			<button

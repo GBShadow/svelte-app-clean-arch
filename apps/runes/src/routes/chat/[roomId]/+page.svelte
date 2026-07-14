@@ -43,7 +43,12 @@
 	);
 	const isRoomCreator = $derived(data.room.created_by === data.userId);
 	const participantsById = $derived(
-		new Map((data.room.expand?.participants ?? []).map((p) => [p.id, p]))
+		new Map(
+			[...(data.room.expand?.participants ?? []), ...(data.orphanSenders ?? [])].map((p) => [
+				p.id,
+				p
+			])
+		)
 	);
 </script>
 

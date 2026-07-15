@@ -1,8 +1,71 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import Bell from 'lucide-svelte/icons/bell';
+	import BellOff from 'lucide-svelte/icons/bell-off';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import type { PageProps } from './$types';
+	import {
+		disablePushNotifications,
+		enablePushNotifications,
+		hasActiveSubscription,
+		isPushSupported
+	} from '$lib/client/pushSubscription';
 
 	let { data, form }: PageProps = $props();
+
+	type NotificationState = 'loading' | 'unsupported' | 'default' | 'denied' | 'subscribed';
+
+	let notificationState = $state<NotificationState>('loading');
+	let notificationBusy = $state(false);
+	let notificationError = $state('');
+
+	async function refreshNotificationState() {
+		if (!isPushSupported()) {
+			notificationState = 'unsupported';
+			return;
+		}
+		if (Notification.permission === 'denied') {
+			notificationState = 'denied';
+			return;
+		}
+		if (Notification.permission === 'granted' && (await hasActiveSubscription())) {
+			notificationState = 'subscribed';
+			return;
+		}
+		notificationState = 'default';
+	}
+
+	onMount(() => {
+		refreshNotificationState();
+	});
+
+	async function handleEnable() {
+		notificationBusy = true;
+		notificationError = '';
+		try {
+			const outcome = await enablePushNotifications();
+			if (outcome === 'granted') notificationState = 'subscribed';
+			else if (outcome === 'denied') notificationState = 'denied';
+			else if (outcome === 'unsupported') notificationState = 'unsupported';
+		} catch {
+			notificationError = 'Não foi possível ativar as notificações.';
+		} finally {
+			notificationBusy = false;
+		}
+	}
+
+	async function handleDisable() {
+		notificationBusy = true;
+		notificationError = '';
+		try {
+			await disablePushNotifications();
+			notificationState = 'default';
+		} catch {
+			notificationError = 'Não foi possível desativar as notificações.';
+		} finally {
+			notificationBusy = false;
+		}
+	}
 </script>
 
 <div class="flex flex-col gap-4 max-w-md mx-auto w-full">
@@ -41,6 +104,55 @@
 				{/if}
 				<button type="submit" class="btn btn-primary" data-testid="btn-upload-avatar">Salvar avatar</button>
 			</form>
+		</div>
+	</div>
+
+	<div class="card bg-base-100 border border-base-300 shadow-sm">
+		<div class="card-body gap-3">
+			<h2 class="card-title text-base">Notificações push</h2>
+
+			{#if notificationError}
+				<div class="alert alert-error" role="alert" data-testid="error-notifications">
+					{notificationError}
+				</div>
+			{/if}
+
+			{#if notificationState === 'loading'}
+				<p class="text-sm opacity-60">Verificando suporte...</p>
+			{:else if notificationState === 'unsupported'}
+				<p class="text-sm opacity-60" data-testid="notifications-unsupported">
+					Este navegador não é compatível com notificações push.
+				</p>
+			{:else if notificationState === 'denied'}
+				<p class="text-sm opacity-80" data-testid="notifications-blocked">
+					As notificações estão bloqueadas nas configurações do navegador. Para ativar,
+					permita notificações para este site manualmente nas configurações do navegador.
+				</p>
+			{:else if notificationState === 'subscribed'}
+				<p class="text-sm opacity-70">Notificações ativas neste dispositivo.</p>
+				<button
+					type="button"
+					class="btn btn-outline btn-sm gap-1.5 w-fit"
+					disabled={notificationBusy}
+					onclick={handleDisable}
+					data-testid="btn-disable-notifications"
+				>
+					<BellOff class="size-4" />
+					Desativar notificações
+				</button>
+			{:else}
+				<p class="text-sm opacity-70">Receba um alerta quando chegar uma nova mensagem.</p>
+				<button
+					type="button"
+					class="btn btn-primary btn-sm gap-1.5 w-fit"
+					disabled={notificationBusy}
+					onclick={handleEnable}
+					data-testid="btn-enable-notifications"
+				>
+					<Bell class="size-4" />
+					Ativar notificações
+				</button>
+			{/if}
 		</div>
 	</div>
 </div>

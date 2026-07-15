@@ -8,6 +8,7 @@ import { fetchAuthParticipants } from '$lib/server/authExpand';
 import { sendMessageSchema } from '$lib/validation/chatSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
+import { sendChatPush } from '$lib/server/webPush';
 
 const REALTIME_TOKEN_TTL_SECONDS = 600;
 
@@ -111,6 +112,15 @@ export const actions: Actions = {
 			sender: userId,
 			text: parsed.data.text
 		});
+
+		// RF3/RNF Desempenho: disparo best-effort, sem await no caminho crítico.
+		sendChatPush({
+			roomId: room.id,
+			roomName: room.name,
+			senderName: locals.user?.name ?? 'Alguém',
+			text: parsed.data.text,
+			recipientUserIds: room.participants.filter((id) => id !== userId)
+		}).catch(() => {});
 
 		return { success: true };
 	},

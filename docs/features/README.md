@@ -12,6 +12,7 @@ Documentação de funcionalidades implementadas no monorepo.
 | Correção de testes e2e (Playwright) | runes (e2e) | [e2e-test-fix-plan.md](./e2e-test-fix-plan.md) |
 | CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
 | Infra PocketBase (Docker + coleções) | — (infra, sem app) | [pocketbase-infra.md](./pocketbase-infra.md) |
+| Notificações Push (self-hosted) | runes | [notifications.md](./notifications.md) |
 | Quadro Kanban reativo e seguro (runes) | runes | [kanban.md](./kanban.md) |
 | Subagente spec-driven | — (agente de processo) | [spec-driven-agent.md](./spec-driven-agent.md) |
 | Tema Dracula + redesign visual (runes) | runes | [dracula-theme.md](./dracula-theme.md) |

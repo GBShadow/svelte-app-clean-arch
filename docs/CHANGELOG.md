@@ -2,6 +2,22 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-15] Notificações Push self-hosted (chat + canal genérico de sistema)
+
+- Backend: `pocketbase/pb_migrations/0018_create_push_subscriptions_collection.js` (`push_subscriptions`, `endpoint` único, API Rules de posse, `updateRule = null`)
+- Domínio: `apps/runes/src/lib/domain/pushPayload.ts` (truncamento, validação de URL, montagem de payload — puro e testado)
+- Server: `apps/runes/src/lib/server/{vapidKeys,pushRecord,pushSubscriptionStore,webPush}.ts` (`sendChatPush`, `sendSystemPush`)
+- API: `apps/runes/src/routes/api/push/{subscribe,unsubscribe}/+server.ts` (via `locals.pb`, idempotente)
+- Client: `apps/runes/src/lib/client/{pushDecision,pushSubscription}.ts`, `apps/runes/src/service-worker.ts`
+- App: `apps/runes` — botão "Ativar/Desativar notificações" em `/profile`, `NotificationsBanner.svelte` em `/chat`, integração fire-and-forget no `sendMessage` do chat
+- Testes: `pushPayload.test.ts`, `pushDecision.test.ts`, `pushSchemas.test.ts`; verificação manual end-to-end contra PocketBase e dev server reais (IDOR, idempotência, autenticação)
+- Docs: [docs/features/notifications.md](./features/notifications.md)
+
+Infraestrutura de Web Push nativa (Notification API + Push API + Service Worker) self-hosted via
+`web-push`/VAPID, sem dependência de Firebase/OneSignal. Notifica participantes de chat sobre novas
+mensagens (com supressão quando a sala já está aberta e focada) e expõe `sendSystemPush()` como
+canal reutilizável para qualquer outro fluxo do sistema disparar notificações genéricas.
+
 ## [2026-07-14] Correções no Kanban (drag and drop) e no editor Tiptap (listas + TaskList)
 
 - App: `apps/runes` — rotas `/kanban`, `/poker`, `/poker/[roomId]`, `/poker/backlog`, componente `RichTextEditor.svelte`

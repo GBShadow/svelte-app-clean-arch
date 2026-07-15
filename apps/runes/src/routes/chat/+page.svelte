@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Avatar from '$lib/components/Avatar.svelte';
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
+	import NotificationsBanner from '$lib/components/chat/NotificationsBanner.svelte';
 	import type { ChatRoomRecord } from '$lib/server/chatRecord';
 	import type { PageProps } from './$types';
 
@@ -25,6 +26,8 @@
 			Nova conversa
 		</a>
 	</div>
+
+	<NotificationsBanner />
 
 	{#if data.rooms.length === 0}
 		<div class="empty-state">

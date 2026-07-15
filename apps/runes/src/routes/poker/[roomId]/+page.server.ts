@@ -338,6 +338,13 @@ export const actions: Actions = {
 				return fail(403, { errors: { general: 'Permissão negada ou sala finalizada.' } });
 			}
 
+			if (taskId) {
+				const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
+				if (task.room !== roomId) {
+					return fail(403, { errors: { general: 'Task não pertence a esta sala.' } });
+				}
+			}
+
 			// Atualiza a task da sala
 			await adminPb.collection('poker_rooms').update(roomId, {
 				current_task: taskId || null,
@@ -467,6 +474,11 @@ export const actions: Actions = {
 				return fail(403, { errors: { general: 'Permissão negada.' } });
 			}
 
+			const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
+			if (task.room !== roomId) {
+				return fail(403, { errors: { general: 'Task não pertence a esta sala.' } });
+			}
+
 			// Atualiza os pontos da task
 			await adminPb.collection('poker_tasks').update(taskId, {
 				final_points: validation.data.points,
@@ -508,6 +520,13 @@ export const actions: Actions = {
 				return fail(403, { errors: { general: 'Permissão negada.' } });
 			}
 
+			const targetParticipant = await adminPb
+				.collection('poker_participants')
+				.getOne<PokerParticipantRecord>(validation.data.participantId);
+			if (targetParticipant.room !== roomId) {
+				return fail(403, { errors: { general: 'Participante não pertence a esta sala.' } });
+			}
+
 			// Altera papel do participante
 			await adminPb.collection('poker_participants').update(validation.data.participantId, {
 				role: validation.data.role
@@ -539,6 +558,13 @@ export const actions: Actions = {
 
 			if (!canManageRoom(myParticipant.role)) {
 				return fail(403, { errors: { general: 'Permissão negada.' } });
+			}
+
+			const targetParticipant = await adminPb
+				.collection('poker_participants')
+				.getOne<PokerParticipantRecord>(participantId);
+			if (targetParticipant.room !== roomId) {
+				return fail(403, { errors: { general: 'Participante não pertence a esta sala.' } });
 			}
 
 			// Marca que o participante saiu (RF4: não exclui o registro)
@@ -646,8 +672,8 @@ export const actions: Actions = {
 			for (const taskId of taskIds) {
 				const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
 
-				// Evita duplicados ou exportar sem estimativa
-				if (task.status === 'exported' || task.final_points === null) {
+				// Evita duplicados, tasks sem estimativa ou pertencentes a outra sala
+				if (task.room !== roomId || task.status === 'exported' || task.final_points === null) {
 					continue;
 				}
 

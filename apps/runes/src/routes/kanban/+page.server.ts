@@ -20,6 +20,14 @@ import {
 	addCommentSchema
 } from '$lib/validation/kanbanSchemas';
 import { recordCardChanges, recordCardHistory } from '$lib/server/kanbanHistory';
+import { buildKanbanPushPayload } from '$lib/domain/pushPayload';
+import { sendSystemPush } from '$lib/server/webPush';
+import {
+	createKanbanNotification,
+	createKanbanMovedNotification,
+	resolveUserIdsToAuthIds
+} from '$lib/server/notificationStore';
+import { logError } from '$lib/server/logger';
 import type {
 	KanbanColumnRecord,
 	KanbanCardRecord,
@@ -327,6 +335,32 @@ export const actions: Actions = {
 		// Registra no histórico que o card foi criado
 		await recordCardHistory(newCard.id, locals.user.id, 'created');
 
+		// Notifica assignees (exceto o criador se ele se atribuiu)
+		const notifyAssigneeIds = validation.data.assigneeIds.filter((id) => id !== locals.user?.id);
+		if (notifyAssigneeIds.length > 0) {
+			const column = (await adminPb.collection('kanban_columns').getOne(validation.data.columnId)) as KanbanColumnRecord;
+
+			// In-app notifications
+			createKanbanNotification(notifyAssigneeIds, newCard.title, column.name, newCard.id).catch(
+				(err) => logError('kanban:createCard:notification', err)
+			);
+
+			// Push notifications
+			const pushPayload = buildKanbanPushPayload({
+				cardTitle: newCard.title,
+				cardId: newCard.id,
+				columnName: column.name,
+				action: 'created'
+			});
+			if (pushPayload) {
+				// push_subscriptions guarda IDs da coleção auth, não da coleção user
+				// (assignees) — precisa resolver antes de buscar as subscriptions.
+				resolveUserIdsToAuthIds(notifyAssigneeIds)
+					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+					.catch((err) => logError('kanban:createCard:push', err));
+			}
+		}
+
 		return { success: true };
 	},
 
@@ -487,6 +521,38 @@ export const actions: Actions = {
 				column: targetColumnId,
 				position: targetPosition
 			});
+
+			// Notifica assignees (exceto quem moveu) apenas em mudança de coluna
+			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
+			if (notifyAssigneeIds.length > 0) {
+				const newColumn = (await adminPb.collection('kanban_columns').getOne(targetColumnId)) as KanbanColumnRecord;
+				const moverName = locals.user?.name ?? 'Alguém';
+
+				// In-app notifications
+				createKanbanMovedNotification(
+					notifyAssigneeIds,
+					card.title,
+					newColumn.name,
+					card.id,
+					moverName
+				).catch((err) => logError('kanban:moveCard:notification', err));
+
+				// Push notifications
+				const pushPayload = buildKanbanPushPayload({
+					cardTitle: card.title,
+					cardId: card.id,
+					columnName: newColumn.name,
+					action: 'moved',
+					movedByName: moverName
+				});
+				if (pushPayload) {
+					// push_subscriptions guarda IDs da coleção auth, não da coleção user
+					// (assignees) — precisa resolver antes de buscar as subscriptions.
+					resolveUserIdsToAuthIds(notifyAssigneeIds)
+						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+						.catch((err) => logError('kanban:moveCard:push', err));
+				}
+			}
 		}
 
 		return { success: true };

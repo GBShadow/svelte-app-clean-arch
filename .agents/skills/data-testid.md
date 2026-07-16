@@ -77,4 +77,4 @@ await page.getByTestId('todo-item-0').getByRole('button', { name: 'Remover' }).c
 ## Ver também
 
 - `.cursor/rules/architecture/data-testid.mdc` — regra Cursor equivalente
-- `docs/specs/data-testid-e2e.md` — spec completa com dicionário
+- `docs/specs/2026-07-10-data-testid-e2e.md` — spec completa com dicionário

@@ -4,20 +4,21 @@ Documentação de funcionalidades implementadas no monorepo.
 
 ## Índice
 
-| Feature | App | Documento |
-|---------|-----|-----------|
-| App Hub — tela inicial com grid de apps | runes | [app-hub.md](./app-hub.md) |
-| Autenticação PocketBase (runes) | runes | [pocketbase-auth.md](./pocketbase-auth.md) |
-| Chat em tempo real com avatar (runes) | runes | [chat-realtime.md](./chat-realtime.md) |
-| Correção de testes e2e (Playwright) | runes (e2e) | [e2e-test-fix-plan.md](./e2e-test-fix-plan.md) |
-| CRUD de usuário (runes) | runes | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
-| Infra PocketBase (Docker + coleções) | — (infra, sem app) | [pocketbase-infra.md](./pocketbase-infra.md) |
-| Notificações Push (self-hosted) | runes | [notifications.md](./notifications.md) |
-| Quadro Kanban reativo e seguro (runes) | runes | [kanban.md](./kanban.md) |
-| Subagente spec-driven | — (agente de processo) | [spec-driven-agent.md](./spec-driven-agent.md) |
-| Tema Dracula + redesign visual (runes) | runes | [dracula-theme.md](./dracula-theme.md) |
-| Todo List | classic, remote (~~deprecated~~), runes | [todo-list.md](./todo-list.md) |
-| Todo multi-lista com compartilhamento (runes) | runes | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
+| Feature | App | Criada | Documento |
+|---------|-----|--------|-----------|
+| Todo List | classic, remote (~~deprecated~~), runes | 2026-06-18 | [2026-06-18-todo-list.md](./2026-06-18-todo-list.md) |
+| Infra PocketBase (Docker + coleções) | — (infra, sem app) | 2026-07-09 | [2026-07-09-pocketbase-infra.md](./2026-07-09-pocketbase-infra.md) |
+| Autenticação PocketBase (runes) | runes | 2026-07-09 | [2026-07-09-pocketbase-auth.md](./2026-07-09-pocketbase-auth.md) |
+| CRUD de usuário (runes) | runes | 2026-07-09 | [2026-07-09-pocketbase-user-crud.md](./2026-07-09-pocketbase-user-crud.md) |
+| Todo multi-lista com compartilhamento (runes) | runes | 2026-07-09 | [2026-07-09-pocketbase-todo-sharing.md](./2026-07-09-pocketbase-todo-sharing.md) |
+| Subagente spec-driven | — (agente de processo) | 2026-07-09 | [2026-07-09-spec-driven-agent.md](./2026-07-09-spec-driven-agent.md) |
+| Correção de testes e2e (Playwright) | runes (e2e) | 2026-07-10 | [2026-07-10-e2e-test-fix-plan.md](./2026-07-10-e2e-test-fix-plan.md) |
+| Tema Dracula + redesign visual (runes) | runes | 2026-07-10 | [2026-07-10-dracula-theme.md](./2026-07-10-dracula-theme.md) |
+| App Hub — tela inicial com grid de apps | runes | 2026-07-10 | [2026-07-10-app-hub.md](./2026-07-10-app-hub.md) |
+| Chat em tempo real com avatar (runes) | runes | 2026-07-11 | [2026-07-11-chat-realtime.md](./2026-07-11-chat-realtime.md) |
+| Quadro Kanban reativo e seguro (runes) | runes | 2026-07-12 | [2026-07-12-kanban.md](./2026-07-12-kanban.md) |
+| Planning Poker em tempo real | runes | 2026-07-12 | [2026-07-12-planning-poker.md](./2026-07-12-planning-poker.md) |
+| Notificações Push (self-hosted) | runes | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
 
 ## Nova feature
 

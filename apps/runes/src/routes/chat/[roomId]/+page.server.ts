@@ -9,6 +9,9 @@ import { sendMessageSchema } from '$lib/validation/chatSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import { sendChatPush } from '$lib/server/webPush';
+import { createChatNotification } from '$lib/server/notificationStore';
+import { truncatePreview } from '$lib/domain/notification';
+import { logError } from '$lib/server/logger';
 
 const REALTIME_TOKEN_TTL_SECONDS = 600;
 
@@ -107,7 +110,7 @@ export const actions: Actions = {
 			return fail(400, { errors: fieldErrorsFrom(parsed.error) });
 		}
 
-		await locals.pb.collection('chat_messages').create({
+		const message = await locals.pb.collection('chat_messages').create({
 			room: room.id,
 			sender: userId,
 			text: parsed.data.text
@@ -120,7 +123,18 @@ export const actions: Actions = {
 			senderName: locals.user?.name ?? 'Alguém',
 			text: parsed.data.text,
 			recipientUserIds: room.participants.filter((id) => id !== userId)
-		}).catch(() => {});
+		}).catch((err) => logError('chat:sendMessage:push', err));
+
+		// Create in-app notifications for other participants
+		const senderName = locals.user?.name ?? 'Alguém';
+		const preview = truncatePreview(parsed.data.text, 120);
+		for (const participantId of room.participants) {
+			if (participantId !== userId) {
+				createChatNotification(participantId, senderName, preview, room.id, message.id).catch(
+					(err) => logError('chat:sendMessage:notification', err)
+				);
+			}
+		}
 
 		return { success: true };
 	},

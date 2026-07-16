@@ -1,5 +1,7 @@
 # <Nome da Feature>
 
+Created: <YYYY-MM-DD>
+
 ## Resumo
 
 Breve descrição do que foi implementado e por quê.

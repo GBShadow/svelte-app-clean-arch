@@ -1,0 +1,74 @@
+---
+description: Todo catch de operação best-effort (disparada sem await, com .catch para não derrubar o caminho crítico) precisa logar o erro — nunca um .catch(() => {}) silencioso
+alwaysApply: true
+---
+
+# Catch silencioso é bug invisível
+
+## O problema (caso real: notificações do Kanban, corrigido em 2026-07-16)
+
+Notificações de card criado/movido no Kanban simplesmente não apareciam. A causa raiz não era uma,
+eram três, empilhadas — e cada uma delas ficou invisível por causa do mesmo padrão:
+
+```ts
+createKanbanNotification(notifyAssigneeIds, ...).catch(() => {});
+```
+
+1. `resolveUserIdsToAuthIds` usava sintaxe `id IN (...)` — o PocketBase não tem operador `IN`,
+   só igualdade encadeada com `||` (ou `?=` para campos multi-valor). Toda chamada lançava 400.
+2. Mesmo corrigido o filtro, o campo `read` (bool) da coleção `notifications` tinha
+   `required: true` — o PocketBase trata `false` como "vazio" em validação required de bool, então
+   toda criação de notificação falhava com "Cannot be blank.".
+3. Mesmo corrigidos os dois acima, `getAdminClient()` é um client singleton reusado por **todas**
+   as requisições concorrentes do servidor (diferente de `locals.pb`, que é por-request). A
+   autocancelação padrão do SDK do PocketBase agrupa requisições por método+endpoint e cancela a
+   anterior quando uma nova começa — cancelando chamadas concorrentes legítimas de handlers
+   diferentes entre si.
+
+Três bugs reais, três `throw`/`reject` genuínos — e um único `.catch(() => {})` os engolia todos,
+tornando o sintoma ("notificação não aparece") indistinguível de "não havia ninguém para notificar".
+Sem log, cada hipótese testada exigia reproduzir o bug do zero às cegas.
+
+## A regra
+
+Toda vez que um erro é intencionalmente engolido para não propagar (operação best-effort, rollback
+de compensação, disparo "fire-and-forget" sem `await` no caminho crítico), o `catch` **precisa**
+logar o erro. No mínimo:
+
+```ts
+.catch((err) => console.error('[contexto]', err));
+```
+
+Prefira o helper `$lib/server/logger.ts` (`logError(context, err)`) no server para manter o prefixo
+consistente:
+
+```ts
+import { logError } from '$lib/server/logger';
+// ...
+.catch((err) => logError('kanban:moveCard:push', err));
+```
+
+No client (`.svelte`), `console.error('[contexto] ...', err)` inline é suficiente — não importe o
+logger de server em código de browser.
+
+`context` deve identificar rota/ação + operação (`'kanban:createCard:notification'`,
+`'chat:sendMessage:push'`), não só o nome da função, para que o log seja localizável sem abrir o
+código.
+
+## O que NÃO fazer
+
+- `.catch(() => {})` — nunca, em nenhuma circunstância. Se o erro é genuinamente irrelevante (ex.:
+  best-effort onde até o log seria ruído constante e esperado), documente o porquê num comentário
+  na própria linha — não apague o log por padrão.
+- Empilhar `.then().catch()` sem log no `.catch()` final da cadeia.
+- Assumir que "o teste unitário passou" prova que o caminho async best-effort funciona em produção
+  — teste unitário geralmente mocka a chamada; o bug real (filtro inválido, schema, autocancelação)
+  só aparece contra o PocketBase de verdade. Ver `.cursor/rules/meta/lessons-learned.mdc` e a
+  disciplina verify-before-accept em `CLAUDE.md`.
+
+## Ver também
+
+- `apps/runes/src/lib/server/logger.ts` — helper `logError`
+- `.cursor/rules/meta/lessons-learned.mdc` — registrar o padrão geral aprendido
+- `.cursor/rules/meta/rules-sync.mdc` — sincronizar Cursor ↔ Freebuff ↔ Claude ↔ Antigravity ao
+  criar/editar regras

@@ -2,6 +2,17 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-16] Correção definitiva das notificações do Kanban (raiz real: filtro PocketBase, schema e autocancelação)
+
+- Corrigido: `resolveUserIdsToAuthIds` (`apps/runes/src/lib/server/notificationStore.ts`) usava sintaxe `IN (...)` inexistente no PocketBase — trocado por igualdade encadeada (`||`) via `pb.filter()`
+- Corrigido: campo `read` da coleção `notifications` com `required: true` rejeitava `false` (bool required do PocketBase trata `false` como vazio) — impedia a criação de **qualquer** notificação desde sempre; ver `pocketbase/pb_migrations/0020_notifications_read_not_required.js`
+- Corrigido: `getAdminClient()` (`pocketbaseAdmin.ts`) é singleton compartilhado entre requisições concorrentes — autocancelação padrão do SDK do PocketBase cancelava chamadas legítimas entre si; desabilitada via `pb.autoCancellation(false)`
+- Corrigido: push do Kanban (`sendSystemPush`) recebia IDs da coleção `user` (assignees) sem resolver para IDs `auth`, exigidos por `push_subscriptions.user`
+- Novo: `apps/runes/src/lib/server/logger.ts` (`logError`) + regra `.cursor/rules/architecture/error-handling.mdc` — todo `catch` de operação best-effort agora loga o erro; os três bugs acima estavam todos escondidos atrás de `.catch(() => {})` silenciosos
+- Docs: nº 8 em [docs/features/2026-07-12-kanban.md](./features/2026-07-12-kanban.md) (Decisões de design)
+
+Verificado fim a fim contra PocketBase e dev server reais (não só `svelte-check`/`vitest`): `createCard`/`moveCard` via HTTP geraram registros reais em `notifications`, confirmados via API admin.
+
 ## [2026-07-15] Notificações Push self-hosted (chat + canal genérico de sistema)
 
 - Backend: `pocketbase/pb_migrations/0018_create_push_subscriptions_collection.js` (`push_subscriptions`, `endpoint` único, API Rules de posse, `updateRule = null`)
@@ -11,7 +22,7 @@ Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/]
 - Client: `apps/runes/src/lib/client/{pushDecision,pushSubscription}.ts`, `apps/runes/src/service-worker.ts`
 - App: `apps/runes` — botão "Ativar/Desativar notificações" em `/profile`, `NotificationsBanner.svelte` em `/chat`, integração fire-and-forget no `sendMessage` do chat
 - Testes: `pushPayload.test.ts`, `pushDecision.test.ts`, `pushSchemas.test.ts`; verificação manual end-to-end contra PocketBase e dev server reais (IDOR, idempotência, autenticação)
-- Docs: [docs/features/notifications.md](./features/notifications.md)
+- Docs: [docs/features/2026-07-15-notifications.md](./features/2026-07-15-notifications.md)
 
 Infraestrutura de Web Push nativa (Notification API + Push API + Service Worker) self-hosted via
 `web-push`/VAPID, sem dependência de Firebase/OneSignal. Notifica participantes de chat sobre novas
@@ -21,8 +32,8 @@ canal reutilizável para qualquer outro fluxo do sistema disparar notificações
 ## [2026-07-14] Correções no Kanban (drag and drop) e no editor Tiptap (listas + TaskList)
 
 - App: `apps/runes` — rotas `/kanban`, `/poker`, `/poker/[roomId]`, `/poker/backlog`, componente `RichTextEditor.svelte`
-- Corrigido: cards do Kanban revertendo para a coluna original ao arrastar (causa raiz: array de cards compartilhado entre zonas do `svelte-dnd-action`, ver Decisão de design nº 5 em [docs/features/kanban.md](./features/kanban.md))
-- Corrigido: listas (marcador/numeração) do editor Tiptap sem estilo visual (plugin `@tailwindcss/typography` ausente, ver Decisão de design nº 6 em [docs/features/kanban.md](./features/kanban.md))
+- Corrigido: cards do Kanban revertendo para a coluna original ao arrastar (causa raiz: array de cards compartilhado entre zonas do `svelte-dnd-action`, ver Decisão de design nº 5 em [docs/features/2026-07-12-kanban.md](./features/2026-07-12-kanban.md))
+- Corrigido: listas (marcador/numeração) do editor Tiptap sem estilo visual (plugin `@tailwindcss/typography` ausente, ver Decisão de design nº 6 em [docs/features/2026-07-12-kanban.md](./features/2026-07-12-kanban.md))
 - Adicionado: suporte a lista de tarefas (`TaskList`/`TaskItem`) no editor Tiptap compartilhado (Kanban e Planning Poker)
 - Novo: `apps/runes/src/lib/server/richTextSanitize.ts` — allowlist compartilhada de `sanitize-html` para preservar o estado de conclusão da lista de tarefas
 
@@ -33,7 +44,7 @@ canal reutilizável para qualquer outro fluxo do sistema disparar notificações
 - Server: `apps/runes/src/lib/server/pokerRecord.ts` (tipos), e rotas com actions `vote`, `reveal`, `resetVotes`, `setTask`, `createTask`, `setFinalPoints`, `changeRole`, `removeParticipant`, `leaveRoom` e `exportToKanban`
 - App: `apps/runes` — rotas `/poker`, `/poker/[roomId]`, componentes modulares em `lib/components/planning-poker` (`CardDeck.svelte`, `ParticipantsList.svelte`, `VoteResults.svelte`, `TaskList.svelte`, `TaskEditor.svelte`)
 - Testes: `planningPokerAccess.test.ts`, `PlanningPokerRoom.test.ts`, `pokerSchemas.test.ts`, `e2e/planning-poker.spec.ts`
-- Docs: [docs/features/planning-poker.md](./features/planning-poker.md)
+- Docs: [docs/features/2026-07-12-planning-poker.md](./features/2026-07-12-planning-poker.md)
 
 Implementação completa do Planning Poker em tempo real. O módulo gerencia a criação de salas e auto-join seguro, backlog de tarefas, rodadas de votação síncronas com baralho Fibonacci, sigilo de votos via API Rules no PocketBase (bloqueio contra vazamentos realtime), revelação consensual, re-rodadas e exportação para o Kanban.
 
@@ -44,7 +55,7 @@ Implementação completa do Planning Poker em tempo real. O módulo gerencia a c
 - Server: `apps/runes/src/lib/server/kanbanRecord.ts` (tipos), `kanbanHistory.ts` (log imutável de auditoria)
 - App: `apps/runes` — rotas `/kanban`, componente `RichTextEditor.svelte` (Tiptap), registro no hub (`appRegistry.ts`)
 - Testes: `kanbanAccess.test.ts`, `KanbanBoard.test.ts`, `kanbanSchemas.test.ts`, `e2e/kanban.spec.ts`
-- Docs: [docs/features/kanban.md](./features/kanban.md)
+- Docs: [docs/features/2026-07-12-kanban.md](./features/2026-07-12-kanban.md)
 
 Implementação completa do quadro Kanban reativo. O quadro gerencia colunas ("Aguardando", "Fazendo", "Feito" e colunas personalizadas criadas por administradores), com drag and drop reativo de cards e colunas (usando `svelte-dnd-action` com acessibilidade total). Cards contêm títulos, descrições ricas com Tiptap, múltiplos responsáveis de forma segura, comentários em texto simples e log de histórico imutável. Escritas diretas pelo cliente no PocketBase são bloqueadas por segurança via API Rules (`null`), forçando todas as mutações a passarem por Server Actions no SvelteKit com sanitização de HTML contra stored XSS. Posições de cards e colunas são recalculadas como inteiros contíguos de `0` a `N-1` para evitar fragmentação.
 
@@ -55,7 +66,7 @@ Implementação completa do quadro Kanban reativo. O quadro gerencia colunas ("A
 - Server: `apps/runes/src/lib/server/chatRecord.ts`, `authLookup.ts`, `authExpand.ts`, `pocketbaseAdmin.ts` (cliente PocketBase superusuário)
 - App: `apps/runes` — rotas `/profile`, `/chat`, `/chat/new`, `/chat/[roomId]`, componente `Avatar.svelte`, entrada "Chat" no App Hub (`appRegistry.ts`)
 - Testes: `chatRoomAccess.test.ts`, `ChatMessagesFeed.test.ts`, `chatSchemas.test.ts`, `e2e/chat.spec.ts`
-- Docs: [docs/features/chat-realtime.md](./features/chat-realtime.md)
+- Docs: [docs/features/2026-07-10-chat-realtime.md](./features/2026-07-10-chat-realtime.md)
 
 Salas de chat 1:1 e em grupo com mensagens de texto (até 2000 caracteres, imutáveis) e atualização em tempo real via subscription client-side do PocketBase SDK — primeira vez neste projeto que um cliente PocketBase autenticado é instanciado no browser, autenticado com um token de curta duração (`impersonate`, 10 min) devolvido pelo `load` em vez da sessão completa do usuário. Qualquer participante sai da sala; só o criador adiciona/remove outros participantes (auto-remoção via `removeParticipant` é bloqueada, orientando a usar "Sair da sala"); se o criador sai, o papel é transferido para o participante restante mais antigo. Usuário autenticado define um avatar (jpg/png/webp, até 2MB) em `/profile`, exibido ao lado do nome em toda tela de chat (placeholder de iniciais quando ausente). Dupla validação de participação (API Rules do PocketBase + checagem server-side no SvelteKit), seguindo o padrão de `pocketbase-todo-sharing`. Durante a implementação, o `expand` de participantes/remetente via `locals.pb` se mostrou inviável (a `viewRule` de `auth`, restrita a "próprio registro ou admin", também barra registros expandidos) — resolvido com `authExpand.ts`, reaproveitando o cliente superusuário já introduzido para `authLookup.ts`.
 
@@ -96,7 +107,7 @@ As telas de listagem, criação e edição de usuários não tinham `mx-auto`/`m
 - Componentes: `AppCard.svelte`, `AppGrid.svelte`
 - Rotas: `+page.svelte`, `+page.server.ts` (home substitui redirect para `/todos`)
 - Layout: `+layout.svelte` (navbar "❯ hub", links diretos removidos)
-- Docs: [docs/features/app-hub.md](./features/app-hub.md)
+- Docs: [docs/features/2026-07-10-app-hub.md](./features/2026-07-10-app-hub.md)
 
 Home screen (`/`) com saudação "Olá, {nome}!" e grid responsivo de cards de apps. Cards com ícone lucide-svelte, nome, descrição e badge de contador de itens pendentes do Todo. Navbar simplificada para apenas logo "❯ hub" (link para `/`), nome do usuário e logout. Cards administrativos renderizados condicionalmente (`adminOnly`). Layout das telas de todo centralizado com `mx-auto + max-w-*`.
 
@@ -105,7 +116,7 @@ Home screen (`/`) com saudação "Olá, {nome}!" e grid responsivo de cards de a
 - App: runes (somente UI)
 - Config: `apps/runes/src/app.css` (tema + tipografia), `apps/runes/src/app.html` (fontes)
 - UI: `src/lib/components/icons/` (novo), `+layout.svelte`, `UserList.svelte`, `ChangePasswordForm.svelte`, rotas de `login`, `todos`, `users`, `change-password`
-- Docs: [docs/features/dracula-theme.md](./features/dracula-theme.md)
+- Docs: [docs/features/2026-07-10-dracula-theme.md](./features/2026-07-10-dracula-theme.md)
 
 Tema `dracula` do daisyUI aplicado via `@plugin "daisyui" { themes: dracula --default; }` (sintaxe confirmada na doc oficial). Par tipográfico dedicado (Space Grotesk nos títulos, Manrope no corpo, JetBrains Mono em badges/dados/estados vazios/wordmark), ícones SVG inline aditivos nos botões de ação (nunca substituindo texto), cards com borda fina em vez de sombra pesada, tabela de usuários com zebra, estados vazios com voz mais ativa, e a marca do app na navbar redesenhada como prompt de terminal (`❯ todo.apps`) — o elemento de assinatura que conecta a herança "dracula = editor de código" ao produto. Todos os `data-testid` e accessible names preservados; suíte e2e (10/10) usada como prova.
 
@@ -115,7 +126,7 @@ Tema `dracula` do daisyUI aplicado via `@plugin "daisyui" { themes: dracula --de
 - Config: `apps/runes/playwright.config.ts`, `package.json` (raiz)
 - E2E: `e2e/env.ts` (novo), `e2e/cleanup.ts` (novo), `fixtures.ts`, todos os `*.spec.ts` (`todo-sharing` → `todo-crud-basico`)
 - Segurança: `apps/runes/src/routes/change-password/+page.server.ts`, `pocketbase/docker-entrypoint.sh`, `pocketbase/docker-compose.yml`
-- Docs: [docs/features/e2e-test-fix-plan.md](./features/e2e-test-fix-plan.md)
+- Docs: [docs/features/2026-07-10-e2e-test-fix-plan.md](./features/2026-07-10-e2e-test-fix-plan.md)
 
 Os 10 testes e2e quebravam porque o teste antigo de troca de senha envenenava o admin seed. Corrigido: change-password usa usuário temporário; `webServer` passou a `build && preview` (o dev server deixava a hidratação instável e submetia forms vazios); guard fail-fast do seed na fixture; cleanup via API do PocketBase agora limpa `user`+`auth` e não engole falhas. Revisão de segurança encontrou e fechou um bypass da senha atual na troca de senha (o `manageRule` do PocketBase dispensa `oldPassword` para admins) via reautenticação explícita, e o entrypoint do PocketBase passou a recusar subir com a senha de exemplo. Suíte: 10/10, idempotente, sem resíduo no banco.
 
@@ -131,7 +142,7 @@ Os 10 testes e2e quebravam porque o teste antigo de troca de senha envenenava o 
 - App: runes
 - Rotas: `/todos`, `/todos/new`, `/todos/[id]` (substituem a lista global antiga)
 - Infra: `pocketbase/pb_migrations/0008_create_todo_collections.js`
-- Docs: [docs/features/pocketbase-todo-sharing.md](./features/pocketbase-todo-sharing.md)
+- Docs: [docs/features/2026-07-09-pocketbase-todo-sharing.md](./features/2026-07-09-pocketbase-todo-sharing.md)
 
 Cada usuário gerencia várias listas próprias; lista com `public = true` fica visível (somente leitura) para qualquer usuário autenticado com o link. Escrita bloqueada para não-donos em duas camadas (API Rules do PocketBase + checagem server-side no SvelteKit), testado inclusive com chamadas diretas à API do PocketBase. A lista global antiga do runes (sem dono) foi removida; `classic`/`remote` não foram alterados. Completa o backlog de specs PocketBase (infra → auth → user-crud → todo-sharing).
 
@@ -140,7 +151,7 @@ Cada usuário gerencia várias listas próprias; lista com `public = true` fica 
 - App: runes
 - Rotas: `/users`, `/users/new`, `/users/[id]/edit`, `/change-password` (funcional)
 - Infra: `pocketbase/pb_migrations/0005_user_auth_rules.js`, `0006_fix_seed_admin_email_visibility.js`, `0007_restrict_self_update_fields.js`
-- Docs: [docs/features/pocketbase-user-crud.md](./features/pocketbase-user-crud.md)
+- Docs: [docs/features/2026-07-09-pocketbase-user-crud.md](./features/2026-07-09-pocketbase-user-crud.md)
 
 Admin cria, lista, edita e exclui usuários (auth+user sincronizados, com compensação em falha parcial); usuário comum edita o próprio nome/cargo e troca a própria senha; reset de senha pelo admin aciona o gate de troca obrigatória de `pocketbase-auth`. Base para o todo multi-lista com compartilhamento (próxima spec).
 
@@ -152,7 +163,7 @@ Revisão de segurança encontrou uma falha de privilege escalation na `auth.upda
 - Server: `apps/runes/src/hooks.server.ts`, `apps/runes/src/lib/server/pocketbase.ts`
 - Rotas: `/login`, `/logout`, `/change-password`
 - Infra: `pocketbase/pb_migrations/0004_allow_self_lookup_on_user_collection.js`
-- Docs: [docs/features/pocketbase-auth.md](./features/pocketbase-auth.md)
+- Docs: [docs/features/2026-07-09-pocketbase-auth.md](./features/2026-07-09-pocketbase-auth.md)
 
 Login/sessão via cookie `httpOnly` para `apps/runes`, com todas as rotas protegidas (exceto `/login`), gate de troca de senha obrigatória após 10 dias e sincronização de login/logout entre abas via `BroadcastChannel`. Base para CRUD de usuário e todo multi-lista (specs seguintes).
 
@@ -161,7 +172,7 @@ Login/sessão via cookie `httpOnly` para `apps/runes`, com todas as rotas proteg
 - App: — (infraestrutura, sem app SvelteKit ainda)
 - Docker: `pocketbase/Dockerfile`, `pocketbase/docker-compose.yml`
 - Schema: `pocketbase/pb_migrations/0001_create_auth_collection.js`, `0002_create_user_collection.js`, `0003_seed_admin.js`
-- Docs: [docs/features/pocketbase-infra.md](./features/pocketbase-infra.md)
+- Docs: [docs/features/2026-07-09-pocketbase-infra.md](./features/2026-07-09-pocketbase-infra.md)
 
 PocketBase rodando via Docker Compose com coleções `auth`/`user` criadas por migration, superusuário e conta de aplicação semeados automaticamente (`pnpm backend:dev`). Base para autenticação, CRUD de usuário e todo multi-lista (specs seguintes).
 
@@ -169,7 +180,7 @@ PocketBase rodando via Docker Compose com coleções `auth`/`user` criadas por m
 
 - App: — (agente de processo, `.claude/agents/`)
 - Agente: `.claude/agents/spec-driven.md`
-- Docs: [docs/features/spec-driven-agent.md](./features/spec-driven-agent.md)
+- Docs: [docs/features/2026-07-09-spec-driven-agent.md](./features/2026-07-09-spec-driven-agent.md)
 
 Subagente que conduz o fluxo spec → Jira → (pausa) → feature doc → PR conversacionalmente, seguindo os templates de `docs/specs/`, `docs/workflow/` e `docs/features/`, sem escrever código de produto nem executar `git commit`/`git push`/`gh pr create`.
 
@@ -177,6 +188,6 @@ Subagente que conduz o fluxo spec → Jira → (pausa) → feature doc → PR co
 
 - App: classic, remote, runes
 - Domínio: `packages/todo-domain/src/observable/`, `packages/todo-domain/src/gateways/`
-- Docs: [docs/features/todo-list.md](./features/todo-list.md)
+- Docs: [docs/features/2026-06-18-todo-list.md](./features/2026-06-18-todo-list.md)
 
 Implementação inicial do CRUD de tarefas com Ports & Adapters: Observable/Observer (classic/remote), runes (runes app), gateways Memory/Http/Remote e API REST.

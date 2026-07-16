@@ -9,6 +9,14 @@ describe('isParticipant', () => {
 	test('não-participante não está na lista', () => {
 		expect(isParticipant({ createdBy: 'u1', participantIds: ['u1', 'u2'] }, 'u3')).toBe(false);
 	});
+
+	test('criador que é participante é reconhecido', () => {
+		expect(isParticipant({ createdBy: 'u1', participantIds: ['u1', 'u2'] }, 'u1')).toBe(true);
+	});
+
+	test('lista vazia não tem participantes', () => {
+		expect(isParticipant({ createdBy: 'u1', participantIds: [] }, 'u1')).toBe(false);
+	});
 });
 
 describe('isCreator', () => {

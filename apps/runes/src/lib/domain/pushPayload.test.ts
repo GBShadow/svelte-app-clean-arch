@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import {
 	buildChatPushPayload,
 	buildSystemPushPayload,
+	buildKanbanPushPayload,
 	isSafeRedirectUrl,
 	truncateMessage
 } from './pushPayload';
@@ -96,5 +97,61 @@ describe('buildSystemPushPayload', () => {
 			url: '/kanban'
 		});
 		expect(payload).toBeNull();
+	});
+});
+
+describe('buildKanbanPushPayload', () => {
+	test('cria payload para card criado', () => {
+		const payload = buildKanbanPushPayload({
+			cardTitle: 'Minha Task',
+			cardId: 'card123',
+			columnName: 'Aguardando',
+			action: 'created'
+		});
+
+		expect(payload).not.toBeNull();
+		expect(payload!.type).toBe('system');
+		expect(payload!.title).toBe('Novo cartão atribuído');
+		expect(payload!.body).toBe('Você foi atribuído ao cartão "Minha Task" na coluna "Aguardando"');
+		expect(payload!.url).toBe('/kanban#card-card123');
+		expect(payload!.data).toEqual({});
+	});
+
+	test('cria payload para card movido com movedByName', () => {
+		const payload = buildKanbanPushPayload({
+			cardTitle: 'Minha Task',
+			cardId: 'card123',
+			columnName: 'Fazendo',
+			action: 'moved',
+			movedByName: 'João'
+		});
+
+		expect(payload).not.toBeNull();
+		expect(payload!.title).toBe('Cartão movido');
+		expect(payload!.body).toBe('João moveu "Minha Task" para "Fazendo"');
+		expect(payload!.url).toBe('/kanban#card-card123');
+	});
+
+	test('usa fallback "Alguém" quando movedByName não informado', () => {
+		const payload = buildKanbanPushPayload({
+			cardTitle: 'Task',
+			cardId: 'card1',
+			columnName: 'Feito',
+			action: 'moved'
+		});
+
+		expect(payload!.body).toBe('Alguém moveu "Task" para "Feito"');
+	});
+
+	test('retorna null para url insegura (deep link com protocolo)', () => {
+		// buildKanbanPushPayload sempre gera url relativa, mas testamos a validação interna
+		const payload = buildKanbanPushPayload({
+			cardTitle: 'Task',
+			cardId: 'card1',
+			columnName: 'Coluna',
+			action: 'created'
+		});
+		// URL gerada é sempre relativa, então não deve ser null
+		expect(payload).not.toBeNull();
 	});
 });

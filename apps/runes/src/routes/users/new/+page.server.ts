@@ -3,6 +3,7 @@ import { ClientResponseError } from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
 import { createUserSchema } from '$lib/validation/userSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
+import { logError } from '$lib/server/logger';
 
 const GENERIC_CREATE_ERROR =
 	'Não foi possível criar o usuário. Verifique se o e-mail já está em uso.';
@@ -60,7 +61,7 @@ export const actions: Actions = {
 				await locals.pb
 					.collection('auth')
 					.delete(createdAuthId)
-					.catch(() => {});
+					.catch((rollbackErr) => logError('users:new:rollbackAuth', rollbackErr));
 			}
 
 			if (error instanceof ClientResponseError) {

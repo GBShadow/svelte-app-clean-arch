@@ -42,4 +42,4 @@ protegem quem passa pela UI).
 - `.agents/skills/pocketbase-collections.md` — convenção de `created`/`updated`
 - `pocketbase/pb_migrations/0007_restrict_self_update_fields.js` — exemplo de rule com validação por campo
 - `pocketbase/pb_migrations/0014_restrict_chat_room_update_rule.js` — correção do caso real descrito acima
-- `docs/features/chat-realtime.md` — seção "Decisões de design" com o relato completo do incidente
+- `docs/features/2026-07-10-chat-realtime.md` — seção "Decisões de design" com o relato completo do incidente

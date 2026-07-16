@@ -6,24 +6,25 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 
 ## Índice
 
-| Slug | PR | Jira |
-|------|----|------|
-| `app-hub` | _(pendente)_ | [app-hub.jira.md](./app-hub.jira.md) |
-| `chat-realtime` | [chat-realtime.pr.md](./chat-realtime.pr.md) | [chat-realtime.jira.md](./chat-realtime.jira.md) |
-| `notifications` | _(pendente)_ | [notifications.jira.md](./notifications.jira.md) |
-| `data-testid-e2e` | _(pendente)_ | [data-testid-e2e.jira.md](./data-testid-e2e.jira.md) |
-| `dracula-theme-redesign` | [dracula-theme-redesign.pr.md](./dracula-theme-redesign.pr.md) | _(ver app-hub.jira.md)_ |
-| `e2e-test-fix-plan` | [e2e-test-fix-plan.pr.md](./e2e-test-fix-plan.pr.md) | [e2e-test-fix-plan.jira.md](./e2e-test-fix-plan.jira.md) |
-| `pocketbase-auth` | [pocketbase-auth.pr.md](./pocketbase-auth.pr.md) | [pocketbase-auth.jira.md](./pocketbase-auth.jira.md) |
-| `pocketbase-infra` | [pocketbase-infra.pr.md](./pocketbase-infra.pr.md) | [pocketbase-infra.jira.md](./pocketbase-infra.jira.md) |
-| `pocketbase-todo-sharing` | [pocketbase-todo-sharing.pr.md](./pocketbase-todo-sharing.pr.md) | [pocketbase-todo-sharing.jira.md](./pocketbase-todo-sharing.jira.md) |
-| `pocketbase-user-crud` | [pocketbase-user-crud.pr.md](./pocketbase-user-crud.pr.md) | [pocketbase-user-crud.jira.md](./pocketbase-user-crud.jira.md) |
-| `spec-driven-agent` | [spec-driven-agent.pr.md](./spec-driven-agent.pr.md) | [spec-driven-agent.jira.md](./spec-driven-agent.jira.md) |
-| `planning-poker` | _(pendente)_ | [planning-poker.jira.md](./planning-poker.jira.md) |
-| `kanban` | [kanban.pr.md](./kanban.pr.md) | [kanban.jira.md](./kanban.jira.md) |
-| `chat-sender-preservar` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | [chat-sender-preservar.jira.md](./chat-sender-preservar.jira.md) |
-| `poker-backlog-global` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | [poker-backlog-global.jira.md](./poker-backlog-global.jira.md) |
-| `kanban-fixes-e-poker-backlog` | [kanban-fixes-e-poker-backlog.pr.md](./kanban-fixes-e-poker-backlog.pr.md) | _(ver chat-sender-preservar/poker-backlog-global)_ |
+| Slug | Criada | PR | Jira |
+|------|--------|----|------|
+| `pocketbase-infra` | 2026-07-09 | [2026-07-09-pocketbase-infra.pr.md](./2026-07-09-pocketbase-infra.pr.md) | [2026-07-09-pocketbase-infra.jira.md](./2026-07-09-pocketbase-infra.jira.md) |
+| `pocketbase-auth` | 2026-07-09 | [2026-07-09-pocketbase-auth.pr.md](./2026-07-09-pocketbase-auth.pr.md) | [2026-07-09-pocketbase-auth.jira.md](./2026-07-09-pocketbase-auth.jira.md) |
+| `pocketbase-user-crud` | 2026-07-09 | [2026-07-09-pocketbase-user-crud.pr.md](./2026-07-09-pocketbase-user-crud.pr.md) | [2026-07-09-pocketbase-user-crud.jira.md](./2026-07-09-pocketbase-user-crud.jira.md) |
+| `pocketbase-todo-sharing` | 2026-07-09 | [2026-07-09-pocketbase-todo-sharing.pr.md](./2026-07-09-pocketbase-todo-sharing.pr.md) | [2026-07-09-pocketbase-todo-sharing.jira.md](./2026-07-09-pocketbase-todo-sharing.jira.md) |
+| `spec-driven-agent` | 2026-07-09 | [2026-07-09-spec-driven-agent.pr.md](./2026-07-09-spec-driven-agent.pr.md) | [2026-07-09-spec-driven-agent.jira.md](./2026-07-09-spec-driven-agent.jira.md) |
+| `data-testid-e2e` | 2026-07-10 | _(pendente)_ | [2026-07-10-data-testid-e2e.jira.md](./2026-07-10-data-testid-e2e.jira.md) |
+| `e2e-test-fix-plan` | 2026-07-10 | [2026-07-10-e2e-test-fix-plan.pr.md](./2026-07-10-e2e-test-fix-plan.pr.md) | [2026-07-10-e2e-test-fix-plan.jira.md](./2026-07-10-e2e-test-fix-plan.jira.md) |
+| `app-hub` | 2026-07-10 | _(pendente)_ | [2026-07-10-app-hub.jira.md](./2026-07-10-app-hub.jira.md) |
+| `chat-realtime` | 2026-07-10 | [2026-07-11-chat-realtime.pr.md](./2026-07-11-chat-realtime.pr.md) | [2026-07-10-chat-realtime.jira.md](./2026-07-10-chat-realtime.jira.md) |
+| `dracula-theme-redesign` | 2026-07-10 | [2026-07-10-dracula-theme-redesign.pr.md](./2026-07-10-dracula-theme-redesign.pr.md) | _(ver app-hub)_ |
+| `kanban` | 2026-07-12 | [2026-07-12-kanban.pr.md](./2026-07-12-kanban.pr.md) | [2026-07-12-kanban.jira.md](./2026-07-12-kanban.jira.md) |
+| `planning-poker` | 2026-07-12 | [2026-07-12-planning-poker.pr.md](./2026-07-12-planning-poker.pr.md) | [2026-07-12-planning-poker.jira.md](./2026-07-12-planning-poker.jira.md) |
+| `chat-sender-preservar` | 2026-07-12 | [2026-07-14-kanban-fixes-e-poker-backlog.pr.md](./2026-07-14-kanban-fixes-e-poker-backlog.pr.md) | [2026-07-12-chat-sender-preservar.jira.md](./2026-07-12-chat-sender-preservar.jira.md) |
+| `poker-backlog-global` | 2026-07-12 | [2026-07-14-kanban-fixes-e-poker-backlog.pr.md](./2026-07-14-kanban-fixes-e-poker-backlog.pr.md) | [2026-07-12-poker-backlog-global.jira.md](./2026-07-12-poker-backlog-global.jira.md) |
+| `kanban-fixes-e-poker-backlog` | 2026-07-14 | [2026-07-14-kanban-fixes-e-poker-backlog.pr.md](./2026-07-14-kanban-fixes-e-poker-backlog.pr.md) | _(ver chat-sender-preservar/poker-backlog-global)_ |
+| `notifications` | 2026-07-15 | _(pendente)_ | [2026-07-15-notifications.jira.md](./2026-07-15-notifications.jira.md) |
+| `chat-admin-access` | 2026-07-15 | _(pendente)_ | [2026-07-15-chat-admin-access.jira.md](./2026-07-15-chat-admin-access.jira.md) |
 
 ## Convenção de nomes
 

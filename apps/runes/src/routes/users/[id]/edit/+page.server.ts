@@ -5,6 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 import type { UserRecord } from '$lib/server/userRecord';
 import { adminEmailSchema, resetPasswordSchema, updateUserSchema } from '$lib/validation/userSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
+import { logError } from '$lib/server/logger';
 
 async function findAuthRecordByUserEmail(pb: PocketBase, email: string) {
 	return pb.collection('auth').getFirstListItem(pb.filter('email = {:email}', { email }));
@@ -85,7 +86,7 @@ export const actions: Actions = {
 				await locals.pb
 					.collection('auth')
 					.update(authRecordId, { email: previousAuthEmail })
-					.catch(() => {});
+					.catch((rollbackErr) => logError('users:edit:rollbackEmail', rollbackErr));
 			}
 			if (err instanceof ClientResponseError) {
 				const errors: Record<string, string> = { general: 'Não foi possível salvar as alterações.' };

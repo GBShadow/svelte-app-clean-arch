@@ -73,3 +73,34 @@ export function buildSystemPushPayload(params: {
 
 	return payload;
 }
+
+export interface KanbanPushParams {
+	cardTitle: string;
+	cardId: string;
+	columnName: string;
+	action: 'created' | 'moved';
+	movedByName?: string;
+}
+
+/**
+ * Constrói payload de push para notificações de Kanban (card criado ou movido).
+ * Usa o tipo 'system' para reutilizar infraestrutura existente (sendSystemPush).
+ * Retorna null se URL for insegura ou payload exceder limite.
+ */
+export function buildKanbanPushPayload(params: KanbanPushParams): SystemPushPayload | null {
+	const titles = {
+		created: 'Novo cartão atribuído',
+		moved: 'Cartão movido'
+	};
+
+	const bodies = {
+		created: `Você foi atribuído ao cartão "${params.cardTitle}" na coluna "${params.columnName}"`,
+		moved: `${params.movedByName ?? 'Alguém'} moveu "${params.cardTitle}" para "${params.columnName}"`
+	};
+
+	return buildSystemPushPayload({
+		title: titles[params.action],
+		body: bodies[params.action],
+		url: `/kanban#card-${params.cardId}`
+	});
+}

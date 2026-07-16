@@ -5,9 +5,21 @@ import { fetchAuthParticipants } from '$lib/server/authExpand';
 export const load: PageServerLoad = async ({ locals }) => {
 	const userId = locals.pb.authStore.record?.id ?? '';
 
-	const rooms = await locals.pb.collection('chat_rooms').getFullList<ChatRoomRecord>({
-		filter: locals.pb.filter('participants.id ?= {:userId}', { userId })
-	});
+	let rooms: ChatRoomRecord[];
+	try {
+		rooms = await locals.pb.collection('chat_rooms').getFullList<ChatRoomRecord>({
+			filter: locals.pb.filter('participants.id ?= {:userId}', { userId })
+		});
+	} catch (err) {
+		const status = err && typeof err === 'object' && 'status' in err
+			? (err as { status: number }).status
+			: undefined;
+		if (status === 403) {
+			rooms = [];
+		} else {
+			throw err;
+		}
+	}
 
 	const participantIds = [...new Set(rooms.flatMap((room) => room.participants))];
 	const participants = await fetchAuthParticipants(participantIds);

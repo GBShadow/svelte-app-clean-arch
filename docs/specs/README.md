@@ -6,20 +6,20 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 
 ## Índice
 
-| Feature | Status | Spec |
-|---------|--------|------|
-| Subagente spec-driven | Implementada | [spec-driven-agent.md](./spec-driven-agent.md) |
-| Infra PocketBase (Docker + coleções) | Implementada | [pocketbase-infra.md](./pocketbase-infra.md) |
-| Autenticação PocketBase (runes) | Implementada | [pocketbase-auth.md](./pocketbase-auth.md) |
-| CRUD de usuário (runes) | Implementada | [pocketbase-user-crud.md](./pocketbase-user-crud.md) |
-| Todo multi-lista com compartilhamento (runes) | Implementada | [pocketbase-todo-sharing.md](./pocketbase-todo-sharing.md) |
-| App Hub (tela inicial) | Implementada | [app-hub.md](./app-hub.md) |
-| Chat em tempo real com avatar (runes) | Implementada | [chat-realtime.md](./chat-realtime.md) |
-| Preservar Remetente do Chat (runes) | Spec em aprovação | [chat-sender-preservar.md](./chat-sender-preservar.md) |
-| Notificações Push de Chat e Sistema (runes) | Implementada | [notifications.md](./notifications.md) |
-| Planning Poker & Integração Kanban | Implementada | [planning-poker.md](./planning-poker.md) |
-| Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | [poker-backlog-global.md](./poker-backlog-global.md) |
-| Kanban | Implementada | [kanban.md](./kanban.md) |
+| Feature | Status | Criada | Spec |
+|---------|--------|--------|------|
+| Infra PocketBase (Docker + coleções) | Implementada | 2026-07-09 | [2026-07-09-pocketbase-infra.md](./2026-07-09-pocketbase-infra.md) |
+| Autenticação PocketBase (runes) | Implementada | 2026-07-09 | [2026-07-09-pocketbase-auth.md](./2026-07-09-pocketbase-auth.md) |
+| CRUD de usuário (runes) | Implementada | 2026-07-09 | [2026-07-09-pocketbase-user-crud.md](./2026-07-09-pocketbase-user-crud.md) |
+| Todo multi-lista com compartilhamento (runes) | Implementada | 2026-07-09 | [2026-07-09-pocketbase-todo-sharing.md](./2026-07-09-pocketbase-todo-sharing.md) |
+| Subagente spec-driven | Implementada | 2026-07-09 | [2026-07-09-spec-driven-agent.md](./2026-07-09-spec-driven-agent.md) |
+| App Hub (tela inicial) | Implementada | 2026-07-10 | [2026-07-10-app-hub.md](./2026-07-10-app-hub.md) |
+| Chat em tempo real com avatar (runes) | Implementada | 2026-07-10 | [2026-07-10-chat-realtime.md](./2026-07-10-chat-realtime.md) |
+| Kanban | Implementada | 2026-07-12 | [2026-07-12-kanban.md](./2026-07-12-kanban.md) |
+| Planning Poker & Integração Kanban | Implementada | 2026-07-12 | [2026-07-12-planning-poker.md](./2026-07-12-planning-poker.md) |
+| Preservar Remetente do Chat (runes) | Spec em aprovação | 2026-07-12 | [2026-07-12-chat-sender-preservar.md](./2026-07-12-chat-sender-preservar.md) |
+| Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | 2026-07-12 | [2026-07-12-poker-backlog-global.md](./2026-07-12-poker-backlog-global.md) |
+| Notificações Push de Chat e Sistema (runes) | Implementada | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
 
 > **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.
 

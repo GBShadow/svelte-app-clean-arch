@@ -370,29 +370,29 @@ docs/
 ├── specs/                      ← Specs (antes de implementar)
 │   ├── _template.md
 │   ├── README.md               ← Índice de specs
-│   ├── spec-driven-agent.md
-│   ├── pocketbase-infra.md
-│   ├── pocketbase-auth.md
-│   ├── pocketbase-user-crud.md
-│   ├── pocketbase-todo-sharing.md
-│   └── app-hub.md
+│   ├── 2026-07-09-spec-driven-agent.md
+│   ├── 2026-07-09-pocketbase-infra.md
+│   ├── 2026-07-09-pocketbase-auth.md
+│   ├── 2026-07-09-pocketbase-user-crud.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.md
+│   └── 2026-07-10-app-hub.md
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
 │   ├── README.md               ← Índice de features
-│   ├── todo-list.md
-│   ├── spec-driven-agent.md
-│   ├── pocketbase-infra.md
-│   ├── pocketbase-auth.md
-│   ├── pocketbase-user-crud.md
-│   ├── pocketbase-todo-sharing.md
-│   └── app-hub.md
+│   ├── 2026-06-18-todo-list.md
+│   ├── 2026-07-09-spec-driven-agent.md
+│   ├── 2026-07-09-pocketbase-infra.md
+│   ├── 2026-07-09-pocketbase-auth.md
+│   ├── 2026-07-09-pocketbase-user-crud.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.md
+│   └── 2026-07-10-app-hub.md
 │
 ├── workflow/                   ← PRs + Jiras
 │   ├── _template-jira.md
 │   ├── _template-pr.md
 │   ├── README.md               ← Índice de workflow
-│   ├── app-hub.jira.md
+│   ├── 2026-07-10-app-hub.jira.md
 │   └── <slug>.pr.md / <slug>.jira.md
 │
 └── testing/

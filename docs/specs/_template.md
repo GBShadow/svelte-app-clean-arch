@@ -1,5 +1,7 @@
 # <Nome da Feature>
 
+Created: <YYYY-MM-DD>
+
 ## Contexto
 
 Qual problema existe hoje? Por que essa funcionalidade é necessária?

@@ -98,4 +98,5 @@ Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
+- `checkpoint` — salva estado da sessão para retomar depois em nova sessão
 - `spec-driven` — agente de processo spec-driven

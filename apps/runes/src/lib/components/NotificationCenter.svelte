@@ -7,6 +7,7 @@
 	import Kanban from 'lucide-svelte/icons/kanban';
 	import Gamepad2 from 'lucide-svelte/icons/gamepad-2';
 	import Check from 'lucide-svelte/icons/check';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import ExternalLink from 'lucide-svelte/icons/external-link';
 
 	interface Props {
@@ -17,28 +18,24 @@
 
 	const typeIcons = { chat: MessageSquare, system: Bell, kanban: Kanban, poker: Gamepad2 };
 
-	let loaded = $state(false);
-
-	async function load() {
-		if (!loaded) {
-			await notificationStore.load({ page: 1 });
-			loaded = true;
-		}
-	}
-
-	function handleClick(url: string | undefined, id: string, event: MouseEvent) {
-		event.stopPropagation();
-		if (url && isSafeRedirectUrl(url)) {
-			notificationStore.markAsReadAndNavigate(id, url);
-		} else {
-			notificationStore.markAsRead([id]);
-		}
-		onClose();
-	}
+	onMount(() => {
+		notificationStore.load({ page: 1 });
+	});
 
 	async function markAsRead(id: string, event: MouseEvent) {
 		event.stopPropagation();
 		await notificationStore.markAsRead([id]);
+	}
+
+	async function deleteNotification(id: string, event: MouseEvent) {
+		event.stopPropagation();
+		await notificationStore.deleteNotification(id);
+	}
+
+	async function navigateTo(url: string, id: string, event: MouseEvent) {
+		event.stopPropagation();
+		await notificationStore.markAsReadAndNavigate(id, url);
+		onClose();
 	}
 
 	async function markAllAsRead(event: MouseEvent) {
@@ -65,24 +62,18 @@
 		</div>
 	</div>
 
-	{#await load()}
+	{#if notificationStore.loading}
 		<div class="p-4 text-center text-base-content/60">Carregando...</div>
-	{/await}
-
-	{#if notificationStore.notifications.length === 0}
+	{:else if notificationStore.notifications.length === 0}
 		<div class="p-4 text-center text-base-content/60">Nenhuma notificação</div>
 	{:else}
 		<div class="overflow-y-auto max-h-[400px]" data-testid="notification-list">
 			{#each notificationStore.notifications as n (n.id)}
 				<div
-					class="p-3 hover:bg-base-200 flex items-start gap-3 border-b border-base-200 last:border-0 cursor-pointer { !n.read ? 'bg-base-200/50' : '' }"
-					onclick={(e) => handleClick(n.url, n.id, e as unknown as MouseEvent)}
+					class="p-3 flex items-start gap-3 border-b border-base-200 last:border-0 {!n.read ? 'bg-base-200/50' : ''}"
 					data-testid="notification-item-{n.id}"
-					role="button"
-					tabindex="0"
-					onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(n.url, n.id, e as unknown as MouseEvent); } }}
 				>
-					<div class="flex h-8 w-8 items-center justify-center rounded-full bg-base-200 shrink-0">
+					<div class="flex h-8 w-8 items-center justify-center rounded-full bg-base-200 shrink-0 mt-1">
 						{#if n.type === 'chat'}
 							<MessageSquare class="size-4" />
 						{:else if n.type === 'system'}
@@ -96,24 +87,46 @@
 					<div class="flex-1 min-w-0">
 						<div class="flex items-center justify-between gap-2">
 							<p class="font-medium truncate">{n.title}</p>
-							<span class="text-xs text-base-content/50 whitespace-nowrap">{formatRelativeTime(n.created)}</span>
+							<span class="text-xs text-base-content/50 whitespace-nowrap shrink-0">{formatRelativeTime(n.created)}</span>
 						</div>
 						<p class="text-sm text-base-content/70 truncate">{n.body}</p>
+					</div>
+					<div class="flex items-center gap-1 shrink-0 mt-1">
 						{#if !n.read}
+							<span class="tooltip tooltip-left" data-tip="Marcar como lida">
+								<button
+									type="button"
+									class="btn btn-ghost btn-xs text-success"
+									onclick={(e) => markAsRead(n.id, e)}
+									data-testid="btn-mark-read-dropdown-{n.id}"
+								>
+									<Check class="size-3.5" />
+								</button>
+							</span>
+						{/if}
+						<span class="tooltip tooltip-left" data-tip="Excluir">
 							<button
 								type="button"
-								class="btn btn-ghost btn-xs text-success mt-1"
-								onclick={(e) => markAsRead(n.id, e)}
-								data-testid="btn-mark-read-dropdown-{n.id}"
+								class="btn btn-ghost btn-xs text-error"
+								onclick={(e) => deleteNotification(n.id, e)}
+								data-testid="btn-delete-dropdown-{n.id}"
 							>
-								<Check class="size-3" />
-								Marcar como lida
+								<Trash2 class="size-3.5" />
 							</button>
+						</span>
+						{#if n.url && isSafeRedirectUrl(n.url)}
+							<span class="tooltip tooltip-left" data-tip="Ir para o destino">
+								<button
+									type="button"
+									class="btn btn-ghost btn-xs"
+									onclick={(e) => navigateTo(n.url, n.id, e)}
+									data-testid="notification-link-dropdown-{n.id}"
+								>
+									<ExternalLink class="size-3.5" />
+								</button>
+							</span>
 						{/if}
 					</div>
-					{#if n.url && isSafeRedirectUrl(n.url)}
-						<ExternalLink class="size-4 text-base-content/40 shrink-0 mt-1" />
-					{/if}
 				</div>
 			{/each}
 		</div>

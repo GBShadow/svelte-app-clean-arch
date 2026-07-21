@@ -162,6 +162,55 @@ export async function createKanbanMovedNotification(
 	return results;
 }
 
+export async function createKanbanCommentedNotification(
+	assigneeIds: string[],
+	cardTitle: string,
+	cardId: string,
+	commenterName: string
+): Promise<NotificationRecord[]> {
+	const authIdMap = await resolveUserIdsToAuthIds(assigneeIds);
+	if (authIdMap.size === 0) return [];
+
+	const payload = buildNotificationPayload(
+		'kanban',
+		'Novo coment\u00E1rio',
+		`${commenterName} comentou em "${cardTitle}"`,
+		`/kanban#card-${cardId}`,
+		{ cardId, commenterName }
+	);
+
+	const results: NotificationRecord[] = [];
+	for (const [, authId] of authIdMap) {
+		const record = await createNotification(authId, payload);
+		results.push(record);
+	}
+	return results;
+}
+
+export async function createKanbanDeletedNotification(
+	assigneeIds: string[],
+	cardTitle: string,
+	deleterName: string
+): Promise<NotificationRecord[]> {
+	const authIdMap = await resolveUserIdsToAuthIds(assigneeIds);
+	if (authIdMap.size === 0) return [];
+
+	const payload = buildNotificationPayload(
+		'kanban',
+		'Cart\u00E3o removido',
+		`"${cardTitle}" foi removido do kanban por ${deleterName}`,
+		`/kanban`,
+		{ deletedBy: deleterName }
+	);
+
+	const results: NotificationRecord[] = [];
+	for (const [, authId] of authIdMap) {
+		const record = await createNotification(authId, payload);
+		results.push(record);
+	}
+	return results;
+}
+
 export async function createPokerNotification(
 	userId: string,
 	title: string,

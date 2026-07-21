@@ -25,13 +25,60 @@ Se o pedido for um bugfix de poucas linhas, sem impacto de design (RF7): pule a 
 
 ## Passo 1 — Spec (RF1, RF2)
 
-1. Copie `docs/specs/_template.md` → `docs/specs/<slug>.md`.
-2. Preencha as seções junto com o usuário, **uma pergunta por vez**, preferencialmente com `AskUserQuestion` (múltipla escolha quando fizer sentido): Contexto, Objetivo, Escopo (incluído/fora do escopo), Requisitos funcionais, Requisitos não funcionais, Critérios de aceite, Design (Ports & Adapters), Contrato de API (se houver), Alternativas consideradas, Questões em aberto.
-3. Não invente seções fora do template.
-4. Default de arquitetura: **runes** (`apps/runes/...`) — único app ativo. `classic` e `remote` foram movidos para `deprecated/`.
-5. Escreva `docs/specs/<slug>.md` e atualize o índice em `docs/specs/README.md` (tabela "Índice", status inicial "Em validação").
+Divida o preenchimento em **5 estágios sequenciais**. Cada estágio faz perguntas granulares **uma de cada vez**, preferencialmente com `AskUserQuestion` (múltipla escolha quando fizer sentido). Só avance ao próximo estágio quando o anterior estiver completo e válido.
 
-**Validação com o usuário antes de prosseguir** — alinhamento é o objetivo da spec, não documentação retroativa.
+### Estágio 1 — Descoberta (contexto, atores, impacto)
+
+Leia `docs/TECH-DEBT.md` antes de começar. Pergunte **uma por vez**:
+
+1. **Qual o problema ou necessidade de negócio que esta feature resolve?** (Contexto)
+2. **Quem são os usuários/atores afetados?** (personas, perfis de acesso)
+3. **Qual o objetivo mensurável?** — o que muda de concreto após a implementação? (Objetivo)
+4. **Quais features/rotas/coleções existentes podem ser impactadas?** (Impactos e Dependências)
+5. **Há dívida técnica conhecida em `docs/TECH-DEBT.md` que afeta esta área?** Se sim, cite os itens e pergunte se devem ser endereçados junto. (Impactos e Dependências)
+6. **Quais dependências esta feature tem?** — precisa de outra spec/feature/migration antes? (Impactos e Dependências)
+7. **O que fica DENTRO do escopo?** e **O que fica FORA do escopo?** (Escopo)
+
+### Estágio 2 — Requisitos (funcionais, não funcionais, borda, aceite)
+
+1. **Quais os requisitos funcionais?** — enumere um a um (RF1, RF2, ...)
+2. **Quais os requisitos não funcionais?** — performance, segurança, acessibilidade, offline, realtime
+3. **Quais casos de borda e cenários de erro precisam ser cobertos?** — concorrência, timeout, sessão expirada, dados inconsistentes, permissão negada, input inválido (ver template para a lista completa)
+4. **Quais riscos de segurança são relevantes?** — XSS em campos de texto rico, IDOR em rotas, vazamento via realtime subscriptions, escalação de privilégio
+5. **Quais os critérios de aceite?** — formato Gherkin (Dado/Quando/Então), um por AC
+
+### Estágio 3 — Design & Arquitetura
+
+1. **Qual o mapeamento Ports & Adapters?** — camada por camada (PocketBase, Domínio, Server, Validação, API, UI) seguindo a tabela do template
+2. **Qual o contrato de API?** — rotas, métodos, payloads de request/response, form actions
+3. **Quais coleções/campos no PocketBase (se houver)?** — migration, regras de acesso (`listRule`, `viewRule`, etc.)
+4. **Qual o design de UI e seus estados?** — componentes, layout, estados (loading/empty/error/success/offline)
+5. **Quais alternativas foram consideradas e por que a escolhida venceu?** — trade-offs arquiteturais
+
+### Estágio 4 — Análise de Dívida Técnica
+
+1. **Que trade-offs arquiteturais estamos aceitando?** — o que está sendo simplificado em vez de feito "do jeito certo"?
+2. **Que débito técnico novo esta feature cria se seguirmos com a abordagem atual?** — seja explícito sobre o custo futuro
+3. **Que débito existente (de `docs/TECH-DEBT.md`) vale a pena resolver junto já que estamos na área?** — avalie custo vs. benefício
+4. **Há itens para registrar em `docs/TECH-DEBT.md`?** — se sim, registre antes de prosseguir, seguindo o formato do arquivo
+
+### Estágio 5 — Review & Consolidação
+
+Antes de escrever o arquivo:
+
+1. **Apresente um resumo completo** de tudo que foi coletado nos 4 estágios anteriores.
+2. **Verifique consistência cruzada:** requisitos funcionais ↔ critérios de aceite ↔ design ↔ contrato de API. Há algum RF sem AC correspondente? Algum AC sem design? Algum design sem camada mapeada?
+3. **Ajuste de escopo:** pergunte se o escopo ainda está adequado ou se algo precisa sair/entrar com base no que foi descoberto.
+4. **Confirmação final:** "Posso gerar a spec e seguir para o Jira?" — só prossiga com resposta positiva.
+
+Após a confirmação:
+
+5. Copie `docs/specs/_template.md` → `docs/specs/<slug>.md`.
+6. Preencha todas as seções com base no que foi coletado nos estágios 1–4.
+7. Default de arquitetura: **runes** (`apps/runes/...`) — único app ativo. `classic` e `remote` foram movidos para `deprecated/`.
+8. Atualize o índice em `docs/specs/README.md` (tabela "Índice", status inicial "Em validação").
+
+> **Nota:** Não invente seções fora do template. Se alguma seção do template não se aplica, mantenha-a com "Não aplicável."
 
 ## Passo 2 — Jira (RF3, RF4)
 

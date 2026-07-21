@@ -31,7 +31,7 @@ export class NotificationStore {
 	}
 
 	async load(opts: { page?: number; append?: boolean; filter?: NotificationFilter } = {}) {
-		if (!this.#pb || !this.#userId) return;
+		if (!this.#userId) return;
 		const { page = 1, append = false, filter } = opts;
 		this.loading = true;
 		try {
@@ -42,14 +42,16 @@ export class NotificationStore {
 				...(this.filter.type && { type: this.filter.type }),
 				...(this.filter.read !== undefined && { read: String(this.filter.read) })
 			});
-			const res = await this.#pb.send(`/api/notifications?${params}`, { method: 'GET' });
+			const res = await fetch(`/api/notifications?${params}`);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			const data = await res.json();
 			if (append) {
-				this.notifications = [...this.notifications, ...res.items];
+				this.notifications = [...this.notifications, ...data.items];
 			} else {
-				this.notifications = res.items;
+				this.notifications = data.items;
 			}
-			this.page = res.page;
-			this.hasMore = res.page < res.totalPages;
+			this.page = data.page;
+			this.hasMore = data.page < data.totalPages;
 		} catch (e) {
 			console.error('Erro ao carregar notificações:', e);
 		} finally {
@@ -64,13 +66,18 @@ export class NotificationStore {
 	}
 
 	async markAsRead(ids: string[]) {
-		if (!this.#pb || !this.#userId) return;
+		if (!this.#userId) return;
 		for (const id of ids) {
 			const idx = this.notifications.findIndex((n) => n.id === id);
 			if (idx !== -1) this.notifications[idx] = { ...this.notifications[idx], read: true };
 		}
 		try {
-			await this.#pb.send('/api/notifications/read', { method: 'POST', body: { ids } });
+			const res = await fetch('/api/notifications/read', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ ids })
+			});
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		} catch (e) {
 			console.error('Erro ao marcar como lida:', e);
 			this.load({ page: 1 });
@@ -78,10 +85,11 @@ export class NotificationStore {
 	}
 
 	async markAllAsRead() {
-		if (!this.#pb || !this.#userId) return;
+		if (!this.#userId) return;
 		this.notifications = this.notifications.map((n) => ({ ...n, read: true }));
 		try {
-			await this.#pb.send('/api/notifications/read-all', { method: 'POST' });
+			const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		} catch (e) {
 			console.error('Erro ao marcar todas como lidas:', e);
 			this.load({ page: 1 });
@@ -130,14 +138,15 @@ export class NotificationStore {
 	}
 
 	async deleteNotification(id: string) {
-		if (!this.#pb || !this.#userId) return;
+		if (!this.#userId) return;
 		this.notifications = this.notifications.filter((n) => n.id !== id);
 		try {
-			await this.#pb.collection('notifications').delete(id);
+			const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		} catch (e) {
 			console.error('Erro ao deletar notificação:', e);
-			this.load({ page: 1 });
 		}
+		await this.load({ page: 1 });
 	}
 
 	destroy() {

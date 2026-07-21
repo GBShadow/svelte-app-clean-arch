@@ -77,30 +77,42 @@ export function buildSystemPushPayload(params: {
 export interface KanbanPushParams {
 	cardTitle: string;
 	cardId: string;
-	columnName: string;
-	action: 'created' | 'moved';
+	columnName?: string;
+	action: 'created' | 'moved' | 'commented' | 'deleted';
 	movedByName?: string;
+	commenterName?: string;
 }
 
 /**
- * Constrói payload de push para notificações de Kanban (card criado ou movido).
+ * Constrói payload de push para notificações de Kanban (card criado, movido, comentado ou removido).
  * Usa o tipo 'system' para reutilizar infraestrutura existente (sendSystemPush).
  * Retorna null se URL for insegura ou payload exceder limite.
  */
 export function buildKanbanPushPayload(params: KanbanPushParams): SystemPushPayload | null {
-	const titles = {
+	const titles: Record<string, string> = {
 		created: 'Novo cartão atribuído',
-		moved: 'Cartão movido'
+		moved: 'Cartão movido',
+		commented: 'Novo comentário',
+		deleted: 'Cartão removido'
 	};
 
-	const bodies = {
+	const bodies: Record<string, string> = {
 		created: `Você foi atribuído ao cartão "${params.cardTitle}" na coluna "${params.columnName}"`,
-		moved: `${params.movedByName ?? 'Alguém'} moveu "${params.cardTitle}" para "${params.columnName}"`
+		moved: `${params.movedByName ?? 'Alguém'} moveu "${params.cardTitle}" para "${params.columnName}"`,
+		commented: `${params.commenterName ?? 'Alguém'} comentou em "${params.cardTitle}"`,
+		deleted: `"${params.cardTitle}" foi removido do kanban`
+	};
+
+	const urls: Record<string, string> = {
+		created: `/kanban#card-${params.cardId}`,
+		moved: `/kanban#card-${params.cardId}`,
+		commented: `/kanban#card-${params.cardId}`,
+		deleted: `/kanban`
 	};
 
 	return buildSystemPushPayload({
 		title: titles[params.action],
 		body: bodies[params.action],
-		url: `/kanban#card-${params.cardId}`
+		url: urls[params.action]
 	});
 }

@@ -8,10 +8,9 @@
 	import Kanban from 'lucide-svelte/icons/kanban';
 	import Gamepad2 from 'lucide-svelte/icons/gamepad-2';
 	import Check from 'lucide-svelte/icons/check';
-	import X from 'lucide-svelte/icons/x';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import Clock from 'lucide-svelte/icons/clock';
 	import ExternalLink from 'lucide-svelte/icons/external-link';
-	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import type { PageProps } from './$types';
@@ -36,6 +35,10 @@
 		notificationStore.page = data.currentPage;
 		notificationStore.hasMore = data.currentPage < data.totalPages;
 	});
+
+	let items = $derived(notificationStore.notifications);
+	let totalItems = $derived(data.totalItems);
+	let totalPages = $derived(data.totalPages);
 
 	async function loadPage(page: number) {
 		if (loading || page < 1 || page > data.totalPages) return;
@@ -67,14 +70,8 @@
 		event.stopPropagation();
 		event.preventDefault();
 		deleting = id;
-		try {
-			await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
-			notificationStore.notifications = notificationStore.notifications.filter((n) => n.id !== id);
-		} catch {
-			console.error('Erro ao deletar notificação');
-		} finally {
-			deleting = null;
-		}
+		await notificationStore.deleteNotification(id);
+		deleting = null;
 	}
 
 	async function handleNavigate(notification: any, event: MouseEvent) {
@@ -122,12 +119,12 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#if data.notifications.length === 0}
+						{#if items.length === 0}
 							<tr>
 								<td colspan="6" class="text-center py-8 text-base-content/60">Nenhuma notificação</td>
 							</tr>
 						{:else}
-							{#each data.notifications as n (n.id)}
+							{#each items as n (n.id)}
 								<tr class="{!n.read ? 'bg-base-200/50' : ''}" data-testid="notification-row-{n.id}">
 									<td>
 										<div class="flex h-8 w-8 items-center justify-center rounded-full bg-base-200">
@@ -145,33 +142,39 @@
 									<td>
 										<div class="flex items-center justify-end gap-1">
 											{#if !n.read}
+												<span class="tooltip tooltip-left" data-tip="Marcar como lida">
+													<button
+														type="button"
+														class="btn btn-ghost btn-xs text-success"
+														onclick={(e) => handleMarkRead(n.id, e)}
+														data-testid="btn-mark-read-page-{n.id}"
+													>
+														<Check class="size-3.5" />
+													</button>
+												</span>
+											{/if}
+											<span class="tooltip tooltip-left" data-tip="Excluir">
 												<button
 													type="button"
-													class="btn btn-ghost btn-xs text-success"
-													onclick={(e) => handleMarkRead(n.id, e)}
-													data-testid="btn-mark-read-page-{n.id}"
+													class="btn btn-ghost btn-xs text-error"
+													onclick={(e) => handleDelete(n.id, e)}
+													disabled={deleting === n.id}
+													data-testid="btn-delete-page-{n.id}"
 												>
-													<Check class="size-3.5" />
+													<Trash2 class="size-3.5" />
 												</button>
-											{/if}
-											<button
-												type="button"
-												class="btn btn-ghost btn-xs text-error"
-												onclick={(e) => handleDelete(n.id, e)}
-												disabled={deleting === n.id}
-												data-testid="btn-delete-page-{n.id}"
-											>
-												<X class="size-3.5" />
-											</button>
+											</span>
 											{#if n.url && isSafeRedirectUrl(n.url)}
-												<a
-													href={n.url}
-													class="btn btn-ghost btn-xs"
-													onclick={(e) => handleNavigate(n, e)}
-													data-testid="notification-link-page-{n.id}"
-												>
-													<ExternalLink class="size-3.5" />
-												</a>
+												<span class="tooltip tooltip-left" data-tip="Ir para o destino">
+													<a
+														href={n.url}
+														class="btn btn-ghost btn-xs"
+														onclick={(e) => handleNavigate(n, e)}
+														data-testid="notification-link-page-{n.id}"
+													>
+														<ExternalLink class="size-3.5" />
+													</a>
+												</span>
 											{/if}
 										</div>
 									</td>
@@ -182,25 +185,25 @@
 				</table>
 			</div>
 
-			{#if data.totalPages > 1}
+			{#if totalPages > 1}
 				<div class="flex items-center justify-between p-4 border-t border-base-200">
 					<div class="text-sm text-base-content/60">
-						Página {data.currentPage} de {data.totalPages} — {data.totalItems} itens
+						Página {currentPage} de {totalPages} — {totalItems} itens
 					</div>
 					<div class="flex gap-2">
 						<button
 							type="button"
 							class="btn btn-ghost btn-sm"
-							onclick={() => loadPage(data.currentPage - 1)}
-							disabled={data.currentPage <= 1 || loading}
+							onclick={() => loadPage(currentPage - 1)}
+							disabled={currentPage <= 1 || loading}
 						>
 							<ChevronLeft class="size-4" />
 						</button>
 						<button
 							type="button"
 							class="btn btn-ghost btn-sm"
-							onclick={() => loadPage(data.currentPage + 1)}
-							disabled={data.currentPage >= data.totalPages || loading}
+							onclick={() => loadPage(currentPage + 1)}
+							disabled={currentPage >= totalPages || loading}
 						>
 							<ChevronRight class="size-4" />
 						</button>

@@ -14,6 +14,9 @@
 
 	function toggle() {
 		open = !open;
+		if (open) {
+			notificationStore.load({ page: 1 });
+		}
 	}
 
 	function close() {

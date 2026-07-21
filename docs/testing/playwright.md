@@ -113,7 +113,7 @@ falha rápido com a mensagem "Rode: pnpm backend:reset". Rode `pnpm backend:rese
 
 ### Pré-requisito extra: `apps/runes` exige o PocketBase rodando
 
-Desde a autenticação PocketBase (`docs/features/pocketbase-auth.md`), todas as rotas de `apps/runes` exigem login — `e2e/fixtures.ts` loga com a conta seed antes de cada teste. Suba o backend antes de rodar `pnpm test:e2e` em `runes`:
+Desde a autenticação PocketBase (`docs/features/2026-07-09-pocketbase-auth.md`), todas as rotas de `apps/runes` exigem login — `e2e/fixtures.ts` loga com a conta seed antes de cada teste. Suba o backend antes de rodar `pnpm test:e2e` em `runes`:
 
 ```bash
 cp .env.example .env   # se ainda não existir

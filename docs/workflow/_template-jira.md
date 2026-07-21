@@ -1,5 +1,7 @@
 # <Summary — título curto da tarefa>
 
+Created: <YYYY-MM-DD>
+
 ## Metadados Jira
 
 | Campo | Valor |

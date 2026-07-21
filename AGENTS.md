@@ -78,6 +78,13 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 
 Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste repositório.
 
+## Comandos disponíveis
+
+- `review` — revisão completa de código: análise técnica, lint/typecheck, testes,
+  documentação (CODE-STRUCTURE, CHANGELOG, features, tech-debt), lições aprendidas e
+  análise de impacto. Aceita commit, branch, PR ou nada (mudanças não commitadas).
+  Definição em `.opencode/command/review.md`.
+
 ## Skills disponíveis (`.agents/skills/`)
 
 - `verify-before-accept` — disciplina de evidência (esta regra — detalhada acima)

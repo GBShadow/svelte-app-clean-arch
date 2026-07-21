@@ -38,7 +38,13 @@ AAAA-MM-DD, PR/commit <link ou hash>` no final. Não delete o histórico do item
 
 ## Abertos
 
-_Nenhum item registrado ainda._
+### E2E Playwright falha ao resolver `$env` em imports do server
+
+- **Identificado em:** 2026-07-15, durante investigação de notificações do Kanban
+- **Local:** `apps/runes/playwright.config.ts` + `apps/runes/e2e/*.spec.ts`; imports transitivos de `src/lib/server/pocketbaseAdmin.ts` (que usa `$env/static/private`)
+- **Descrição:** Rodar `npx playwright test` (ou `pnpm exec playwright test`) quebra com `Error: Cannot find package '$env' imported from .../pocketbaseAdmin.ts`. O runner do Playwright carrega os specs como TS puro e não aplica o alias/resolução de módulos do SvelteKit/Vite para `$env`, `$lib`, etc. Não é erro de código de feature — é o setup do runner E2E que não está processando os aliases do SvelteKit.
+- **Impacto:** Não é possível validar E2E localmente (ex.: `kanban.spec.ts`) neste ambiente; a verificação fica limitada a `svelte-check` + `vitest`. Risco de regressões de UI/realtime não capturadas em CI local.
+- **Sugestão de resolução:** Configurar `tsconfig-paths`/`playwright` para usar o `vite-tsconfig-paths` ou apontar o `tsconfig` do SvelteKit no `playwright.config.ts` (`tsconfig: './tsconfig.json'` + `resolveConfig` do SvelteKit), ou mover a lógica de teste para não importar módulos server que dependam de `$env`. Priorizar validação manual via `pnpm dev:full` enquanto isso.
 
 ## Resolvidos
 

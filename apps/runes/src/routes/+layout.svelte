@@ -1,14 +1,24 @@
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { onAuthEvent, postAuthEvent } from '$lib/client/authChannel';
 	import IconLogout from '$lib/components/icons/IconLogout.svelte';
+	import NotificationBell from '$lib/components/NotificationBell.svelte';
+	import { notificationStore } from '$lib/client/notifications.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 
 	onMount(() => onAuthEvent(() => invalidateAll()));
+
+	if (data.user) {
+		const token = (data as any).pbToken;
+		const record = (data as any).pbRecord;
+		if (token && record) notificationStore.init(data.user.authId, token, record);
+	}
+
+	onDestroy(() => notificationStore.destroy());
 
 	async function handleLogout(event: SubmitEvent) {
 		event.preventDefault();
@@ -30,6 +40,7 @@
 		<div class="flex-none flex items-center gap-4">
 			{#if data.user}
 				<span class="text-sm text-base-content/60 hidden sm:block">{data.user.name}</span>
+				<NotificationBell />
 				<form method="POST" action="/logout" onsubmit={handleLogout}>
 					<button type="submit" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-logout">
 						<IconLogout class="size-4" />

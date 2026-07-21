@@ -3,12 +3,31 @@
 	import { enhance } from '$app/forms';
 	import { createBrowserClient } from '$lib/client/pocketbaseClient';
 	import { ChatMessagesFeed } from '$lib/domain/ChatMessagesFeed.svelte';
+	import { notificationStore } from '$lib/client/notifications.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import type { ChatMessageRecord } from '$lib/server/chatRecord';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+
+	// Initialize notification store with user auth for realtime
+	onMount(() => {
+		if (data.pbToken && data.pbRecord) {
+			notificationStore.init(data.userId, data.pbToken, data.pbRecord);
+			// Mark chat notifications for this room as read
+			const unreadIds = notificationStore.notifications
+				.filter((n) => n.type === 'chat' && !n.read && n.metadata?.roomId === data.room.id)
+				.map((n) => n.id);
+			if (unreadIds.length > 0) {
+				notificationStore.markAsRead(unreadIds);
+			}
+		}
+	});
+
+	onDestroy(() => {
+		notificationStore.destroy();
+	});
 
 	const feed = new ChatMessagesFeed(data.room.id, data.messages, (roomId, onMessage) => {
 		const pb = createBrowserClient(data.pbToken, data.pbRecord);
@@ -18,11 +37,15 @@
 			.subscribe<ChatMessageRecord>(
 				'*',
 				(event) => {
-					if (event.action === 'create') onMessage(event.record);
+					if (event.action === 'create') {
+						onMessage(event.record);
+						// Suppress in-app notification for this room since we're viewing it
+						notificationStore.suppressChatNotification(event.record.room);
+					}
 				},
 				{ filter: `room = "${roomId}"` }
 			)
-			.catch(() => {});
+			.catch((err) => console.error('[chat] Falha ao inscrever no realtime da sala:', err));
 
 		return () => {
 			if (stopped) return;

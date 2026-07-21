@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implementar salas de chat de texto em tempo real (1:1 e grupo) com avatar de usuário no app `apps/runes`, conforme `docs/specs/chat-realtime.md` e `docs/workflow/chat-realtime.jira.md`.
+**Goal:** Implementar salas de chat de texto em tempo real (1:1 e grupo) com avatar de usuário no app `apps/runes`, conforme `docs/specs/2026-07-10-chat-realtime.md` e `docs/workflow/2026-07-10-chat-realtime.jira.md`.
 
 **Architecture:** Segue o padrão **real** do projeto (não o `.mdc` idealizado nem `packages/todo-domain`): mutações via `locals.pb` direto em `+page.server.ts` (como `todos`/`users`), autorização em funções puras testadas isoladamente (`chatRoomAccess.ts`, como `todoListAccess.ts`). A única peça genuinamente nova é a reatividade client-side: uma classe `.svelte.ts` (`ChatMessagesFeed`) que mescla o histórico carregado via SSR com eventos de uma subscription realtime do PocketBase SDK, aberta diretamente do browser (primeira vez neste projeto) autenticada com o token exposto pelo `load`.
 

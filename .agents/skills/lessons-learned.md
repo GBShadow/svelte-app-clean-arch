@@ -20,7 +20,7 @@ era um problema ou como reconhecer o mesmo padrão em outro lugar, registre. Aju
    `.agents/skills/<nome>.md` equivalente + entrada em `CLAUDE.md`. Ver
    `.cursor/rules/meta/rules-sync.mdc`. Exemplo: `pocketbase-api-rules.md`.
 2. **Específico de uma feature** → seção "Decisões de design" do `docs/features/<slug>.md`. Ver
-   exemplos em `docs/features/chat-realtime.md`.
+   exemplos em `docs/features/2026-07-10-chat-realtime.md`.
 3. **Comportamento da IA em sessões futuras** → memória persistente (`type: feedback` ou
    `type: project`), com o *porquê* e o *como aplicar*.
 
@@ -31,4 +31,4 @@ Um mesmo incidente pode exigir mais de um desses três.
 - `.cursor/rules/meta/lessons-learned.mdc` — regra Cursor equivalente
 - `.cursor/rules/meta/rules-sync.mdc` — sincronizar Cursor ↔ Freebuff ↔ Claude
 - `.agents/skills/pocketbase-api-rules.md` — exemplo de skill nascida de um incidente
-- `docs/features/chat-realtime.md` — exemplo de "Decisões de design" com relato de incidentes
+- `docs/features/2026-07-10-chat-realtime.md` — exemplo de "Decisões de design" com relato de incidentes

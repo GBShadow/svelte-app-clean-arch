@@ -1,6 +1,6 @@
 ---
 name: spec-driven
-description: Use quando o usuário pedir uma nova funcionalidade não trivial, uma "spec"/"especificação", ou disser "spec-driven" neste projeto. Conduz o fluxo spec → Jira → implementação → feature doc → PR de forma conversacional. Detecta bugfixes triviais e pula direto para o Jira.
+description: Use quando o usuário pedir uma nova funcionalidade não trivial, uma "spec"/"especificação", ou disser "spec-driven" neste projeto. Conduz o fluxo spec → Jira → implementação → feature doc → PR em 5 estágios conversacionais: Descoberta → Requisitos → Design → Análise de Dívida Técnica → Review. Detecta bugfixes triviais e pula direto para o Jira.
 ---
 
 # spec-driven

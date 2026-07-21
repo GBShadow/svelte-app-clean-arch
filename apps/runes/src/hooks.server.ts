@@ -2,12 +2,20 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { createServerClient } from '$lib/server/pocketbase';
 import { isPasswordExpired } from '$lib/auth/passwordGate';
+import { deleteExpiredNotifications } from '$lib/server/notificationStore';
 import type { AuthenticatedUser } from '$lib/server/authUser';
 
 const PUBLIC_ROUTES = new Set(['/login']);
 const PASSWORD_GATE_EXCLUDED_ROUTES = new Set(['/change-password', '/logout']);
 
+let cleanupRan = false;
+
 export const handle: Handle = async ({ event, resolve }) => {
+	// Run cleanup once on server startup (in production)
+	if (!cleanupRan && !dev) {
+		cleanupRan = true;
+		deleteExpiredNotifications().catch((err) => console.error('[cron] Erro ao limpar notificações expiradas:', err));
+	}
 	const pb = createServerClient(event);
 	event.locals.pb = pb;
 	event.locals.user = null;
@@ -21,6 +29,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 			event.locals.user = {
 				id: profile.id,
+				authId: authRecord.record.id,
 				name: profile.name,
 				email: profile.email,
 				jobTitle: profile.jobTitle,

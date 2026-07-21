@@ -42,28 +42,28 @@
 					if (stopped) return;
 					onCol(event);
 				})
-				.catch(() => {});
+				.catch((err) => console.error('[kanban] Falha ao inscrever em kanban_columns:', err));
 
 			pb.collection('kanban_cards')
 				.subscribe<KanbanCardRecord>('*', (event) => {
 					if (stopped) return;
 					onCard(event);
 				})
-				.catch(() => {});
+				.catch((err) => console.error('[kanban] Falha ao inscrever em kanban_cards:', err));
 
 			pb.collection('kanban_card_comments')
 				.subscribe<KanbanCardCommentRecord>('*', (event) => {
 					if (stopped) return;
 					onComment(event);
 				})
-				.catch(() => {});
+				.catch((err) => console.error('[kanban] Falha ao inscrever em kanban_card_comments:', err));
 
 			pb.collection('kanban_card_history')
 				.subscribe<KanbanCardHistoryRecord>('*', (event) => {
 					if (stopped) return;
 					onHistory(event);
 				})
-				.catch(() => {});
+				.catch((err) => console.error('[kanban] Falha ao inscrever em kanban_card_history:', err));
 
 			return () => {
 				stopped = true;
@@ -86,6 +86,26 @@
 
 	onMount(() => board.start());
 	onDestroy(() => board.stop());
+
+	// Deep link handler: /kanban#card-{id} abre modal do card
+	onMount(() => {
+		const handleHash = () => {
+			const hash = window.location.hash;
+			if (hash.startsWith('#card-')) {
+				const cardId = hash.slice(6); // remove '#card-'
+				const card = board.cards.find((c) => c.id === cardId);
+				if (card) {
+					openEditCard(card);
+					// Limpa hash para não reabrir em navegações futuras
+					history.replaceState(null, '', window.location.pathname + window.location.search);
+				}
+			}
+		};
+		// Executar após board estar pronto
+		setTimeout(handleHash, 100);
+		window.addEventListener('hashchange', handleHash);
+		return () => window.removeEventListener('hashchange', handleHash);
+	});
 
 	// Filtros client-side reativos
 	let filterUser = $state('');

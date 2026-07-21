@@ -74,7 +74,11 @@ src/routes/
 │
 ├── profile/
 │   ├── +page.server.ts         ← Load + Action uploadAvatar: upload de avatar do usuário atual
-│   └── +page.svelte            ← UI: avatar atual + formulário de upload
+│   └── +page.svelte            ← UI: avatar atual + upload + botão ativar/desativar notificações push
+│
+├── api/push/
+│   ├── subscribe/+server.ts    ← POST: cadastra/renova PushSubscription (idempotente por endpoint, via locals.pb)
+│   └── unsubscribe/+server.ts  ← POST: remove PushSubscription do usuário atual (via locals.pb)
 │
 ├── chat/
 │   ├── +page.server.ts         ← Load: salas do usuário (com preview da última mensagem)
@@ -83,7 +87,7 @@ src/routes/
 │   │   ├── +page.server.ts     ← Load (usuários) + Action: criar sala
 │   │   └── +page.svelte        ← UI: formulário de criação (nome opcional + participantes)
 │   └── [roomId]/
-│       ├── +page.server.ts     ← Load + Actions: sendMessage/leaveRoom/addParticipant/removeParticipant
+│       ├── +page.server.ts     ← Load + Actions: sendMessage (dispara sendChatPush fire-and-forget)/leaveRoom/addParticipant/removeParticipant
 │       └── +page.svelte        ← UI: mensagens em tempo real (ChatMessagesFeed) + participantes
 │
 ├── kanban/
@@ -106,7 +110,11 @@ src/lib/
 │   ├── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
 │   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord, KanbanCardCommentRecord, etc.
 │   ├── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
-│   └── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
+│   ├── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
+│   ├── pushRecord.ts           ← Type: PushSubscriptionRecord
+│   ├── vapidKeys.ts            ← Leitura de PUBLIC_VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY/VAPID_SUBJECT
+│   ├── pushSubscriptionStore.ts ← getSubscriptionsForUsers/removeInvalidSubscription via getAdminClient() (contexto do remetente/RF8)
+│   └── webPush.ts              ← Wrapper web-push: sendChatPush(), sendSystemPush()
 │
 ├── domain/                     ← Lógica de negócio pura
 │   ├── todoListAccess.ts       ← canView, canWrite: controle de acesso a listas
@@ -118,7 +126,9 @@ src/lib/
 │   ├── kanbanAccess.ts         ← canCreateCard, canUpdateCard, canDeleteCard, etc. e reordenação de posições
 │   ├── kanbanAccess.test.ts    ← Testes
 │   ├── KanbanBoard.svelte.ts   ← Classe reativa: gerência de cards/colunas realtime com dedup
-│   └── KanbanBoard.test.ts     ← Testes
+│   ├── KanbanBoard.test.ts     ← Testes
+│   ├── pushPayload.ts          ← truncateMessage, isSafeRedirectUrl, buildChatPushPayload, buildSystemPushPayload
+│   └── pushPayload.test.ts     ← Testes
 │
 ├── validation/                 ← Schemas Zod + form errors
 │   ├── authSchemas.ts          ← loginSchema
@@ -131,6 +141,8 @@ src/lib/
 │   ├── chatSchemas.test.ts     ← Testes
 │   ├── kanbanSchemas.ts        ← createCardSchema, createColumnSchema, addCommentSchema, etc.
 │   ├── kanbanSchemas.test.ts   ← Testes
+│   ├── pushSchemas.ts          ← subscribeSchema, unsubscribeSchema
+│   ├── pushSchemas.test.ts     ← Testes
 │   ├── formErrors.ts           ← fieldErrorsFrom: converte ZodError → Record<string, string>
 │   └── formErrors.test.ts      ← Testes
 │
@@ -141,7 +153,10 @@ src/lib/
 ├── client/                     ← Lógica client-side
 │   ├── authChannel.ts          ← BroadcastChannel: sync login/logout entre abas
 │   ├── authChannel.test.ts     ← Testes
-│   └── pocketbaseClient.ts     ← createBrowserClient: cliente PocketBase client-side autenticado (subscriptions realtime)
+│   ├── pocketbaseClient.ts     ← createBrowserClient: cliente PocketBase client-side autenticado (subscriptions realtime)
+│   ├── pushDecision.ts         ← shouldSuppressChatPush: decisão de supressão, testável sem mocks de `self`
+│   ├── pushDecision.test.ts    ← Testes
+│   └── pushSubscription.ts     ← Registra SW, solicita permissão, pushManager.subscribe/getSubscription, chama /api/push/*
 │
 ├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?) — inclui "Chat"
 │
@@ -152,19 +167,30 @@ src/lib/
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
 │   ├── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
 │   ├── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
-│   └── kanban/
-│       └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
+│   ├── kanban/
+│   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
+│   └── chat/
+│       └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
 │
 └── index.ts                    ← (vazio) barrel export
 ```
 
-### 2.3 Server Hook
+### 2.3 Service Worker
+
+```
+src/service-worker.ts           ← Eventos push (parse payload, supressão via pushDecision.ts para
+                                   tipo chat, exibição incondicional para tipo system) e
+                                   notificationclick (foca/abre aba, valida url via pushPayload.ts).
+                                   Auto-registrado pelo SvelteKit (kit.serviceWorker default).
+```
+
+### 2.4 Server Hook
 
 ```
 src/hooks.server.ts             ← handle: auth refresh, route protection, cookie sync
 ```
 
-### 2.4 Testes E2E (Playwright)
+### 2.5 Testes E2E (Playwright)
 
 ```
 e2e/
@@ -177,10 +203,11 @@ e2e/
 ├── user-crud.spec.ts           ← CRUD usuário (admin)
 ├── todo-list-management.spec.ts ← Gerenciamento completo de lista
 ├── chat.spec.ts                ← Criação de sala, envio de mensagem, saída da sala
-└── kanban.spec.ts              ← Teste E2E de cartões, colunas, comentários e histórico do Kanban
+├── kanban.spec.ts              ← Teste E2E de cartões, colunas, comentários e histórico do Kanban
+└── planning-poker.spec.ts      ← Teste E2E de salas, votação, revelação e exportação para Kanban
 ```
 
-### 2.5 Configuração
+### 2.6 Configuração
 
 | Arquivo                   | Função                                     |
 | ------------------------- | ------------------------------------------ |
@@ -319,7 +346,11 @@ pocketbase/
     ├── 0011_create_chat_collections.js      ← Coleções chat_rooms + chat_messages
     ├── 0012_add_avatar_to_auth.js           ← Adiciona campo avatar (file) à coleção auth
     ├── 0013_open_user_listing_for_authenticated.js ← Abre listagem de "user" para qualquer autenticado
-    └── 0014_restrict_chat_room_update_rule.js ← Restringe updateRule de chat_rooms ao criador (corrige IDOR)
+    ├── 0014_restrict_chat_room_update_rule.js ← Restringe updateRule de chat_rooms ao criador (corrige IDOR)
+    ├── 0015_create_kanban_collections.js    ← Coleções kanban_columns, kanban_cards, kanban_card_comments, kanban_card_history
+    ├── 0016_create_poker_collections.js     ← Coleções poker_rooms, poker_tasks, poker_participants, poker_votes
+    ├── 0017_poker_backlog_global.js         ← Backlog global (status em poker_rooms) e ciclo de vida da sala
+    └── 0018_create_push_subscriptions_collection.js ← Coleção push_subscriptions (endpoint único, API Rules de posse, updateRule = null)
 ```
 
 ---
@@ -339,29 +370,29 @@ docs/
 ├── specs/                      ← Specs (antes de implementar)
 │   ├── _template.md
 │   ├── README.md               ← Índice de specs
-│   ├── spec-driven-agent.md
-│   ├── pocketbase-infra.md
-│   ├── pocketbase-auth.md
-│   ├── pocketbase-user-crud.md
-│   ├── pocketbase-todo-sharing.md
-│   └── app-hub.md
+│   ├── 2026-07-09-spec-driven-agent.md
+│   ├── 2026-07-09-pocketbase-infra.md
+│   ├── 2026-07-09-pocketbase-auth.md
+│   ├── 2026-07-09-pocketbase-user-crud.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.md
+│   └── 2026-07-10-app-hub.md
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
 │   ├── README.md               ← Índice de features
-│   ├── todo-list.md
-│   ├── spec-driven-agent.md
-│   ├── pocketbase-infra.md
-│   ├── pocketbase-auth.md
-│   ├── pocketbase-user-crud.md
-│   ├── pocketbase-todo-sharing.md
-│   └── app-hub.md
+│   ├── 2026-06-18-todo-list.md
+│   ├── 2026-07-09-spec-driven-agent.md
+│   ├── 2026-07-09-pocketbase-infra.md
+│   ├── 2026-07-09-pocketbase-auth.md
+│   ├── 2026-07-09-pocketbase-user-crud.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.md
+│   └── 2026-07-10-app-hub.md
 │
 ├── workflow/                   ← PRs + Jiras
 │   ├── _template-jira.md
 │   ├── _template-pr.md
 │   ├── README.md               ← Índice de workflow
-│   ├── app-hub.jira.md
+│   ├── 2026-07-10-app-hub.jira.md
 │   └── <slug>.pr.md / <slug>.jira.md
 │
 └── testing/
@@ -420,13 +451,13 @@ docs/
 
 ## 9. Testes — Resumo
 
-| Pacote/App           | Unit    | E2E         | Total    |
-| -------------------- | ------- | ----------- | -------- |
-| `todo-domain`        | 60      | —           | 60       |
-| `runes`              | 38      | 5 specs     | 43+      |
-| `deprecated/classic` | 17      | 2 specs     | 19+      |
-| `deprecated/remote`  | 15      | —           | 15       |
-| **Total**            | **130** | **7 specs** | **137+** |
+| Pacote/App           | Unit    | E2E          | Total    |
+| -------------------- | ------- | ------------ | -------- |
+| `todo-domain`        | 60      | —            | 60       |
+| `runes`              | 134     | 8 specs      | 142+     |
+| `deprecated/classic` | 17      | 2 specs      | 19+      |
+| `deprecated/remote`  | 15      | —            | 15       |
+| **Total**            | **226** | **10 specs** | **236+** |
 
 ---
 

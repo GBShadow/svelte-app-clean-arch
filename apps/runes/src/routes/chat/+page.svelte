@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Avatar from '$lib/components/Avatar.svelte';
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
+	import NotificationsBanner from '$lib/components/chat/NotificationsBanner.svelte';
+	import NewMessageIndicator from '$lib/components/chat/NewMessageIndicator.svelte';
 	import type { ChatRoomRecord } from '$lib/server/chatRecord';
 	import type { PageProps } from './$types';
 
@@ -26,6 +28,8 @@
 		</a>
 	</div>
 
+	<NotificationsBanner />
+
 	{#if data.rooms.length === 0}
 		<div class="empty-state">
 			<div class="card-body">
@@ -44,7 +48,10 @@
 							<Avatar userId={participant.id} avatar={participant.avatar} name={participant.name} />
 						{/if}
 						<div class="flex-1 min-w-0">
-							<p class="font-medium truncate">{roomDisplayName(room)}</p>
+							<div class="flex items-center gap-2">
+								<p class="font-medium truncate">{roomDisplayName(room)}</p>
+								<NewMessageIndicator roomId={room.id} />
+							</div>
 							{#if lastMessage}
 								<p class="text-sm opacity-60 truncate" data-testid="room-preview-{room.id}">{lastMessage.text}</p>
 							{/if}

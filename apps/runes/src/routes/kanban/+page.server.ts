@@ -20,6 +20,16 @@ import {
 	addCommentSchema
 } from '$lib/validation/kanbanSchemas';
 import { recordCardChanges, recordCardHistory } from '$lib/server/kanbanHistory';
+import { buildKanbanPushPayload } from '$lib/domain/pushPayload';
+import { sendSystemPush } from '$lib/server/webPush';
+import {
+	createKanbanNotification,
+	createKanbanMovedNotification,
+	createKanbanCommentedNotification,
+	createKanbanDeletedNotification,
+	resolveUserIdsToAuthIds
+} from '$lib/server/notificationStore';
+import { logError } from '$lib/server/logger';
 import type {
 	KanbanColumnRecord,
 	KanbanCardRecord,
@@ -327,6 +337,32 @@ export const actions: Actions = {
 		// Registra no histórico que o card foi criado
 		await recordCardHistory(newCard.id, locals.user.id, 'created');
 
+		// Notifica assignees (exceto o criador se ele se atribuiu)
+		const notifyAssigneeIds = validation.data.assigneeIds.filter((id) => id !== locals.user?.id);
+		if (notifyAssigneeIds.length > 0) {
+			const column = (await adminPb.collection('kanban_columns').getOne(validation.data.columnId)) as KanbanColumnRecord;
+
+			// In-app notifications
+			createKanbanNotification(notifyAssigneeIds, newCard.title, column.name, newCard.id).catch(
+				(err) => logError('kanban:createCard:notification', err)
+			);
+
+			// Push notifications
+			const pushPayload = buildKanbanPushPayload({
+				cardTitle: newCard.title,
+				cardId: newCard.id,
+				columnName: column.name,
+				action: 'created'
+			});
+			if (pushPayload) {
+				// push_subscriptions guarda IDs da coleção auth, não da coleção user
+				// (assignees) — precisa resolver antes de buscar as subscriptions.
+				resolveUserIdsToAuthIds(notifyAssigneeIds)
+					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+					.catch((err) => logError('kanban:createCard:push', err));
+			}
+		}
+
 		return { success: true };
 	},
 
@@ -388,6 +424,33 @@ export const actions: Actions = {
 
 		// Registra as alterações no histórico
 		await recordCardChanges(validation.data.cardId, locals.user.id, oldCard, updateData);
+
+		// Notifica novos assignees (que não estavam antes)
+		if (validation.data.assigneeIds !== undefined) {
+			const newAssigneeIds = validation.data.assigneeIds.filter(
+				(id) => !oldCard.assignees.includes(id) && id !== locals.user?.id
+			);
+			if (newAssigneeIds.length > 0) {
+				const column = (await adminPb.collection('kanban_columns').getOne(oldCard.column)) as KanbanColumnRecord;
+				const cardTitle = validation.data.title ?? oldCard.title;
+
+				createKanbanNotification(newAssigneeIds, cardTitle, column.name, validation.data.cardId).catch(
+					(err) => logError('kanban:updateCard:notification', err)
+				);
+
+				const pushPayload = buildKanbanPushPayload({
+					cardTitle,
+					cardId: validation.data.cardId,
+					columnName: column.name,
+					action: 'created'
+				});
+				if (pushPayload) {
+					resolveUserIdsToAuthIds(newAssigneeIds)
+						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+						.catch((err) => logError('kanban:updateCard:push', err));
+				}
+			}
+		}
 
 		return { success: true };
 	},
@@ -487,6 +550,38 @@ export const actions: Actions = {
 				column: targetColumnId,
 				position: targetPosition
 			});
+
+			// Notifica assignees (exceto quem moveu) apenas em mudança de coluna
+			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
+			if (notifyAssigneeIds.length > 0) {
+				const newColumn = (await adminPb.collection('kanban_columns').getOne(targetColumnId)) as KanbanColumnRecord;
+				const moverName = locals.user?.name ?? 'Alguém';
+
+				// In-app notifications
+				createKanbanMovedNotification(
+					notifyAssigneeIds,
+					card.title,
+					newColumn.name,
+					card.id,
+					moverName
+				).catch((err) => logError('kanban:moveCard:notification', err));
+
+				// Push notifications
+				const pushPayload = buildKanbanPushPayload({
+					cardTitle: card.title,
+					cardId: card.id,
+					columnName: newColumn.name,
+					action: 'moved',
+					movedByName: moverName
+				});
+				if (pushPayload) {
+					// push_subscriptions guarda IDs da coleção auth, não da coleção user
+					// (assignees) — precisa resolver antes de buscar as subscriptions.
+					resolveUserIdsToAuthIds(notifyAssigneeIds)
+						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+						.catch((err) => logError('kanban:moveCard:push', err));
+				}
+			}
 		}
 
 		return { success: true };
@@ -511,6 +606,28 @@ export const actions: Actions = {
 		}
 
 		const columnId = card.column;
+
+		const cardTitle = card.title;
+		const deleterName = locals.user.name ?? 'Alguém';
+
+		// Notifica assignees (exceto quem deletou) antes de deletar
+		const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
+		if (notifyAssigneeIds.length > 0) {
+			createKanbanDeletedNotification(notifyAssigneeIds, cardTitle, deleterName).catch(
+				(err) => logError('kanban:deleteCard:notification', err)
+			);
+
+			const pushPayload = buildKanbanPushPayload({
+				cardTitle,
+				cardId,
+				action: 'deleted'
+			});
+			if (pushPayload) {
+				resolveUserIdsToAuthIds(notifyAssigneeIds)
+					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+					.catch((err) => logError('kanban:deleteCard:push', err));
+			}
+		}
 
 		// Deleta o card
 		await adminPb.collection('kanban_cards').delete(cardId);
@@ -543,6 +660,8 @@ export const actions: Actions = {
 			return fail(400, { errors: validation.error.flatten().fieldErrors });
 		}
 
+		const adminPb = await getAdminClient();
+
 		// Comentários podem ser criados via locals.pb direto pois a API Rule permite
 		try {
 			await locals.pb.collection('kanban_card_comments').create({
@@ -552,6 +671,34 @@ export const actions: Actions = {
 			});
 		} catch {
 			return fail(500);
+		}
+
+		// Notifica assignees do card (exceto quem comentou)
+		try {
+			const card = (await adminPb.collection('kanban_cards').getOne(validation.data.cardId)) as KanbanCardRecord;
+			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
+			if (notifyAssigneeIds.length > 0) {
+				createKanbanCommentedNotification(
+					notifyAssigneeIds,
+					card.title,
+					card.id,
+					locals.user.name ?? 'Alguém'
+				).catch((err) => logError('kanban:addComment:notification', err));
+
+				const pushPayload = buildKanbanPushPayload({
+					cardTitle: card.title,
+					cardId: card.id,
+					action: 'commented',
+					commenterName: locals.user.name ?? 'Alguém'
+				});
+				if (pushPayload) {
+					resolveUserIdsToAuthIds(notifyAssigneeIds)
+						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+						.catch((err) => logError('kanban:addComment:push', err));
+				}
+			}
+		} catch {
+			// Card pode ter sido deletado entre a criação do comentário e a notificação
 		}
 
 		return { success: true };

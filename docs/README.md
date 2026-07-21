@@ -11,7 +11,10 @@
 | [specs/](./specs/) | Spec antes de implementar | [_template.md](./specs/_template.md) |
 | [features/](./features/) | Doc por funcionalidade (pós-implementação) | [_template.md](./features/_template.md) |
 | [workflow/](./workflow/) | **PR + Jira (mesma pasta)** | [_template-pr.md](./workflow/_template-pr.md), [_template-jira.md](./workflow/_template-jira.md) |
+| [ROUTES.md](./ROUTES.md) | Mapa completo de todas as rotas do sistema | — |
 | [CODE-STRUCTURE.md](./CODE-STRUCTURE.md) | Mapa completo da estrutura do código | — |
+| [sessions/](./sessions/) | Checkpoints de sessão | — |
+| [superpowers/](./superpowers/) | Planos de superpoderes | [plans/](./superpowers/plans/) |
 | [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
 | [TECH-DEBT.md](./TECH-DEBT.md) | Documento vivo de débitos técnicos identificados (e não corrigidos na hora) | — |

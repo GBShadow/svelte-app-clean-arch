@@ -15,11 +15,14 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | Subagente spec-driven | Implementada | 2026-07-09 | [2026-07-09-spec-driven-agent.md](./2026-07-09-spec-driven-agent.md) |
 | App Hub (tela inicial) | Implementada | 2026-07-10 | [2026-07-10-app-hub.md](./2026-07-10-app-hub.md) |
 | Chat em tempo real com avatar (runes) | Implementada | 2026-07-10 | [2026-07-10-chat-realtime.md](./2026-07-10-chat-realtime.md) |
+| Correção de testes e2e (Playwright) | Implementada | 2026-07-10 | [2026-07-10-e2e-test-fix-plan.md](./2026-07-10-e2e-test-fix-plan.md) |
+| data-testid em componentes e testes | Especificada | 2026-07-10 | [2026-07-10-data-testid-e2e.md](./2026-07-10-data-testid-e2e.md) |
 | Kanban | Implementada | 2026-07-12 | [2026-07-12-kanban.md](./2026-07-12-kanban.md) |
 | Planning Poker & Integração Kanban | Implementada | 2026-07-12 | [2026-07-12-planning-poker.md](./2026-07-12-planning-poker.md) |
 | Preservar Remetente do Chat (runes) | Spec em aprovação | 2026-07-12 | [2026-07-12-chat-sender-preservar.md](./2026-07-12-chat-sender-preservar.md) |
 | Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | 2026-07-12 | [2026-07-12-poker-backlog-global.md](./2026-07-12-poker-backlog-global.md) |
 | Notificações Push de Chat e Sistema (runes) | Implementada | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
+| Chat — acesso administrativo (runes) | Spec em aprovação | 2026-07-15 | [2026-07-15-chat-admin-access.md](./2026-07-15-chat-admin-access.md) |
 
 > **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.
 

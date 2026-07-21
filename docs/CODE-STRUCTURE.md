@@ -34,6 +34,9 @@ Porta: `5175` | Framework: Svelte 5 Runes | Estilo: Tailwind + DaisyUI
 
 ### 2.1 Rotas (SvelteKit)
 
+> A lista detalhada com funções `load`/actions e proteção de cada rota está em [docs/ROUTES.md](./ROUTES.md).
+> Abaixo apenas a estrutura de pastas.
+
 ```
 src/routes/
 ├── +layout.server.ts          ← Load layout: expõe `locals.user`
@@ -76,10 +79,6 @@ src/routes/
 │   ├── +page.server.ts         ← Load + Action uploadAvatar: upload de avatar do usuário atual
 │   └── +page.svelte            ← UI: avatar atual + upload + botão ativar/desativar notificações push
 │
-├── api/push/
-│   ├── subscribe/+server.ts    ← POST: cadastra/renova PushSubscription (idempotente por endpoint, via locals.pb)
-│   └── unsubscribe/+server.ts  ← POST: remove PushSubscription do usuário atual (via locals.pb)
-│
 ├── chat/
 │   ├── +page.server.ts         ← Load: salas do usuário (com preview da última mensagem)
 │   ├── +page.svelte            ← UI: listagem de salas
@@ -93,6 +92,35 @@ src/routes/
 ├── kanban/
 │   ├── +page.server.ts         ← Load + Actions: criar/mover/deletar cartões e colunas + comentários
 │   └── +page.svelte            ← UI: quadro Kanban interativo (KanbanBoard) com Drag and Drop
+│
+├── notifications/
+│   ├── +page.server.ts         ← Load: lista paginada de notificações do usuário
+│   └── +page.svelte            ← UI: central de notificações
+│
+├── poker/
+│   ├── +page.server.ts         ← Load + Actions: criar sala, listar salas disponíveis
+│   ├── +page.svelte            ← UI: listagem de salas de poker
+│   ├── [roomId]/
+│   │   ├── +page.server.ts     ← Load + Actions: votar, revelar, resetar, gerenciar tarefas, export
+│   │   └── +page.svelte        ← UI: sala de Planning Poker
+│   └── backlog/
+│       ├── +page.server.ts     ← Load + Actions: gerenciar backlog global
+│       └── +page.svelte        ← UI: backlog global de tarefas
+│
+└── api/
+    ├── push/
+    │   ├── subscribe/+server.ts    ← POST: cadastra/renova PushSubscription (idempotente)
+    │   └── unsubscribe/+server.ts  ← POST: remove PushSubscription do usuário atual
+    └── notifications/
+        ├── +server.ts              ← GET: listar notificações paginadas + contagem
+        ├── [id]/
+│           └── +server.ts          ← DELETE: deletar notificação
+        ├── read/
+        │   └── +server.ts          ← POST: marcar notif. específica como lida
+        ├── read-all/
+        │   └── +server.ts          ← POST: marcar todas como lidas
+        └── unread-count/
+            └── +server.ts          ← GET: contagem de não lidas
 ```
 
 ### 2.2 Camadas de Código
@@ -110,6 +138,10 @@ src/lib/
 │   ├── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
 │   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord, KanbanCardCommentRecord, etc.
 │   ├── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
+│   ├── logger.ts               ← logError: logging padronizado para operações best-effort
+│   ├── notificationRecord.ts   ← Type: NotificationRecord
+│   ├── notificationStore.ts    ← getNotifications/getUnreadCount/markAsRead/markAllAsRead via admin client
+│   ├── pokerRecord.ts          ← Types: PokerRoomRecord, PokerTaskRecord, PokerParticipantRecord, PokerVoteRecord
 │   ├── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
 │   ├── pushRecord.ts           ← Type: PushSubscriptionRecord
 │   ├── vapidKeys.ts            ← Leitura de PUBLIC_VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY/VAPID_SUBJECT
@@ -127,6 +159,12 @@ src/lib/
 │   ├── kanbanAccess.test.ts    ← Testes
 │   ├── KanbanBoard.svelte.ts   ← Classe reativa: gerência de cards/colunas realtime com dedup
 │   ├── KanbanBoard.test.ts     ← Testes
+│   ├── notification.ts         ← Lógica pura de notificações do sistema
+│   ├── notification.test.ts    ← Testes
+│   ├── planningPokerAccess.ts  ← Controle de acesso, cálculos de votação, ciclo de vida de salas
+│   ├── planningPokerAccess.test.ts ← Testes
+│   ├── PlanningPokerRoom.svelte.ts ← Classe reativa: estado da sala de poker em tempo real
+│   ├── PlanningPokerRoom.test.ts   ← Testes
 │   ├── pushPayload.ts          ← truncateMessage, isSafeRedirectUrl, buildChatPushPayload, buildSystemPushPayload
 │   └── pushPayload.test.ts     ← Testes
 │
@@ -143,6 +181,10 @@ src/lib/
 │   ├── kanbanSchemas.test.ts   ← Testes
 │   ├── pushSchemas.ts          ← subscribeSchema, unsubscribeSchema
 │   ├── pushSchemas.test.ts     ← Testes
+│   ├── notificationSchemas.ts  ← listQuerySchema (filtros page/perPage/type/read)
+│   ├── notificationSchemas.test.ts ← Testes
+│   ├── pokerSchemas.ts         ← createRoomSchema, voteSchema, etc.
+│   ├── pokerSchemas.test.ts    ← Testes
 │   ├── formErrors.ts           ← fieldErrorsFrom: converte ZodError → Record<string, string>
 │   └── formErrors.test.ts      ← Testes
 │
@@ -156,21 +198,38 @@ src/lib/
 │   ├── pocketbaseClient.ts     ← createBrowserClient: cliente PocketBase client-side autenticado (subscriptions realtime)
 │   ├── pushDecision.ts         ← shouldSuppressChatPush: decisão de supressão, testável sem mocks de `self`
 │   ├── pushDecision.test.ts    ← Testes
-│   └── pushSubscription.ts     ← Registra SW, solicita permissão, pushManager.subscribe/getSubscription, chama /api/push/*
+│   ├── pushSubscription.ts     ← Registra SW, solicita permissão, pushManager.subscribe/getSubscription, chama /api/push/*
+│   └── notifications.svelte.ts ← Estado reativo client-side: lista paginada, contagem não lidas, markAsRead
 │
 ├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?) — inclui "Chat"
 │
 ├── components/                 ← Componentes Svelte reutilizáveis
-│   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
-│   ├── UserList.svelte         ← Tabela de listagem de usuários
-│   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
 │   ├── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
 │   ├── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
+│   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
+│   ├── NotificationBell.svelte ← Ícone de sino com badge de contagem de não lidas
+│   ├── NotificationCenter.svelte ← Painel de notificações (dropdown)
+│   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
+│   ├── UserList.svelte         ← Tabela de listagem de usuários
+│   ├── chat/
+│   │   ├── NewMessageIndicator.svelte ← Indicador de nova mensagem não lida
+│   │   └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
+│   ├── icons/                  ← Ícones SVG inline
+│   │   ├── IconEdit.svelte
+│   │   ├── IconLock.svelte
+│   │   ├── IconLogout.svelte
+│   │   ├── IconPlus.svelte
+│   │   ├── IconTrash.svelte
+│   │   └── IconUnlock.svelte
 │   ├── kanban/
 │   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
-│   └── chat/
-│       └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
+│   └── planning-poker/
+│       ├── CardDeck.svelte     ← Baralho Fibonacci para votação
+│       ├── ParticipantsList.svelte ← Lista de participantes com status do voto
+│       ├── TaskEditor.svelte   ← Editor de descrição de tarefa
+│       ├── TaskList.svelte     ← Lista de tarefas do backlog da sala
+│       └── VoteResults.svelte  ← Resultados da votação (revelados ou ocultos)
 │
 └── index.ts                    ← (vazio) barrel export
 ```
@@ -350,7 +409,9 @@ pocketbase/
     ├── 0015_create_kanban_collections.js    ← Coleções kanban_columns, kanban_cards, kanban_card_comments, kanban_card_history
     ├── 0016_create_poker_collections.js     ← Coleções poker_rooms, poker_tasks, poker_participants, poker_votes
     ├── 0017_poker_backlog_global.js         ← Backlog global (status em poker_rooms) e ciclo de vida da sala
-    └── 0018_create_push_subscriptions_collection.js ← Coleção push_subscriptions (endpoint único, API Rules de posse, updateRule = null)
+    ├── 0018_create_push_subscriptions_collection.js ← Coleção push_subscriptions (endpoint único, API Rules de posse, updateRule = null)
+    ├── 0019_create_notifications_collection.js      ← Coleção notifications (notificações do sistema)
+    └── 0020_notifications_read_not_required.js      ← Corrige campo read da coleção notifications: required=false (bool required rejeita false)
 ```
 
 ---
@@ -375,7 +436,16 @@ docs/
 │   ├── 2026-07-09-pocketbase-auth.md
 │   ├── 2026-07-09-pocketbase-user-crud.md
 │   ├── 2026-07-09-pocketbase-todo-sharing.md
-│   └── 2026-07-10-app-hub.md
+│   ├── 2026-07-10-app-hub.md
+│   ├── 2026-07-10-chat-realtime.md
+│   ├── 2026-07-10-data-testid-e2e.md
+│   ├── 2026-07-10-e2e-test-fix-plan.md
+│   ├── 2026-07-12-kanban.md
+│   ├── 2026-07-12-planning-poker.md
+│   ├── 2026-07-12-chat-sender-preservar.md
+│   ├── 2026-07-12-poker-backlog-global.md
+│   ├── 2026-07-15-notifications.md
+│   └── 2026-07-15-chat-admin-access.md
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
@@ -386,14 +456,54 @@ docs/
 │   ├── 2026-07-09-pocketbase-auth.md
 │   ├── 2026-07-09-pocketbase-user-crud.md
 │   ├── 2026-07-09-pocketbase-todo-sharing.md
-│   └── 2026-07-10-app-hub.md
+│   ├── 2026-07-10-app-hub.md
+│   ├── 2026-07-10-dracula-theme.md
+│   ├── 2026-07-10-e2e-test-fix-plan.md
+│   ├── 2026-07-11-chat-realtime.md
+│   ├── 2026-07-12-kanban.md
+│   ├── 2026-07-12-planning-poker.md
+│   └── 2026-07-15-notifications.md
 │
-├── workflow/                   ← PRs + Jiras
+├── sessions/                   ← Checkpoints de sessão (vazio)
+│
+├── superpowers/
+│   └── plans/
+│       └── 2026-07-10-chat-realtime.md
+│
+├── jira/                       ← Jira export (vazio)
+│
+├── pr/                         ← PR export (vazio)
+│
+├── workflow/                   ← PRs + Jiras (mesmo slug)
 │   ├── _template-jira.md
 │   ├── _template-pr.md
 │   ├── README.md               ← Índice de workflow
+│   ├── 2026-07-09-pocketbase-infra.jira.md
+│   ├── 2026-07-09-pocketbase-infra.pr.md
+│   ├── 2026-07-09-pocketbase-auth.jira.md
+│   ├── 2026-07-09-pocketbase-auth.pr.md
+│   ├── 2026-07-09-pocketbase-user-crud.jira.md
+│   ├── 2026-07-09-pocketbase-user-crud.pr.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.jira.md
+│   ├── 2026-07-09-pocketbase-todo-sharing.pr.md
+│   ├── 2026-07-09-spec-driven-agent.jira.md
+│   ├── 2026-07-09-spec-driven-agent.pr.md
 │   ├── 2026-07-10-app-hub.jira.md
-│   └── <slug>.pr.md / <slug>.jira.md
+│   ├── 2026-07-10-chat-realtime.jira.md
+│   ├── 2026-07-10-data-testid-e2e.jira.md
+│   ├── 2026-07-10-dracula-theme-redesign.pr.md
+│   ├── 2026-07-10-e2e-test-fix-plan.jira.md
+│   ├── 2026-07-10-e2e-test-fix-plan.pr.md
+│   ├── 2026-07-11-chat-realtime.pr.md
+│   ├── 2026-07-12-kanban.jira.md
+│   ├── 2026-07-12-kanban.pr.md
+│   ├── 2026-07-12-planning-poker.jira.md
+│   ├── 2026-07-12-planning-poker.pr.md
+│   ├── 2026-07-12-chat-sender-preservar.jira.md
+│   ├── 2026-07-12-poker-backlog-global.jira.md
+│   ├── 2026-07-14-kanban-fixes-e-poker-backlog.pr.md
+│   ├── 2026-07-15-notifications.jira.md
+│   └── 2026-07-15-chat-admin-access.jira.md
 │
 └── testing/
     └── playwright.md           ← Guia de testes e2e
@@ -454,35 +564,48 @@ docs/
 | Pacote/App           | Unit    | E2E          | Total    |
 | -------------------- | ------- | ------------ | -------- |
 | `todo-domain`        | 60      | —            | 60       |
-| `runes`              | 134     | 8 specs      | 142+     |
+| `runes`              | 177     | 8 specs      | 185+     |
 | `deprecated/classic` | 17      | 2 specs      | 19+      |
 | `deprecated/remote`  | 15      | —            | 15       |
-| **Total**            | **226** | **10 specs** | **236+** |
+| **Total**            | **269** | **10 specs** | **279+** |
 
 ---
 
 ## 10. Fluxo de Dados (runes)
 
 ```
-+page.svelte
+Requisição HTTP (navegação/form action)
     │
     ▼
-Container.svelte  ──cria──▶  TodoHttpGateway (todo-domain)
-    │                              │
-    │ instancia                    │ HTTP fetch
-    ▼                              ▼
-Service (.svelte.ts)         /api/.../+server.ts
-    │                              │
-    │ contém                       │ chama
-    ▼                              ▼
-Domínio (.svelte.ts)         $lib/server/...Store.ts
-    │                         (PocketBase)
-    │ contém
-    ▼
-Entidades (.svelte.ts)
+hooks.server.ts → createServerClient() → PocketBase auth
+    │                                        │
+    │  locals.pb (server client)             │ auth refresh
+    ▼                                        ▼
++page.server.ts (load / actions)        PocketBase DB
+    │                                        ▲
+    │  dados + token impersonate             │ subscription realtime
+    ▼                                        │
++page.svelte ────────────────────────────────┘
+    │
+    ├── Classes reativas (.svelte.ts) ← PocketBase subscriptions (pocketbaseClient.ts)
+    │       │                                ▲
+    │       └── estado $state/$derived       │ events realtime
+    │                                        │
+    └── Componentes Svelte 5
+            │
+            ├── Mutação via form action (use:enhance)
+            │       → +page.server.ts → PocketBase
+            │
+            └── Mutação via fetch client-side (api routes)
+                    → /api/.../+server.ts → PocketBase
 
 Autenticação:
-  hooks.server.ts → createServerClient() → PocketBase auth
-  passwordGate.ts → isPasswordExpired()  → gate de troca de senha
-  authChannel.ts  → BroadcastChannel     → sync cross-tab
+  hooks.server.ts → createServerClient() → PocketBase auth + cookie
+  Browser: pocketbaseClient.ts → impersonate token (10min) → subscriptions
+  authChannel.ts → BroadcastChannel → sync login/logout cross-tab
+  passwordGate.ts → isPasswordExpired() → gate de troca de senha
+
+Realtime:
+  pocketbaseClient.ts (browser) → pb.collection().subscribe()
+  .svelte.ts classes → merge load data + subscription events (com dedup)
 ```

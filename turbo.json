@@ -9,6 +9,10 @@
 			"dependsOn": ["^test"],
 			"outputs": []
 		},
+		"test:coverage": {
+			"dependsOn": ["^test:coverage"],
+			"outputs": ["coverage/**"]
+		},
 		"test:e2e": {
 			"outputs": ["playwright-report/**", "test-results/**"]
 		},

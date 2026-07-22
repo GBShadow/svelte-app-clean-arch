@@ -12,6 +12,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
 		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"test:e2e:install": "playwright install chromium",
 		"test:e2e": "playwright install chromium && playwright test"
 	},
@@ -38,6 +39,7 @@
 		"@types/sanitize-html": "^2.16.1",
 		"@types/web-push": "^3.6.4",
 		"@vitest/browser-playwright": "^4.1.8",
+		"@vitest/coverage-v8": "^4.1.9",
 		"daisyui": "^5.6.16",
 		"happy-dom": "^20.10.6",
 		"playwright": "^1.60.0",

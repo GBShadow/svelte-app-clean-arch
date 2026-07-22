@@ -14,3 +14,4 @@ package-lock.json
 ports_and_adapters_ca_design_patterns_frontend-master/
 **/test-results/
 playwright-report/
+coverage/

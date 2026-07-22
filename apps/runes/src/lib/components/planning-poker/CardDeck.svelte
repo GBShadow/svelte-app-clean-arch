@@ -21,7 +21,7 @@
 		Seu Voto
 	</h3>
 
-	<div class="grid grid-cols-4 sm:grid-cols-7 md:grid-cols-13 gap-3">
+	<div class="grid grid-cols-4 sm:grid-cols-7 gap-3">
 		{#each POKER_CARDS as card}
 			<button
 				type="button"

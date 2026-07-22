@@ -19,6 +19,7 @@ import {
 	moveCardSchema,
 	addCommentSchema
 } from '$lib/validation/kanbanSchemas';
+import { canViewProject, canManageProject, isProjectParticipant } from '$lib/domain/projectAccess';
 import { recordCardChanges, recordCardHistory } from '$lib/server/kanbanHistory';
 import { buildKanbanPushPayload } from '$lib/domain/pushPayload';
 import { sendSystemPush } from '$lib/server/webPush';
@@ -35,49 +36,149 @@ import type {
 	KanbanCardRecord,
 	KanbanCardCommentRecord
 } from '$lib/server/kanbanRecord';
+import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 	if (!locals.user) {
 		throw redirect(303, '/login');
 	}
 
+	const projectId = url.searchParams.get('project');
+	if (!projectId) {
+		const lastProject = cookies.get('lastKanbanProject');
+		if (lastProject) {
+			throw redirect(303, `/kanban?project=${lastProject}`);
+		}
+		const adminPb = await getAdminClient();
+		const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+			sort: 'title',
+			expand: 'participants'
+		});
+		const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
+		return {
+			project: null,
+			projects: accessibleProjects,
+			sprints: [],
+			activeSprint: null,
+			plannedSprint: null,
+			columns: [],
+			cards: [],
+			users: [],
+			comments: [],
+			history: [],
+			token: locals.pb.authStore.token,
+			canManageProject: false
+		};
+	}
+
 	const adminPb = await getAdminClient();
 
-	// Busca as colunas ordenadas por posição
+	// Load project
+	let project: ProjectRecord;
+	try {
+		project = await adminPb.collection('projects').getOne<ProjectRecord>(projectId, {
+			expand: 'created_by,responsaveis,participants'
+		});
+	} catch {
+		throw error(404, 'Projeto não encontrado');
+	}
+
+	if (!canViewProject(locals.user, project)) {
+		throw error(403, 'Acesso negado');
+	}
+
+	cookies.set('lastKanbanProject', projectId, {
+		path: '/kanban',
+		maxAge: 60 * 60 * 24 * 365,
+		httpOnly: true,
+		sameSite: 'lax',
+		secure: false
+	});
+
+	// Load sprints for project
+	const sprints = await adminPb.collection('sprints').getFullList<SprintRecord>({
+		filter: adminPb.filter('project = {:id}', { id: projectId }),
+		sort: '-created'
+	});
+
+	const activeSprint = sprints.find((s) => s.status === 'active') || null;
+	const plannedSprint = sprints.find((s) => s.status === 'planned') || null;
+
+	// Load columns for this project
 	const columns = (await adminPb.collection('kanban_columns').getFullList({
+		filter: adminPb.filter('project = {:projectId}', { projectId }),
 		sort: 'position'
 	})) as KanbanColumnRecord[];
 
-	// Busca os cards com assignees expandidos
+	// Load cards: project match, and (sprint = active OR sprint = null)
+	// Cards from finished sprints are hidden
+	const activeSprintId = activeSprint?.id;
+	let cardsFilter = adminPb.filter('project = {:projectId}', { projectId });
+	if (activeSprintId) {
+		cardsFilter = adminPb.filter(
+			'project = {:projectId} && (sprint = {:sprintId} || sprint = null || sprint = "")',
+			{ projectId, sprintId: activeSprintId }
+		);
+	} else {
+		// No active sprint, only show cards without sprint
+		cardsFilter = adminPb.filter(
+			'project = {:projectId} && (sprint = null || sprint = "")',
+			{ projectId }
+		);
+	}
+
 	const cards = (await adminPb.collection('kanban_cards').getFullList({
+		filter: cardsFilter,
 		sort: 'position',
 		expand: 'assignees,created_by,column'
 	})) as KanbanCardRecord[];
 
-	// Busca a lista de usuários para atribuição de responsáveis
+	// Load users for assignee selection
 	const users = await adminPb.collection('user').getFullList({
 		sort: 'name'
 	});
 
-	// Busca os comentários expandindo autor
-	const comments = (await adminPb.collection('kanban_card_comments').getFullList({
-		sort: 'created',
-		expand: 'user'
-	})) as KanbanCardCommentRecord[];
+	// Load all comments (for all cards in this project)
+	const commentCardIds = cards.map((c) => c.id);
+	let comments: KanbanCardCommentRecord[] = [];
+	if (commentCardIds.length > 0) {
+		comments = (await adminPb.collection('kanban_card_comments').getFullList({
+			filter: commentCardIds.map((id) => `card = "${id}"`).join(' || '),
+			sort: 'created',
+			expand: 'user'
+		})) as KanbanCardCommentRecord[];
+	}
 
-	// Busca o histórico do Kanban ordenado por data descendente
-	const history = await adminPb.collection('kanban_card_history').getFullList({
-		sort: '-created',
-		expand: 'user'
+	// Load history for cards in this project
+	let history: any[] = [];
+	if (commentCardIds.length > 0) {
+		history = await adminPb.collection('kanban_card_history').getFullList({
+			filter: commentCardIds.map((id) => `card = "${id}"`).join(' || '),
+			sort: '-created',
+			expand: 'user'
+		});
+	}
+
+	// Load all projects for the project switcher
+	const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+		sort: 'title',
+		expand: 'participants'
 	});
+	const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
 
 	return {
+		project,
+		projects: accessibleProjects,
+		sprints,
+		activeSprint,
+		plannedSprint,
 		columns,
 		cards,
 		users,
 		comments,
 		history,
-		token: locals.pb.authStore.token
+		token: locals.pb.authStore.token,
+		canManageProject: canManageProject(locals.user, project)
 	};
 };
 
@@ -88,30 +189,30 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const name = formData.get('name') as string;
+		const projectId = formData.get('projectId') as string;
 
-		const validation = createColumnSchema.safeParse({ name });
+		const validation = createColumnSchema.safeParse({ name, projectId });
 		if (!validation.success) {
 			return fail(400, { errors: validation.error.flatten().fieldErrors });
 		}
 
 		const adminPb = await getAdminClient();
 
-		// Busca as colunas existentes para posicionar a nova antes da coluna "done" (Feito)
 		const columns = (await adminPb.collection('kanban_columns').getFullList({
+			filter: adminPb.filter('project = {:projectId}', { projectId: validation.data.projectId }),
 			sort: 'position'
 		})) as KanbanColumnRecord[];
 
 		const doneCol = columns.find((c) => c.type === 'done');
 		const targetPosition = doneCol ? doneCol.position : columns.length;
 
-		// Cria a nova coluna customizada
 		await adminPb.collection('kanban_columns').create({
 			name: validation.data.name,
 			position: targetPosition,
-			type: 'custom'
+			type: 'custom',
+			project: validation.data.projectId
 		});
 
-		// Se existia uma coluna "done", desloca ela para a direita
 		if (doneCol) {
 			await adminPb.collection('kanban_columns').update(doneCol.id, {
 				position: targetPosition + 1
@@ -129,7 +230,7 @@ export const actions: Actions = {
 		const columnId = formData.get('columnId') as string;
 		const name = formData.get('name') as string;
 
-		const validation = createColumnSchema.safeParse({ name });
+		const validation = createColumnSchema.safeParse({ name, projectId: '' });
 		if (!validation.success) {
 			return fail(400, { errors: validation.error.flatten().fieldErrors });
 		}
@@ -143,7 +244,7 @@ export const actions: Actions = {
 		}
 
 		if (col.type !== 'custom') {
-			return fail(403); // Colunas padrão não podem ser renomeadas
+			return fail(403);
 		}
 
 		await adminPb.collection('kanban_columns').update(columnId, {
@@ -164,28 +265,22 @@ export const actions: Actions = {
 		if (isNaN(newPosition)) return fail(400);
 
 		const adminPb = await getAdminClient();
+		const col = await adminPb.collection('kanban_columns').getOne(columnId) as KanbanColumnRecord;
+		const projectId = col.project;
+
 		const columns = (await adminPb.collection('kanban_columns').getFullList({
+			filter: adminPb.filter('project = {:projectId}', { projectId }),
 			sort: 'position'
 		})) as KanbanColumnRecord[];
 
-		const col = columns.find((c) => c.id === columnId);
-		if (!col) return fail(404);
+		const target = columns.find((c) => c.id === columnId);
+		if (!target) return fail(404);
+		if (target.type !== 'custom') return fail(403);
 
-		if (col.type !== 'custom') {
-			return fail(403); // Colunas padrão não podem ser movidas
-		}
-
-		// Filtra as colunas que podem se mover (tipo "custom")
 		const moveableColumns = columns.filter((c) => c.type === 'custom');
-		
-		// newPosition vem do client. Vamos mapear para o index do array de moveableColumns
-		// Lembrando que Aguardando (backlog) está na pos 0, e Feito (done) está no final.
-		// As custom columns ocupam posições 1 até N.
 		const targetIndex = Math.max(0, Math.min(newPosition - 1, moveableColumns.length - 1));
 
 		const reordered = reorderPositions(moveableColumns, columnId, targetIndex);
-
-		// Atualiza as posições no banco deslocando por +1
 		for (const column of reordered) {
 			await adminPb.collection('kanban_columns').update(column.id, {
 				position: column.position + 1
@@ -210,33 +305,26 @@ export const actions: Actions = {
 			return fail(404);
 		}
 
-		if (!canDeleteColumn(locals.user, col)) {
-			return fail(403);
-		}
+		if (!canDeleteColumn(locals.user, col)) return fail(403);
 
-		// Busca a coluna "Aguardando" para onde os cards órfãos serão jogados
 		const columns = (await adminPb.collection('kanban_columns').getFullList({
+			filter: adminPb.filter('project = {:projectId}', { projectId: col.project }),
 			sort: 'position'
 		})) as KanbanColumnRecord[];
 
 		const backlogCol = columns.find((c) => c.type === 'backlog');
-		if (!backlogCol) {
-			return fail(500); // Backlog sumiu?
-		}
+		if (!backlogCol) return fail(500);
 
-		// Busca todos os cards da coluna que será deletada
 		const cardsInCol = (await adminPb.collection('kanban_cards').getFullList({
 			filter: `column = "${columnId}"`,
 			sort: 'position'
 		})) as KanbanCardRecord[];
 
-		// Busca os cards do backlog para saber a partir de qual posição enfiar os órfãos
 		const backlogCards = (await adminPb.collection('kanban_cards').getFullList({
 			filter: `column = "${backlogCol.id}"`,
 			sort: 'position'
 		})) as KanbanCardRecord[];
 
-		// Move os cards órfãos para o backlog
 		let startPos = backlogCards.length;
 		for (const card of cardsInCol) {
 			const oldCard = { ...card };
@@ -244,7 +332,6 @@ export const actions: Actions = {
 				column: backlogCol.id,
 				position: startPos
 			});
-			// Registra a mudança de coluna e de posição no histórico
 			await recordCardChanges(card.id, locals.user.id, oldCard, {
 				column: backlogCol.id,
 				position: startPos
@@ -252,13 +339,9 @@ export const actions: Actions = {
 			startPos++;
 		}
 
-		// Deleta a coluna
 		await adminPb.collection('kanban_columns').delete(columnId);
 
-		// Recalcula a posição das demais colunas customizadas
-		const remainingMoveable = columns
-			.filter((c) => c.id !== columnId && c.type === 'custom');
-		
+		const remainingMoveable = columns.filter((c) => c.id !== columnId && c.type === 'custom');
 		const reorderedColumns = recalculatePositions(remainingMoveable);
 		for (const column of reorderedColumns) {
 			await adminPb.collection('kanban_columns').update(column.id, {
@@ -266,7 +349,6 @@ export const actions: Actions = {
 			});
 		}
 
-		// Ajusta a posição da coluna "done" (Feito)
 		const doneCol = columns.find((c) => c.type === 'done');
 		if (doneCol) {
 			await adminPb.collection('kanban_columns').update(doneCol.id, {
@@ -285,6 +367,8 @@ export const actions: Actions = {
 		const title = formData.get('title') as string;
 		const description = formData.get('description') as string;
 		const columnId = formData.get('columnId') as string;
+		const projectId = formData.get('projectId') as string;
+		const sprintId = formData.get('sprintId') as string;
 		const assigneeIds = formData.getAll('assigneeIds[]') as string[];
 		const tagsString = formData.get('tags') as string;
 		const dueDate = formData.get('dueDate') as string;
@@ -305,6 +389,8 @@ export const actions: Actions = {
 					})
 				: '',
 			columnId,
+			projectId,
+			sprintId: sprintId || null,
 			assigneeIds,
 			tags,
 			dueDate: dueDate || null,
@@ -317,7 +403,6 @@ export const actions: Actions = {
 
 		const adminPb = await getAdminClient();
 
-		// Conta quantos cards já existem na coluna alvo para posicionar o novo no final
 		const existingCards = await adminPb.collection('kanban_cards').getFullList({
 			filter: `column = "${validation.data.columnId}"`
 		});
@@ -326,6 +411,8 @@ export const actions: Actions = {
 			title: validation.data.title,
 			description: validation.data.description,
 			column: validation.data.columnId,
+			project: validation.data.projectId,
+			sprint: validation.data.sprintId || null,
 			created_by: locals.user.id,
 			assignees: validation.data.assigneeIds,
 			position: existingCards.length,
@@ -334,20 +421,16 @@ export const actions: Actions = {
 			dueDate: validation.data.dueDate || null
 		});
 
-		// Registra no histórico que o card foi criado
 		await recordCardHistory(newCard.id, locals.user.id, 'created');
 
-		// Notifica assignees (exceto o criador se ele se atribuiu)
 		const notifyAssigneeIds = validation.data.assigneeIds.filter((id) => id !== locals.user?.id);
 		if (notifyAssigneeIds.length > 0) {
 			const column = (await adminPb.collection('kanban_columns').getOne(validation.data.columnId)) as KanbanColumnRecord;
 
-			// In-app notifications
 			createKanbanNotification(notifyAssigneeIds, newCard.title, column.name, newCard.id).catch(
 				(err) => logError('kanban:createCard:notification', err)
 			);
 
-			// Push notifications
 			const pushPayload = buildKanbanPushPayload({
 				cardTitle: newCard.title,
 				cardId: newCard.id,
@@ -355,8 +438,6 @@ export const actions: Actions = {
 				action: 'created'
 			});
 			if (pushPayload) {
-				// push_subscriptions guarda IDs da coleção auth, não da coleção user
-				// (assignees) — precisa resolver antes de buscar as subscriptions.
 				resolveUserIdsToAuthIds(notifyAssigneeIds)
 					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
 					.catch((err) => logError('kanban:createCard:push', err));
@@ -378,6 +459,7 @@ export const actions: Actions = {
 		const tagsString = formData.get('tags') as string;
 		const dueDate = formData.get('dueDate') as string;
 		const pointsRaw = formData.get('points');
+		const sprintId = formData.get('sprintId') as string;
 
 		const tags = tagsString ? tagsString.split(',').map((t) => t.trim()).filter(Boolean) : [];
 		const points = pointsRaw ? parseInt(pointsRaw as string, 10) : null;
@@ -397,7 +479,8 @@ export const actions: Actions = {
 			assigneeIds,
 			tags,
 			dueDate: dueDate || null,
-			points: isNaN(points as number) ? null : points
+			points: isNaN(points as number) ? null : points,
+			sprintId: sprintId || null
 		});
 
 		if (!validation.success) {
@@ -419,13 +502,11 @@ export const actions: Actions = {
 		if (validation.data.tags !== undefined) updateData.tags = validation.data.tags;
 		if (validation.data.dueDate !== undefined) updateData.dueDate = validation.data.dueDate;
 		if (validation.data.points !== undefined) updateData.points = validation.data.points;
+		if (validation.data.sprintId !== undefined) updateData.sprint = validation.data.sprintId;
 
 		await adminPb.collection('kanban_cards').update(validation.data.cardId, updateData);
-
-		// Registra as alterações no histórico
 		await recordCardChanges(validation.data.cardId, locals.user.id, oldCard, updateData);
 
-		// Notifica novos assignees (que não estavam antes)
 		if (validation.data.assigneeIds !== undefined) {
 			const newAssigneeIds = validation.data.assigneeIds.filter(
 				(id) => !oldCard.assignees.includes(id) && id !== locals.user?.id
@@ -482,7 +563,6 @@ export const actions: Actions = {
 		const targetPosition = validation.data.position;
 
 		if (oldColumnId === targetColumnId) {
-			// Movimentação interna na mesma coluna
 			const oldCard = { ...card };
 			const cardsInCol = (await adminPb.collection('kanban_cards').getFullList({
 				filter: `column = "${oldColumnId}"`,
@@ -491,20 +571,12 @@ export const actions: Actions = {
 
 			const reordered = reorderPositions(cardsInCol, cardId, targetPosition);
 			for (const c of reordered) {
-				await adminPb.collection('kanban_cards').update(c.id, {
-					position: c.position
-				});
+				await adminPb.collection('kanban_cards').update(c.id, { position: c.position });
 			}
-
-			// Registra a mudança de posição se alterada
-			await recordCardChanges(cardId, locals.user.id, oldCard, {
-				position: targetPosition
-			});
+			await recordCardChanges(cardId, locals.user.id, oldCard, { position: targetPosition });
 		} else {
-			// Movimentação entre colunas diferentes
 			const oldCard = { ...card };
 
-			// 1. Remove da antiga coluna e reordena os restantes
 			const oldColCards = (await adminPb.collection('kanban_cards').getFullList({
 				filter: `column = "${oldColumnId}"`,
 				sort: 'position'
@@ -513,18 +585,14 @@ export const actions: Actions = {
 			const oldColRemaining = oldColCards.filter((c) => c.id !== cardId);
 			const recalculatedOld = recalculatePositions(oldColRemaining);
 			for (const c of recalculatedOld) {
-				await adminPb.collection('kanban_cards').update(c.id, {
-					position: c.position
-				});
+				await adminPb.collection('kanban_cards').update(c.id, { position: c.position });
 			}
 
-			// 2. Insere na nova coluna e reordena todos
 			const newColCards = (await adminPb.collection('kanban_cards').getFullList({
 				filter: `column = "${targetColumnId}"`,
 				sort: 'position'
 			})) as KanbanCardRecord[];
 
-			// Força a posição inicial do card movido antes de passar ao helper
 			const cardToMoveWithInitialPos = { ...card, column: targetColumnId, position: targetPosition };
 			const recalculatedNew = reorderPositions(
 				[...newColCards, cardToMoveWithInitialPos],
@@ -539,34 +607,24 @@ export const actions: Actions = {
 						position: c.position
 					});
 				} else {
-					await adminPb.collection('kanban_cards').update(c.id, {
-						position: c.position
-					});
+					await adminPb.collection('kanban_cards').update(c.id, { position: c.position });
 				}
 			}
 
-			// Registra no histórico a mudança de coluna e posição
 			await recordCardChanges(cardId, locals.user.id, oldCard, {
 				column: targetColumnId,
 				position: targetPosition
 			});
 
-			// Notifica assignees (exceto quem moveu) apenas em mudança de coluna
 			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
 			if (notifyAssigneeIds.length > 0) {
 				const newColumn = (await adminPb.collection('kanban_columns').getOne(targetColumnId)) as KanbanColumnRecord;
 				const moverName = locals.user?.name ?? 'Alguém';
 
-				// In-app notifications
 				createKanbanMovedNotification(
-					notifyAssigneeIds,
-					card.title,
-					newColumn.name,
-					card.id,
-					moverName
+					notifyAssigneeIds, card.title, newColumn.name, card.id, moverName
 				).catch((err) => logError('kanban:moveCard:notification', err));
 
-				// Push notifications
 				const pushPayload = buildKanbanPushPayload({
 					cardTitle: card.title,
 					cardId: card.id,
@@ -575,8 +633,6 @@ export const actions: Actions = {
 					movedByName: moverName
 				});
 				if (pushPayload) {
-					// push_subscriptions guarda IDs da coleção auth, não da coleção user
-					// (assignees) — precisa resolver antes de buscar as subscriptions.
 					resolveUserIdsToAuthIds(notifyAssigneeIds)
 						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
 						.catch((err) => logError('kanban:moveCard:push', err));
@@ -601,27 +657,19 @@ export const actions: Actions = {
 			return fail(404);
 		}
 
-		if (!canDeleteCard(locals.user.id, card)) {
-			return fail(403);
-		}
+		if (!canDeleteCard(locals.user.id, card)) return fail(403);
 
 		const columnId = card.column;
-
 		const cardTitle = card.title;
 		const deleterName = locals.user.name ?? 'Alguém';
 
-		// Notifica assignees (exceto quem deletou) antes de deletar
 		const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
 		if (notifyAssigneeIds.length > 0) {
 			createKanbanDeletedNotification(notifyAssigneeIds, cardTitle, deleterName).catch(
 				(err) => logError('kanban:deleteCard:notification', err)
 			);
 
-			const pushPayload = buildKanbanPushPayload({
-				cardTitle,
-				cardId,
-				action: 'deleted'
-			});
+			const pushPayload = buildKanbanPushPayload({ cardTitle, cardId, action: 'deleted' });
 			if (pushPayload) {
 				resolveUserIdsToAuthIds(notifyAssigneeIds)
 					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
@@ -629,10 +677,8 @@ export const actions: Actions = {
 			}
 		}
 
-		// Deleta o card
 		await adminPb.collection('kanban_cards').delete(cardId);
 
-		// Recalcula as posições dos cards restantes na coluna
 		const cardsInCol = (await adminPb.collection('kanban_cards').getFullList({
 			filter: `column = "${columnId}"`,
 			sort: 'position'
@@ -640,9 +686,7 @@ export const actions: Actions = {
 
 		const recalculated = recalculatePositions(cardsInCol);
 		for (const c of recalculated) {
-			await adminPb.collection('kanban_cards').update(c.id, {
-				position: c.position
-			});
+			await adminPb.collection('kanban_cards').update(c.id, { position: c.position });
 		}
 
 		return { success: true };
@@ -662,7 +706,6 @@ export const actions: Actions = {
 
 		const adminPb = await getAdminClient();
 
-		// Comentários podem ser criados via locals.pb direto pois a API Rule permite
 		try {
 			await locals.pb.collection('kanban_card_comments').create({
 				card: validation.data.cardId,
@@ -673,16 +716,12 @@ export const actions: Actions = {
 			return fail(500);
 		}
 
-		// Notifica assignees do card (exceto quem comentou)
 		try {
 			const card = (await adminPb.collection('kanban_cards').getOne(validation.data.cardId)) as KanbanCardRecord;
 			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
 			if (notifyAssigneeIds.length > 0) {
 				createKanbanCommentedNotification(
-					notifyAssigneeIds,
-					card.title,
-					card.id,
-					locals.user.name ?? 'Alguém'
+					notifyAssigneeIds, card.title, card.id, locals.user.name ?? 'Alguém'
 				).catch((err) => logError('kanban:addComment:notification', err));
 
 				const pushPayload = buildKanbanPushPayload({
@@ -697,9 +736,7 @@ export const actions: Actions = {
 						.catch((err) => logError('kanban:addComment:push', err));
 				}
 			}
-		} catch {
-			// Card pode ter sido deletado entre a criação do comentário e a notificação
-		}
+		} catch {}
 
 		return { success: true };
 	},
@@ -712,9 +749,7 @@ export const actions: Actions = {
 
 		try {
 			const comment = await locals.pb.collection('kanban_card_comments').getOne(commentId);
-			if (comment.user !== locals.user.id) {
-				return fail(403);
-			}
+			if (comment.user !== locals.user.id) return fail(403);
 			await locals.pb.collection('kanban_card_comments').delete(commentId);
 		} catch {
 			return fail(404);

@@ -10,12 +10,12 @@ import {
 describe('Planning Poker Validation Schemas', () => {
 	describe('createRoomSchema', () => {
 		it('deve validar nomes corretos', () => {
-			const res = createRoomSchema.safeParse({ name: 'Sala Scrum' });
+			const res = createRoomSchema.safeParse({ name: 'Sala Scrum', projectId: 'proj-1' });
 			expect(res.success).toBe(true);
 		});
 
 		it('deve rejeitar nome vazio', () => {
-			const res = createRoomSchema.safeParse({ name: '' });
+			const res = createRoomSchema.safeParse({ name: '', projectId: 'proj-1' });
 			expect(res.success).toBe(false);
 			if (!res.success) {
 				expect(res.error.issues[0].message).toBe('O nome da sala é obrigatório.');

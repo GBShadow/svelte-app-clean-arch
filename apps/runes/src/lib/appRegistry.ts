@@ -3,6 +3,7 @@ import MessageCircle from 'lucide-svelte/icons/message-circle';
 import Users from 'lucide-svelte/icons/users';
 import Kanban from 'lucide-svelte/icons/kanban';
 import Dices from 'lucide-svelte/icons/dices';
+import FolderKanban from 'lucide-svelte/icons/folder-kanban';
 
 export interface AppEntry {
 	id: string;
@@ -49,5 +50,12 @@ export const appRegistry: AppEntry[] = [
 		icon: Users,
 		route: '/users',
 		adminOnly: true
+	},
+	{
+		id: 'projects',
+		name: 'Projetos',
+		description: 'Gerencie projetos, sprints e participantes',
+		icon: FolderKanban,
+		route: '/projects'
 	}
 ];

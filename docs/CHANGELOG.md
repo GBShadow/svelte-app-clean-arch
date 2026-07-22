@@ -2,6 +2,26 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-21] Correções: login, criação de projetos, avatar, poker, kanban
+
+- **Login quebrado** (migration 0021): `fields.add({...})` com plain object falhava silenciosamente no PocketBase — trocado para `fields.add(new RelationField({...}))`. Rebuild da imagem Docker necessário.
+- **Criação de projetos**: `throw redirect()` dentro de `try-catch` era engolido — movido para fora. Adicionada UI de seleção de responsáveis/participantes com checkbox.
+- **Avatar centralizado**: placeholders inline sem `flex items-center justify-center` em `projects/[id]/+page.svelte` e `kanban/+page.svelte` — corrigido.
+- **Poker**: filtro do backlog sobreposto pelo botão "Nova Task" (`absolute top-6 right-6`) — movido para dentro do header do `TaskList.svelte`. `md:grid-cols-13` removido (classe Tailwind inválida).
+- **Poker participantes**: `expand: 'user'` via `locals.pb` não resolvia outros participantes (barrado pela `viewRule`) — trocado para `getAdminClient()`.
+- **Kanban redirecionamento**: rota `/kanban` sem `?project=` redirecionava para `/projects` — agora redireciona para o último kanban acessado (cookie `lastKanbanProject`). Primeiro acesso mostra seletor de projeto em vez de redirecionar.
+- **Documentação**: `docs/LESSONS-LEARNED.md` criado com registro de causas raiz.
+
+## [2026-07-21] Projetos, Sprints e contexto no Kanban + Poker
+
+- **Projetos**: CRUD completo (`/projects`, `/projects/new`, `/projects/[id]`, `/projects/[id]/edit`). Campos: título*, descrição*, imagem (upload), participantes, responsáveis. Apenas admin global cria. Responsáveis gerenciam participantes.
+- **Sprints**: vinculadas a projeto, com status `planned | active | finished`. Ao finalizar uma sprint ativa, a próxima é auto-criada como `planned`. Tasks de sprints finalizadas são ocultadas do board.
+- **Kanban com contexto**: seletor de projeto no topo do board (`/kanban?project=xxx`). Cards filtrados por projeto + sprint ativa. Suporte a cards sem sprint (backlog).
+- **Poker com projeto**: criação de sala exige seleção de projeto. `exportToKanban` direciona tasks para a sprint ativa (ou planejada) do projeto.
+- **Migration 0021**: novas coleções `projects`, `sprints`; campos `project`/`sprint` em `kanban_columns`, `kanban_cards`; campo `project` em `poker_rooms`. Seed de projeto "Geral" com sprint padrão para dados migrados.
+- **Servidor**: `projectRecord.ts`, `projectAccess.ts`, `sprintAccess.ts`; validações `projectSchemas.ts`.
+- App hub: entrada "Projetos" adicionada ao `appRegistry.ts`.
+
 ## [2026-07-16] Correção definitiva das notificações do Kanban (raiz real: filtro PocketBase, schema e autocancelação)
 
 - Corrigido: `resolveUserIdsToAuthIds` (`apps/runes/src/lib/server/notificationStore.ts`) usava sintaxe `IN (...)` inexistente no PocketBase — trocado por igualdade encadeada (`||`) via `pb.filter()`

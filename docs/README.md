@@ -18,6 +18,7 @@
 | [testing/](./testing/) | Testes e2e (Playwright) | [playwright.md](./testing/playwright.md) |
 | [CHANGELOG.md](./CHANGELOG.md) | Histórico de features | — |
 | [TECH-DEBT.md](./TECH-DEBT.md) | Documento vivo de débitos técnicos identificados (e não corrigidos na hora) | — |
+| [LESSONS-LEARNED.md](./LESSONS-LEARNED.md) | Causas raiz de problemas resolvidos | — |
 
 ## Convenção workflow
 

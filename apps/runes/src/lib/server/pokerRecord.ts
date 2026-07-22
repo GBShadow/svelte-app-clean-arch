@@ -4,6 +4,7 @@ export interface PokerRoomRecord {
 	id: string;
 	name: string;
 	created_by: string;
+	project: string;
 	current_task: string | null;
 	revealed: boolean;
 	status: 'open' | 'finalized';
@@ -11,6 +12,7 @@ export interface PokerRoomRecord {
 	updated: string;
 	expand?: {
 		created_by?: UserRecord;
+		project?: { id: string; title: string };
 	};
 }
 

@@ -527,8 +527,8 @@
 <!-- Modal: Create Card -->
 {#if isNewCardOpen}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-xl">
-			<h3 class="font-bold text-lg mb-4">Criar Novo Cartão</h3>
+		<div class="modal-box max-w-xl flex flex-col max-h-[95vh]">
+			<h3 class="font-bold text-lg mb-4 shrink-0">Criar Novo Cartão</h3>
 			<form
 				method="POST"
 				action="?/createCard"
@@ -538,164 +538,48 @@
 						await update();
 					};
 				}}
-				class="flex flex-col gap-4"
+				class="flex flex-col flex-1 min-h-0"
 			>
 				<input type="hidden" name="columnId" value={selectedColumnId} />
 				<input type="hidden" name="projectId" value={project.id} />
 				<input type="hidden" name="sprintId" value={cardSprintId} />
 
-				<div class="form-control">
-					<label class="label font-medium text-sm" for="new-card-title">Título *</label>
-					<input id="new-card-title" type="text" name="title" required
-						class="input input-bordered w-full" bind:value={cardTitle}
-						placeholder="Digite o título do cartão..." />
-				</div>
-
-				<div class="form-control">
-					<label class="label font-medium text-sm" for="new-card-desc">Descrição</label>
-					<input type="hidden" name="description" value={cardDescription} />
-					<RichTextEditor bind:value={cardDescription} />
-				</div>
-
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="overflow-y-auto min-h-0 flex-1 space-y-4 pb-4">
 					<div class="form-control">
-						<label class="label font-medium text-sm" for="new-card-points">Pontuação</label>
-						<select id="new-card-points" name="points" class="select select-bordered" bind:value={cardPoints}>
-							<option value={null}>Sem Estimativa</option>
-							{#each [0,1,2,3,5,8,13,21,34,55,89] as n}
-								<option value={n}>{n} SP</option>
-							{/each}
-						</select>
+						<label class="label font-medium text-sm" for="new-card-title">Título *</label>
+						<input id="new-card-title" type="text" name="title" required
+							class="input input-bordered w-full" bind:value={cardTitle}
+							placeholder="Digite o título do cartão..." />
 					</div>
 
 					<div class="form-control">
-						<label class="label font-medium text-sm" for="new-card-due">Data de Vencimento</label>
-						<input id="new-card-due" type="date" name="dueDate"
-							class="input input-bordered" bind:value={cardDueDate} />
-					</div>
-				</div>
-
-				<!-- Sprint Selection -->
-				<div class="form-control">
-					<label class="label font-medium text-sm" for="new-card-sprint">Sprint</label>
-					<select id="new-card-sprint" name="sprintId" class="select select-bordered" bind:value={cardSprintId}>
-						<option value="">Backlog (sem sprint)</option>
-						{#if activeSprint}
-							<option value={activeSprint.id}>{activeSprint.title} (ativa)</option>
-						{/if}
-						{#if plannedSprint}
-							<option value={plannedSprint.id}>{plannedSprint.title} (planejada)</option>
-						{/if}
-					</select>
-				</div>
-
-				<div class="form-control">
-					<span class="label font-medium text-sm">Responsáveis</span>
-					<div class="flex flex-col gap-1.5 max-h-32 overflow-y-auto border border-base-300 rounded-lg p-2">
-						{#each data.users as user}
-							<label class="flex items-center gap-2 cursor-pointer py-1 px-1.5 hover:bg-base-200 rounded">
-								<input type="checkbox" name="assigneeIds[]" value={user.id}
-									checked={cardAssignees.includes(user.id)}
-									onchange={(e) => {
-										const checked = (e.target as HTMLInputElement).checked;
-										cardAssignees = checked ? [...cardAssignees, user.id] : cardAssignees.filter((id) => id !== user.id);
-									}}
-									class="checkbox checkbox-sm checkbox-primary" />
-								<Avatar userId={user.id} avatar={user.avatar} name={user.name} size="size-5" />
-								<span class="text-sm">{user.name}</span>
-							</label>
-						{/each}
-					</div>
-				</div>
-
-				<div class="form-control">
-					<label class="label font-medium text-sm" for="new-card-tags">Tags (separadas por vírgula)</label>
-					<input id="new-card-tags" type="text" name="tags" class="input input-bordered"
-						bind:value={cardTags} placeholder="ex: bug, frontend, urgente" />
-				</div>
-
-				<div class="modal-action">
-					<button type="button" class="btn btn-ghost" onclick={() => (isNewCardOpen = false)}>Cancelar</button>
-					<button type="submit" class="btn btn-primary" data-testid="btn-save-new-card">Criar</button>
-				</div>
-			</form>
-		</div>
-	</dialog>
-{/if}
-
-<!-- Modal: Edit Card -->
-{#if isEditCardOpen && selectedCard}
-	<dialog class="modal modal-open">
-		<div class="modal-box max-w-3xl">
-			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4">
-				<h3 class="font-bold text-lg">Detalhes do Cartão</h3>
-				<div class="flex items-center gap-2">
-					{#if canDeleteCard(data.user?.id, selectedCard)}
-						<form method="POST" action="?/deleteCard"
-							use:enhance={() => {
-								return async ({ update }) => {
-									isEditCardOpen = false;
-									await update();
-								};
-							}}
-						>
-							<input type="hidden" name="cardId" value={selectedCard.id} />
-							<button type="submit" class="btn btn-error btn-outline btn-sm gap-1" data-testid="btn-delete-card">
-								<Trash class="size-4" />
-								Excluir
-							</button>
-						</form>
-					{/if}
-					<button class="btn btn-ghost btn-sm btn-circle" onclick={() => (isEditCardOpen = false)}>
-						<X class="size-5" />
-					</button>
-				</div>
-			</div>
-
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<form method="POST" action="?/updateCard"
-					use:enhance={() => {
-						return async ({ update }) => {
-							isEditCardOpen = false;
-							await update();
-						};
-					}}
-					class="lg:col-span-2 flex flex-col gap-4"
-				>
-					<input type="hidden" name="cardId" value={selectedCard.id} />
-
-					<div class="form-control">
-						<label class="label font-medium text-sm" for="edit-card-title">Título *</label>
-						<input id="edit-card-title" type="text" name="title" required class="input input-bordered w-full" bind:value={cardTitle} />
-					</div>
-
-					<div class="form-control">
-						<label class="label font-medium text-sm" for="edit-card-desc">Descrição</label>
+						<label class="label font-medium text-sm" for="new-card-desc">Descrição</label>
 						<input type="hidden" name="description" value={cardDescription} />
 						<RichTextEditor bind:value={cardDescription} />
 					</div>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div class="form-control">
-							<label class="label font-medium text-sm" for="edit-card-points">Pontuação</label>
-							<select id="edit-card-points" name="points" class="select select-bordered" bind:value={cardPoints}>
-							<option value={null}>Sem Estimativa</option>
-							{#each [0,1,2,3,5,8,13,21,34,55,89] as n}
-								<option value={n}>{n} SP</option>
-							{/each}
+							<label class="label font-medium text-sm" for="new-card-points">Pontuação</label>
+							<select id="new-card-points" name="points" class="select select-bordered" bind:value={cardPoints}>
+								<option value={null}>Sem Estimativa</option>
+								{#each [0,1,2,3,5,8,13,21,34,55,89] as n}
+									<option value={n}>{n} SP</option>
+								{/each}
 							</select>
 						</div>
 
 						<div class="form-control">
-							<label class="label font-medium text-sm" for="edit-card-due">Data de Vencimento</label>
-							<input id="edit-card-due" type="date" name="dueDate" class="input input-bordered" bind:value={cardDueDate} />
+							<label class="label font-medium text-sm" for="new-card-due">Data de Vencimento</label>
+							<input id="new-card-due" type="date" name="dueDate"
+								class="input input-bordered" bind:value={cardDueDate} />
 						</div>
 					</div>
 
 					<!-- Sprint Selection -->
 					<div class="form-control">
-						<label class="label font-medium text-sm" for="edit-card-sprint">Sprint</label>
-						<select id="edit-card-sprint" name="sprintId" class="select select-bordered" bind:value={cardSprintId}>
+						<label class="label font-medium text-sm" for="new-card-sprint">Sprint</label>
+						<select id="new-card-sprint" name="sprintId" class="select select-bordered" bind:value={cardSprintId}>
 							<option value="">Backlog (sem sprint)</option>
 							{#if activeSprint}
 								<option value={activeSprint.id}>{activeSprint.title} (ativa)</option>
@@ -726,89 +610,209 @@
 					</div>
 
 					<div class="form-control">
-						<label class="label font-medium text-sm" for="edit-card-tags">Tags</label>
-						<input id="edit-card-tags" type="text" name="tags" class="input input-bordered" bind:value={cardTags} />
+						<label class="label font-medium text-sm" for="new-card-tags">Tags (separadas por vírgula)</label>
+						<input id="new-card-tags" type="text" name="tags" class="input input-bordered"
+							bind:value={cardTags} placeholder="ex: bug, frontend, urgente" />
 					</div>
+				</div>
 
-					<div class="flex gap-2 justify-end mt-2">
-						<button type="button" class="btn btn-ghost" onclick={() => (isEditCardOpen = false)}>Fechar</button>
-						<button type="submit" class="btn btn-primary" data-testid="btn-save-card">Salvar Alterações</button>
-					</div>
-				</form>
+				<div class="modal-action mt-0 shrink-0">
+					<button type="button" class="btn btn-ghost" onclick={() => (isNewCardOpen = false)}>Cancelar</button>
+					<button type="submit" class="btn btn-primary" data-testid="btn-save-new-card">Criar</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+{/if}
 
-				<div class="flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-base-200 pt-6 lg:pt-0 lg:pl-6 max-h-[70vh] overflow-y-auto">
-					<!-- Comments -->
-					<div class="flex flex-col gap-3">
-						<h4 class="font-bold text-sm text-base-content/85 flex items-center gap-1.5">
-							Comentários ({board.comments.filter((c) => c.card === selectedCard?.id).length})
-						</h4>
-						<div class="flex flex-col gap-2 max-h-56 overflow-y-auto border border-base-200 rounded-xl p-2 bg-base-50">
-							{#each board.comments.filter((c) => c.card === selectedCard?.id) as comment (comment.id)}
-								<div class="bg-base-100 p-2.5 rounded-lg border border-base-200 relative group flex gap-2">
-									<Avatar userId={comment.user} avatar={comment.expand?.user?.avatar || ''}
-										name={comment.expand?.user?.name || ''} size="size-5" />
-									<div class="flex-1">
-										<div class="flex items-center justify-between">
-											<span class="text-xs font-bold text-base-content/80">{comment.expand?.user?.name || 'Desconhecido'}</span>
-											<span class="text-[10px] opacity-50">{new Date(comment.created).toLocaleDateString('pt-BR')}</span>
-										</div>
-										<p class="text-sm mt-1 text-base-content/90 font-light break-words">{comment.text}</p>
-									</div>
-									{#if comment.user === data.user?.id}
-										<form method="POST" action="?/deleteComment" use:enhance
-											class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-											<input type="hidden" name="commentId" value={comment.id} />
-											<button type="submit" class="btn btn-ghost btn-xs text-error p-0.5 min-h-0 h-auto">
-												<X class="size-3" />
-											</button>
-										</form>
-									{/if}
-								</div>
-							{:else}
-								<p class="text-xs text-center opacity-50 py-4">Nenhum comentário.</p>
-							{/each}
-						</div>
-						<form method="POST" action="?/addComment"
+<!-- Modal: Edit Card -->
+{#if isEditCardOpen && selectedCard}
+	<dialog class="modal modal-open">
+		<div class="modal-box max-w-3xl flex flex-col max-h-[95vh]">
+			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4 shrink-0">
+				<h3 class="font-bold text-lg">Detalhes do Cartão</h3>
+				<div class="flex items-center gap-2">
+					{#if canDeleteCard(data.user?.id, selectedCard)}
+						<form method="POST" action="?/deleteCard"
 							use:enhance={() => {
 								return async ({ update }) => {
-									await update({ reset: true });
+									isEditCardOpen = false;
+									await update();
 								};
 							}}
-							class="flex gap-2"
 						>
 							<input type="hidden" name="cardId" value={selectedCard.id} />
-							<input type="text" name="text" required placeholder="Escreva um comentário..." class="input input-bordered input-sm flex-1" data-testid="input-comment" />
-							<button type="submit" class="btn btn-sm btn-outline" data-testid="btn-add-comment">Enviar</button>
+							<button type="submit" class="btn btn-error btn-outline btn-sm gap-1" data-testid="btn-delete-card">
+								<Trash class="size-4" />
+								Excluir
+							</button>
 						</form>
-					</div>
+					{/if}
+					<button class="btn btn-ghost btn-sm btn-circle" onclick={() => (isEditCardOpen = false)}>
+						<X class="size-5" />
+					</button>
+				</div>
+			</div>
 
-					<!-- History -->
-					<div class="flex flex-col gap-3 border-t border-base-200 pt-4">
-						<h4 class="font-bold text-sm text-base-content/85">Histórico de Alterações</h4>
-						<div class="flex flex-col gap-2 max-h-48 overflow-y-auto border border-base-200 rounded-xl p-2 bg-base-50 text-xs">
-							{#each board.history.filter((h) => h.card === selectedCard?.id) as h (h.id)}
-								<div class="py-1 border-b border-base-200/60 last:border-b-0">
-									<span class="font-semibold">{h.expand?.user?.name || 'Sistema'}</span>
-									<span class="opacity-75">
-										{h.field === 'created' ? 'criou o cartão' :
-										h.field === 'title' ? 'alterou o título' :
-										h.field === 'description' ? 'alterou a descrição' :
-										h.field === 'column' ? 'moveu o cartão de coluna' :
-										h.field === 'assignees' ? 'alterou os responsáveis' :
-										h.field === 'points' ? 'alterou os Story Points' :
-										h.field === 'tags' ? 'alterou as tags' :
-										h.field === 'dueDate' ? 'alterou a data de vencimento' :
-										h.field === 'sprint' ? 'alterou a sprint' :
-										`alterou o campo ${h.field}`}
-									</span>
-									<span class="block text-[10px] opacity-50 mt-0.5">{new Date(h.created).toLocaleString('pt-BR')}</span>
-								</div>
-							{:else}
-								<p class="text-xs text-center opacity-50 py-4">Nenhuma alteração registrada.</p>
-							{/each}
+			<div class="overflow-y-auto min-h-0 flex-1 pr-1 pb-4">
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					<form method="POST" action="?/updateCard" id="update-card-form"
+						use:enhance={() => {
+							return async ({ update }) => {
+								isEditCardOpen = false;
+								await update();
+							};
+						}}
+						class="lg:col-span-2 flex flex-col gap-4"
+					>
+						<input type="hidden" name="cardId" value={selectedCard.id} />
+
+						<div class="form-control">
+							<label class="label font-medium text-sm" for="edit-card-title">Título *</label>
+							<input id="edit-card-title" type="text" name="title" required class="input input-bordered w-full" bind:value={cardTitle} />
+						</div>
+
+						<div class="form-control">
+							<label class="label font-medium text-sm" for="edit-card-desc">Descrição</label>
+							<input type="hidden" name="description" value={cardDescription} />
+							<RichTextEditor bind:value={cardDescription} />
+						</div>
+
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div class="form-control">
+								<label class="label font-medium text-sm" for="edit-card-points">Pontuação</label>
+								<select id="edit-card-points" name="points" class="select select-bordered" bind:value={cardPoints}>
+								<option value={null}>Sem Estimativa</option>
+								{#each [0,1,2,3,5,8,13,21,34,55,89] as n}
+									<option value={n}>{n} SP</option>
+								{/each}
+								</select>
+							</div>
+
+							<div class="form-control">
+								<label class="label font-medium text-sm" for="edit-card-due">Data de Vencimento</label>
+								<input id="edit-card-due" type="date" name="dueDate" class="input input-bordered" bind:value={cardDueDate} />
+							</div>
+						</div>
+
+						<!-- Sprint Selection -->
+						<div class="form-control">
+							<label class="label font-medium text-sm" for="edit-card-sprint">Sprint</label>
+							<select id="edit-card-sprint" name="sprintId" class="select select-bordered" bind:value={cardSprintId}>
+								<option value="">Backlog (sem sprint)</option>
+								{#if activeSprint}
+									<option value={activeSprint.id}>{activeSprint.title} (ativa)</option>
+								{/if}
+								{#if plannedSprint}
+									<option value={plannedSprint.id}>{plannedSprint.title} (planejada)</option>
+								{/if}
+							</select>
+						</div>
+
+						<div class="form-control">
+							<span class="label font-medium text-sm">Responsáveis</span>
+							<div class="flex flex-col gap-1.5 max-h-32 overflow-y-auto border border-base-300 rounded-lg p-2">
+								{#each data.users as user}
+									<label class="flex items-center gap-2 cursor-pointer py-1 px-1.5 hover:bg-base-200 rounded">
+										<input type="checkbox" name="assigneeIds[]" value={user.id}
+											checked={cardAssignees.includes(user.id)}
+											onchange={(e) => {
+												const checked = (e.target as HTMLInputElement).checked;
+												cardAssignees = checked ? [...cardAssignees, user.id] : cardAssignees.filter((id) => id !== user.id);
+											}}
+											class="checkbox checkbox-sm checkbox-primary" />
+										<Avatar userId={user.id} avatar={user.avatar} name={user.name} size="size-5" />
+										<span class="text-sm">{user.name}</span>
+									</label>
+								{/each}
+							</div>
+						</div>
+
+						<div class="form-control">
+							<label class="label font-medium text-sm" for="edit-card-tags">Tags</label>
+							<input id="edit-card-tags" type="text" name="tags" class="input input-bordered" bind:value={cardTags} />
+						</div>
+					</form>
+
+					<div class="flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-base-200 pt-6 lg:pt-0 lg:pl-6">
+						<!-- Comments -->
+						<div class="flex flex-col gap-3">
+							<h4 class="font-bold text-sm text-base-content/85 flex items-center gap-1.5">
+								Comentários ({board.comments.filter((c) => c.card === selectedCard?.id).length})
+							</h4>
+							<div class="flex flex-col gap-2 max-h-56 overflow-y-auto border border-base-200 rounded-xl p-2 bg-base-50">
+								{#each board.comments.filter((c) => c.card === selectedCard?.id) as comment (comment.id)}
+									<div class="bg-base-100 p-2.5 rounded-lg border border-base-200 relative group flex gap-2">
+										<Avatar userId={comment.user} avatar={comment.expand?.user?.avatar || ''}
+											name={comment.expand?.user?.name || ''} size="size-5" />
+										<div class="flex-1">
+											<div class="flex items-center justify-between">
+												<span class="text-xs font-bold text-base-content/80">{comment.expand?.user?.name || 'Desconhecido'}</span>
+												<span class="text-[10px] opacity-50">{new Date(comment.created).toLocaleDateString('pt-BR')}</span>
+											</div>
+											<p class="text-sm mt-1 text-base-content/90 font-light break-words">{comment.text}</p>
+										</div>
+										{#if comment.user === data.user?.id}
+											<form method="POST" action="?/deleteComment" use:enhance
+												class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+												<input type="hidden" name="commentId" value={comment.id} />
+												<button type="submit" class="btn btn-ghost btn-xs text-error p-0.5 min-h-0 h-auto">
+													<X class="size-3" />
+												</button>
+											</form>
+										{/if}
+									</div>
+								{:else}
+									<p class="text-xs text-center opacity-50 py-4">Nenhum comentário.</p>
+								{/each}
+							</div>
+							<form method="POST" action="?/addComment"
+								use:enhance={() => {
+									return async ({ update }) => {
+										await update({ reset: true });
+									};
+								}}
+								class="flex gap-2"
+							>
+								<input type="hidden" name="cardId" value={selectedCard.id} />
+								<input type="text" name="text" required placeholder="Escreva um comentário..." class="input input-bordered input-sm flex-1" data-testid="input-comment" />
+								<button type="submit" class="btn btn-sm btn-outline" data-testid="btn-add-comment">Enviar</button>
+							</form>
+						</div>
+
+						<!-- History -->
+						<div class="flex flex-col gap-3 border-t border-base-200 pt-4">
+							<h4 class="font-bold text-sm text-base-content/85">Histórico de Alterações</h4>
+							<div class="flex flex-col gap-2 max-h-48 overflow-y-auto border border-base-200 rounded-xl p-2 bg-base-50 text-xs">
+								{#each board.history.filter((h) => h.card === selectedCard?.id) as h (h.id)}
+									<div class="py-1 border-b border-base-200/60 last:border-b-0">
+										<span class="font-semibold">{h.expand?.user?.name || 'Sistema'}</span>
+										<span class="opacity-75">
+											{h.field === 'created' ? 'criou o cartão' :
+											h.field === 'title' ? 'alterou o título' :
+											h.field === 'description' ? 'alterou a descrição' :
+											h.field === 'column' ? 'moveu o cartão de coluna' :
+											h.field === 'assignees' ? 'alterou os responsáveis' :
+											h.field === 'points' ? 'alterou os Story Points' :
+											h.field === 'tags' ? 'alterou as tags' :
+											h.field === 'dueDate' ? 'alterou a data de vencimento' :
+											h.field === 'sprint' ? 'alterou a sprint' :
+											`alterou o campo ${h.field}`}
+										</span>
+										<span class="block text-[10px] opacity-50 mt-0.5">{new Date(h.created).toLocaleString('pt-BR')}</span>
+									</div>
+								{:else}
+									<p class="text-xs text-center opacity-50 py-4">Nenhuma alteração registrada.</p>
+								{/each}
+							</div>
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div class="flex gap-2 justify-end pt-4 mt-4 border-t border-base-200 shrink-0">
+				<button type="button" class="btn btn-ghost" onclick={() => (isEditCardOpen = false)}>Fechar</button>
+				<button type="submit" form="update-card-form" class="btn btn-primary" data-testid="btn-save-card">Salvar Alterações</button>
 			</div>
 		</div>
 	</dialog>
@@ -817,8 +821,8 @@
 <!-- Modal: Manage Columns -->
 {#if isManageColumnsOpen}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-md">
-			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4">
+		<div class="modal-box max-w-md flex flex-col max-h-[95vh]">
+			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4 shrink-0">
 				<h3 class="font-bold text-lg">Gerenciar Colunas</h3>
 				<button class="btn btn-ghost btn-sm btn-circle" onclick={() => (isManageColumnsOpen = false)}>
 					<X class="size-5" />
@@ -832,7 +836,7 @@
 						await update();
 					};
 				}}
-				class="flex gap-2 mb-6"
+				class="flex gap-2 mb-4 shrink-0"
 			>
 				<input type="hidden" name="projectId" value={project.id} />
 				<input type="text" name="name" required placeholder="Nome da nova coluna..." class="input input-bordered input-sm flex-1"
@@ -843,7 +847,7 @@
 				</button>
 			</form>
 
-			<div class="flex flex-col gap-2 max-h-64 overflow-y-auto">
+			<div class="flex flex-col gap-2 overflow-y-auto min-h-0 flex-1 pb-4">
 				{#each board.columns as column}
 					<div class="flex items-center justify-between bg-base-100 border border-base-300 p-2.5 rounded-xl">
 						<div class="flex flex-col">
@@ -877,7 +881,7 @@
 				{/each}
 			</div>
 
-			<div class="modal-action">
+			<div class="modal-action mt-0 shrink-0">
 				<button class="btn btn-neutral btn-sm" onclick={() => (isManageColumnsOpen = false)}>Fechar</button>
 			</div>
 		</div>

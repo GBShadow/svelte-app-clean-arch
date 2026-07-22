@@ -3,6 +3,8 @@
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import IconUnlock from '$lib/components/icons/IconUnlock.svelte';
+	import { enhance } from '$app/forms';
+	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -26,7 +28,7 @@
 	{#if data.isOwner}
 		<div class="card bg-base-100 border border-base-300 shadow-sm">
 			<div class="card-body gap-4">
-				<form method="POST" action="?/updateTitle" novalidate class="flex gap-2" data-testid="update-title-form">
+				<form method="POST" action="?/updateTitle" novalidate class="flex gap-2" data-testid="update-title-form" use:enhance={withToast({ successMessage: 'Título atualizado!' })}>
 					<input
 						type="text"
 						name="title"
@@ -38,7 +40,7 @@
 					<button type="submit" class="btn btn-primary" data-testid="btn-save-title">Salvar título</button>
 				</form>
 
-				<form method="POST" action="?/togglePublic" data-testid="toggle-public-form">
+				<form method="POST" action="?/togglePublic" data-testid="toggle-public-form" use:enhance={withToast({ successMessage: 'Visibilidade alterada!' })}>
 					<button type="submit" class="btn btn-outline btn-sm gap-1.5" data-testid="btn-toggle-public">
 						{#if data.list.public}
 							<IconLock class="size-4" />
@@ -50,7 +52,7 @@
 					</button>
 				</form>
 
-				<form method="POST" action="?/delete" data-testid="delete-list-form">
+				<form method="POST" action="?/delete" data-testid="delete-list-form" use:enhance={withToast({ successMessage: 'Lista excluída!' })}>
 					<button type="submit" class="btn btn-error btn-sm w-fit gap-1.5" data-testid="btn-delete-list">
 						<IconTrash class="size-4" />
 						Excluir lista
@@ -88,7 +90,7 @@
 					<span class:line-through={item.done} class="flex-1" data-testid="item-desc-{item.id}">{item.description}</span>
 
 					{#if data.isOwner}
-						<form method="POST" action="?/removeItem">
+						<form method="POST" action="?/removeItem" use:enhance={withToast({ successMessage: 'Tarefa removida!' })}>
 							<input type="hidden" name="itemId" value={item.id} />
 							<button type="submit" class="btn btn-ghost btn-xs gap-1 text-error hover:bg-error/10" data-testid="btn-remove-item-{item.id}">
 								<IconTrash class="size-3.5" />
@@ -100,7 +102,7 @@
 			{/each}
 
 			{#if data.isOwner}
-				<form method="POST" action="?/addItem" novalidate class="flex gap-2 mt-2" data-testid="add-item-form">
+				<form method="POST" action="?/addItem" novalidate class="flex gap-2 mt-2" data-testid="add-item-form" use:enhance={withToast({ successMessage: 'Tarefa adicionada!' })}>
 					<input
 						type="text"
 						name="description"

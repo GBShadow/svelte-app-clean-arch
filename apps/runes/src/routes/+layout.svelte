@@ -8,6 +8,7 @@
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 	import { notificationStore } from '$lib/client/notifications.svelte';
 	import { accent } from '$lib/client/accent.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
@@ -86,3 +87,5 @@
 		{@render children()}
 	</main>
 </div>
+
+<Toast />

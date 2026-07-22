@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { enhance, applyAction } from '$app/forms';
+	import { withToast } from '$lib/client/enhanceWithToast';
+	import { toastStore } from '$lib/client/toast.svelte';
 	import { goto } from '$app/navigation';
 	import { createBrowserClient } from '$lib/client/pocketbaseClient';
 	import { KanbanBoard } from '$lib/domain/KanbanBoard.svelte';
@@ -533,8 +535,10 @@
 				method="POST"
 				action="?/createCard"
 				use:enhance={() => {
-					return async ({ update }) => {
+					return async ({ result, update }: any) => {
 						isNewCardOpen = false;
+						if (result.type === 'success') { toastStore.add('Cartão criado!', 'success'); }
+						if (result.type === 'failure') { toastStore.add(result.data.errors?.general || 'Erro ao criar cartão.', 'error'); }
 						await update();
 					};
 				}}
@@ -635,8 +639,10 @@
 					{#if canDeleteCard(data.user?.id, selectedCard)}
 						<form method="POST" action="?/deleteCard"
 							use:enhance={() => {
-								return async ({ update }) => {
+								return async ({ result, update }: any) => {
 									isEditCardOpen = false;
+									if (result.type === 'success') toastStore.add('Cartão excluído!', 'success');
+									if (result.type === 'failure') toastStore.add(result.data.errors?.general || 'Erro ao excluir.', 'error');
 									await update();
 								};
 							}}
@@ -656,13 +662,15 @@
 
 			<div class="overflow-y-auto min-h-0 flex-1 pr-1 pb-4">
 				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-					<form method="POST" action="?/updateCard" id="update-card-form"
-						use:enhance={() => {
-							return async ({ update }) => {
-								isEditCardOpen = false;
-								await update();
-							};
-						}}
+				<form method="POST" action="?/updateCard" id="update-card-form"
+					use:enhance={() => {
+						return async ({ result, update }: any) => {
+							isEditCardOpen = false;
+							if (result.type === 'success') toastStore.add('Cartão atualizado!', 'success');
+							if (result.type === 'failure') toastStore.add(result.data.errors?.general || 'Erro ao atualizar.', 'error');
+							await update();
+						};
+					}}
 						class="lg:col-span-2 flex flex-col gap-4"
 					>
 						<input type="hidden" name="cardId" value={selectedCard.id} />
@@ -831,8 +839,10 @@
 
 			<form method="POST" action="?/createColumn"
 				use:enhance={() => {
-					return async ({ update }) => {
+					return async ({ result, update }: any) => {
 						columnName = '';
+						if (result.type === 'success') toastStore.add('Coluna criada!', 'success');
+						if (result.type === 'failure') toastStore.add(result.data.errors?.general || 'Erro ao criar coluna.', 'error');
 						await update();
 					};
 				}}
@@ -856,14 +866,16 @@
 						</div>
 						<div class="flex items-center gap-1">
 							{#if column.type === 'custom'}
-								<form method="POST" action="?/renameColumn" use:enhance class="flex gap-1">
+								<form method="POST" action="?/renameColumn" use:enhance={withToast({ successMessage: 'Coluna renomeada!' })} class="flex gap-1">
 									<input type="hidden" name="columnId" value={column.id} />
 									<input type="text" name="name" required placeholder="Novo nome" class="input input-bordered input-xs w-28" />
 									<button type="submit" class="btn btn-xs btn-outline">OK</button>
 								</form>
 								<form method="POST" action="?/deleteColumn"
 									use:enhance={() => {
-										return async ({ update }) => {
+										return async ({ result, update }: any) => {
+											if (result.type === 'success') toastStore.add('Coluna excluída!', 'success');
+											if (result.type === 'failure') toastStore.add(result.data.errors?.general || 'Erro ao excluir.', 'error');
 											await update();
 										};
 									}}

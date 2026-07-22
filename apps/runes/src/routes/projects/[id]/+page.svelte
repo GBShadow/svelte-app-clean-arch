@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
+	import { withToast } from '$lib/client/enhanceWithToast';
+	import { toastStore } from '$lib/client/toast.svelte';
 	import { canManageProject } from '$lib/domain/projectAccess';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
 	import Settings from 'lucide-svelte/icons/settings';
@@ -132,8 +134,14 @@
 					method="POST"
 					action="?/createSprint"
 					use:enhance={() => {
-						return async ({ update }) => {
+						return async ({ result, update }) => {
 							resetSprintForm();
+							if (result.type === 'success') toastStore.add('Sprint criada!', 'success');
+							if (result.type === 'failure') {
+								const data = result.data as Record<string, unknown>;
+								const err = data?.error || (data?.errors as Record<string, unknown>)?.general || 'Erro ao criar sprint.';
+								toastStore.add(err as string, 'error');
+							}
 							await update();
 						};
 					}}
@@ -192,7 +200,7 @@
 							<span class="badge badge-sm badge-primary">Ativa</span>
 						</h3>
 						{#if canManage}
-							<form method="POST" action="?/finalizeSprint" use:enhance>
+							<form method="POST" action="?/finalizeSprint" use:enhance={withToast({ successMessage: 'Sprint finalizada!' })}>
 								<input type="hidden" name="sprintId" value={activeSprint.id} />
 								<button type="submit" class="btn btn-ghost btn-xs text-warning gap-1">
 									<Check class="w-3 h-3" />
@@ -220,7 +228,7 @@
 						<div class="flex items-center gap-2">
 							<span class="badge badge-sm badge-ghost">Planejada</span>
 							{#if canManage}
-								<form method="POST" action="?/startSprint" use:enhance>
+								<form method="POST" action="?/startSprint" use:enhance={withToast({ successMessage: 'Sprint iniciada!' })}>
 									<input type="hidden" name="sprintId" value={sprint.id} />
 									<button type="submit" class="btn btn-ghost btn-xs text-primary gap-1">
 										<Play class="w-3 h-3" />
@@ -270,7 +278,7 @@
 				<form
 					method="POST"
 					action="?/addParticipant"
-					use:enhance
+					use:enhance={withToast({ successMessage: 'Participante adicionado!' })}
 					class="flex items-end gap-2 mb-6 p-3 bg-base-100 border border-base-300 rounded-xl"
 				>
 					<div class="form-control flex-1">
@@ -325,7 +333,7 @@
 								</div>
 							</div>
 							{#if canManage && p.id !== user?.id}
-								<form method="POST" action="?/removeParticipant" use:enhance>
+								<form method="POST" action="?/removeParticipant" use:enhance={withToast({ successMessage: 'Participante removido!' })}>
 									<input type="hidden" name="userId" value={p.id} />
 									<button type="submit" class="btn btn-ghost btn-xs text-error">
 										<X class="w-4 h-4" />

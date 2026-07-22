@@ -6,12 +6,22 @@ export interface KanbanCardAccessInfo {
 	created_by: string;
 }
 
-export function canCreateCard(userId: string | undefined): boolean {
-	return !!userId;
+export function canCreateCard(
+	user: { id: string; isAdmin: boolean } | null | undefined,
+	project: { participants: string[] }
+): boolean {
+	if (!user) return false;
+	if (user.isAdmin) return true;
+	return project.participants.includes(user.id);
 }
 
-export function canUpdateCard(userId: string | undefined): boolean {
-	return !!userId;
+export function canUpdateCard(
+	user: { id: string; isAdmin: boolean } | null | undefined,
+	project: { participants: string[] }
+): boolean {
+	if (!user) return false;
+	if (user.isAdmin) return true;
+	return project.participants.includes(user.id);
 }
 
 export function canDeleteCard(userId: string | undefined, card: KanbanCardAccessInfo): boolean {

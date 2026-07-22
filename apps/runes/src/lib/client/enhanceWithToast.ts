@@ -15,7 +15,7 @@ export function withToast(opts?: ToastEnhanceOptions) {
 					typeof (data?.errors as any)?.general === 'string' ? (data.errors as any).general :
 					null) || 'Erro ao executar ação.';
 				toastStore.add(msg, 'error');
-			} else if (result.type === 'success' && opts?.successMessage && !opts?.noSuccessToast) {
+			} else if ((result.type === 'success' || result.type === 'redirect') && opts?.successMessage && !opts?.noSuccessToast) {
 				toastStore.add(opts.successMessage, 'success');
 			}
 			await update();

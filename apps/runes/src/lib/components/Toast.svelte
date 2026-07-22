@@ -21,7 +21,7 @@
 				{/if}
 				<span class="text-sm">{toast.message}</span>
 				<button class="btn btn-ghost btn-xs btn-square shrink-0" onclick={() => toastStore.remove(toast.id)}>
-					<X class="size-4" />
+					<X class="size-4 text-base-content/60 hover:text-base-content" />
 				</button>
 			</div>
 		{/each}

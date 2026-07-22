@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
-	// IconSearch inline
+	import Search from 'lucide-svelte/icons/search';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -23,16 +23,16 @@
 	</div>
 
 	{#if data.lists.length > 0}
-		<div class="relative">
-			<svg class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+		<label class="input input-bordered flex items-center gap-2 w-full">
+			<Search class="size-4 shrink-0 text-base-content/40" />
 			<input
 				type="search"
 				placeholder="Pesquisar listas..."
-				class="input input-bordered w-full pl-9"
+				class="grow"
 				bind:value={search}
 				data-testid="input-search-list"
 			/>
-		</div>
+		</label>
 	{/if}
 
 	{#if data.lists.length === 0}

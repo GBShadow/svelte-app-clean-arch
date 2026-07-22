@@ -9,9 +9,9 @@ import {
 
 describe('kanbanSchemas', () => {
 	test('createColumnSchema', () => {
-		expect(createColumnSchema.safeParse({ name: '' }).success).toBe(false);
-		expect(createColumnSchema.safeParse({ name: 'A'.repeat(101) }).success).toBe(false);
-		expect(createColumnSchema.safeParse({ name: 'Coluna 1' }).success).toBe(true);
+		expect(createColumnSchema.safeParse({ name: '', projectId: 'p1' }).success).toBe(false);
+		expect(createColumnSchema.safeParse({ name: 'A'.repeat(101), projectId: 'p1' }).success).toBe(false);
+		expect(createColumnSchema.safeParse({ name: 'Coluna 1', projectId: 'p1' }).success).toBe(true);
 	});
 
 	test('createCardSchema', () => {
@@ -19,6 +19,7 @@ describe('kanbanSchemas', () => {
 			title: 'Test Card',
 			description: 'This is a test description',
 			columnId: 'column-123',
+			projectId: 'project-1',
 			assigneeIds: ['user-1'],
 			tags: ['tag1', 'tag2'],
 			dueDate: '2026-12-31',

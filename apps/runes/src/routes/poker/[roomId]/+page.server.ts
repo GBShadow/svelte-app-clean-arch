@@ -31,6 +31,7 @@ import type {
 	PokerVoteRecord
 } from '$lib/server/pokerRecord';
 import type { UserRecord } from '$lib/server/userRecord';
+import type { SprintRecord } from '$lib/server/projectRecord';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.user) {
@@ -45,11 +46,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			expand: 'created_by'
 		});
 
-		// 2. Busca participantes ativos
-		const participants = await locals.pb
+		// 2. Busca participantes ativos (usa admin client para expandir user de todos)
+		const adminPb = await getAdminClient();
+		const participants = await adminPb
 			.collection('poker_participants')
 			.getFullList<PokerParticipantRecord>({
-				filter: locals.pb.filter('room = {:roomId} && has_left = false', { roomId }),
+				filter: adminPb.filter('room = {:roomId} && has_left = false', { roomId }),
 				expand: 'user'
 			});
 
@@ -59,7 +61,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		if (!myParticipation) {
 			// Não é participante, cria um (usa o cliente admin pois createRule permite apenas voter e offline inicialmente)
-			const adminPb = await getAdminClient();
 			myParticipation = await adminPb.collection('poker_participants').create<PokerParticipantRecord>({
 				room: roomId,
 				user: currentUserId,
@@ -69,26 +70,25 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				has_left: false
 			});
 			// Faz re-load dos participantes para incluir o novo com o expand correto
-			const freshParticipants = await locals.pb
+			const freshParticipants = await adminPb
 				.collection('poker_participants')
 				.getFullList<PokerParticipantRecord>({
-					filter: locals.pb.filter('room = {:roomId} && has_left = false', { roomId }),
+					filter: adminPb.filter('room = {:roomId} && has_left = false', { roomId }),
 					expand: 'user'
 				});
 			participants.splice(0, participants.length, ...freshParticipants);
 		} else if (myParticipation.has_left) {
 			// Reativa a participação
-			const adminPb = await getAdminClient();
 			myParticipation = await adminPb
 				.collection('poker_participants')
 				.update<PokerParticipantRecord>(myParticipation.id, {
 					has_left: false,
 					is_online: true
 				});
-			const freshParticipants = await locals.pb
+			const freshParticipants = await adminPb
 				.collection('poker_participants')
 				.getFullList<PokerParticipantRecord>({
-					filter: locals.pb.filter('room = {:roomId} && has_left = false', { roomId }),
+					filter: adminPb.filter('room = {:roomId} && has_left = false', { roomId }),
 					expand: 'user'
 				});
 			participants.splice(0, participants.length, ...freshParticipants);
@@ -637,7 +637,6 @@ export const actions: Actions = {
 		const adminPb = await getAdminClient();
 
 		try {
-			// Valida permissão do usuário
 			const myParticipant = await adminPb
 				.collection('poker_participants')
 				.getFirstListItem<PokerParticipantRecord>(
@@ -653,17 +652,31 @@ export const actions: Actions = {
 				return fail(403, { errors: { general: 'Permissão negada ou sala não finalizada.' } });
 			}
 
-			// Busca a coluna Backlog (Aguardando) do Kanban
+			if (!room.project) {
+				return fail(400, { errors: { general: 'Sala não está vinculada a um projeto.' } });
+			}
+
+			// Find target sprint: active first, then planned
+			const sprints = await adminPb.collection('sprints').getFullList<SprintRecord>({
+				filter: adminPb.filter('project = {:projectId}', { projectId: room.project }),
+				sort: '-created'
+			});
+			const targetSprint = sprints.find((s) => s.status === 'active') || sprints.find((s) => s.status === 'planned');
+
+			if (!targetSprint) {
+				return fail(400, { errors: { general: 'Nenhuma sprint ativa ou planejada encontrada para este projeto. Crie uma sprint primeiro.' } });
+			}
+
+			// Find backlog column for the project
 			const columns = await adminPb.collection('kanban_columns').getFullList({
-				filter: 'type = "backlog"'
+				filter: adminPb.filter('project = {:projectId} && type = "backlog"', { projectId: room.project })
 			});
 			const backlogColumn = columns[0];
 
 			if (!backlogColumn) {
-				return fail(500, { errors: { general: 'Coluna de Backlog não encontrada no Kanban.' } });
+				return fail(500, { errors: { general: 'Coluna de Backlog não encontrada no projeto.' } });
 			}
 
-			// Busca o número atual de cards no backlog para determinar a posição
 			const existingCards = await adminPb.collection('kanban_cards').getFullList({
 				filter: adminPb.filter('column = {:colId}', { colId: backlogColumn.id })
 			});
@@ -672,16 +685,16 @@ export const actions: Actions = {
 			for (const taskId of taskIds) {
 				const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
 
-				// Evita duplicados, tasks sem estimativa ou pertencentes a outra sala
 				if (task.room !== roomId || task.status === 'exported' || task.final_points === null) {
 					continue;
 				}
 
-				// Cria o card no Kanban
 				const card = await adminPb.collection('kanban_cards').create({
 					title: task.title,
 					description: task.description,
 					column: backlogColumn.id,
+					project: room.project,
+					sprint: targetSprint.id,
 					created_by: locals.user?.id,
 					assignees: [],
 					position: positionCounter++,
@@ -689,7 +702,6 @@ export const actions: Actions = {
 					tags: []
 				});
 
-				// Atualiza a task no Poker
 				await adminPb.collection('poker_tasks').update(taskId, {
 					status: 'exported',
 					exported_card: card.id

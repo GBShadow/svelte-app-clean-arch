@@ -20,7 +20,8 @@ export const createRoomSchema = z.object({
 	name: z
 		.string()
 		.min(1, 'O nome da sala é obrigatório.')
-		.max(100, 'O nome da sala deve ter no máximo 100 caracteres.')
+		.max(100, 'O nome da sala deve ter no máximo 100 caracteres.'),
+	projectId: z.string().min(1, 'O projeto é obrigatório.')
 });
 
 export const createTaskSchema = z.object({

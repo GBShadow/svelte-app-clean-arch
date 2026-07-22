@@ -4,6 +4,7 @@ import type {
 	KanbanCardCommentRecord,
 	KanbanCardHistoryRecord
 } from '$lib/server/kanbanRecord';
+import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
 
 export type KanbanSubscribe = (
 	onColumnEvent: (event: { action: string; record: KanbanColumnRecord }) => void,
@@ -17,6 +18,9 @@ export class KanbanBoard {
 	#cards = $state<KanbanCardRecord[]>([]);
 	#comments = $state<KanbanCardCommentRecord[]>([]);
 	#history = $state<KanbanCardHistoryRecord[]>([]);
+	#project = $state<ProjectRecord | null>(null);
+	#activeSprint = $state<SprintRecord | null>(null);
+	#plannedSprint = $state<SprintRecord | null>(null);
 
 	#subscribeFn: KanbanSubscribe;
 	#unsubscribe: (() => void) | null = null;
@@ -26,12 +30,18 @@ export class KanbanBoard {
 		initialCards: KanbanCardRecord[],
 		initialComments: KanbanCardCommentRecord[],
 		initialHistory: KanbanCardHistoryRecord[],
-		subscribeFn: KanbanSubscribe
+		subscribeFn: KanbanSubscribe,
+		project: ProjectRecord | null = null,
+		activeSprint: SprintRecord | null = null,
+		plannedSprint: SprintRecord | null = null
 	) {
 		this.#columns = initialColumns;
 		this.#cards = initialCards;
 		this.#comments = initialComments;
 		this.#history = initialHistory;
+		this.#project = project;
+		this.#activeSprint = activeSprint;
+		this.#plannedSprint = plannedSprint;
 		this.#subscribeFn = subscribeFn;
 	}
 
@@ -55,6 +65,18 @@ export class KanbanBoard {
 		);
 	}
 
+	get project(): ProjectRecord | null {
+		return this.#project;
+	}
+
+	get activeSprint(): SprintRecord | null {
+		return this.#activeSprint;
+	}
+
+	get plannedSprint(): SprintRecord | null {
+		return this.#plannedSprint;
+	}
+
 	start(): void {
 		this.#unsubscribe = this.#subscribeFn(
 			(colEvent) => this.#handleColumnEvent(colEvent),
@@ -73,12 +95,18 @@ export class KanbanBoard {
 		columns: KanbanColumnRecord[],
 		cards: KanbanCardRecord[],
 		comments: KanbanCardCommentRecord[],
-		history: KanbanCardHistoryRecord[]
+		history: KanbanCardHistoryRecord[],
+		project?: ProjectRecord | null,
+		activeSprint?: SprintRecord | null,
+		plannedSprint?: SprintRecord | null
 	): void {
 		this.#columns = columns;
 		this.#cards = cards;
 		this.#comments = comments;
 		this.#history = history;
+		if (project !== undefined) this.#project = project;
+		if (activeSprint !== undefined) this.#activeSprint = activeSprint;
+		if (plannedSprint !== undefined) this.#plannedSprint = plannedSprint;
 	}
 
 	#handleColumnEvent(event: { action: string; record: KanbanColumnRecord }): void {
@@ -93,6 +121,9 @@ export class KanbanBoard {
 	}
 
 	#handleCardEvent(event: { action: string; record: KanbanCardRecord }): void {
+		// Only handle cards belonging to the current project
+		if (event.record.project !== this.#project?.id) return;
+
 		if (event.action === 'create') {
 			if (this.#cards.some((c) => c.id === event.record.id)) return;
 			this.#cards = [...this.#cards, event.record];

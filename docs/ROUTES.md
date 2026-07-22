@@ -98,7 +98,7 @@
 
 | Rota | Arquivos | Funções | Proteção |
 |------|----------|---------|----------|
-| `/kanban` | `+page.server.ts` | `load` — colunas, cards (+ assignees), comentários, histórico | hooks global |
+| `/kanban` | `+page.server.ts` | `load` — se `?project=` setado: colunas, cards, etc. Salva cookie `lastKanbanProject`. Se sem `?project=` e sem cookie: retorna `project: null` + projetos acessíveis. Se sem `?project=` com cookie: redireciona para `/kanban?project=<last>`. | hooks global |
 | | | `actions.createColumn` — criar coluna personalizada | `canManageColumns` |
 | | | `actions.renameColumn` — renomear (só colunas custom) | `canManageColumns` |
 | | | `actions.moveColumn` — reordenar colunas | `canManageColumns` |
@@ -109,7 +109,7 @@
 | | | `actions.deleteCard` — deletar + notify | `canDeleteCard` |
 | | | `actions.addComment` — comentar + notify assignees | Qualquer autenticado |
 | | | `actions.deleteComment` — deletar comentário | Dono do comentário |
-| | `+page.svelte` | Quadro Kanban (drag and drop) | |
+| | `+page.svelte` | Quadro Kanban (drag and drop) com seletor de projeto no topo. Quando `project` é null (primeiro acesso sem cookie), mostra empty state com mensagem para selecionar um projeto. | |
 
 ### Planning Poker
 

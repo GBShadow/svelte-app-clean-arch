@@ -9,9 +9,9 @@ import type {
 
 describe('KanbanBoard', () => {
 	const initialCols: KanbanColumnRecord[] = [
-		{ id: 'col1', name: 'Aguardando', position: 0, type: 'backlog', created: '', updated: '' },
-		{ id: 'col3', name: 'Feito', position: 2, type: 'done', created: '', updated: '' },
-		{ id: 'col2', name: 'Fazendo', position: 1, type: 'custom', created: '', updated: '' }
+		{ id: 'col1', name: 'Aguardando', position: 0, type: 'backlog', project: 'proj1', created: '', updated: '' },
+		{ id: 'col3', name: 'Feito', position: 2, type: 'done', project: 'proj1', created: '', updated: '' },
+		{ id: 'col2', name: 'Fazendo', position: 1, type: 'custom', project: 'proj1', created: '', updated: '' }
 	];
 
 	const initialCards: KanbanCardRecord[] = [
@@ -26,6 +26,8 @@ describe('KanbanBoard', () => {
 			points: null,
 			tags: null,
 			dueDate: null,
+			project: 'proj1',
+			sprint: null,
 			created: '',
 			updated: ''
 		},
@@ -40,6 +42,8 @@ describe('KanbanBoard', () => {
 			points: null,
 			tags: null,
 			dueDate: null,
+			project: 'proj1',
+			sprint: null,
 			created: '',
 			updated: ''
 		}
@@ -71,6 +75,7 @@ describe('KanbanBoard', () => {
 			name: 'Custom',
 			position: 3,
 			type: 'custom',
+			project: 'proj1',
 			created: '',
 			updated: ''
 		};
@@ -93,6 +98,7 @@ describe('KanbanBoard', () => {
 			name: 'Fazendo Novo',
 			position: 1,
 			type: 'custom',
+			project: 'proj1',
 			created: '',
 			updated: ''
 		};
@@ -113,7 +119,7 @@ describe('KanbanBoard', () => {
 
 		colHandler({
 			action: 'delete',
-			record: { id: 'col2', name: '', position: 1, type: 'custom', created: '', updated: '' }
+			record: { id: 'col2', name: '', position: 1, type: 'custom', project: 'proj1', created: '', updated: '' }
 		});
 
 		expect(board.columns.map((c) => c.id)).not.toContain('col2');

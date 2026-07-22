@@ -89,9 +89,25 @@ src/routes/
 │       ├── +page.server.ts     ← Load + Actions: sendMessage (dispara sendChatPush fire-and-forget)/leaveRoom/addParticipant/removeParticipant
 │       └── +page.svelte        ← UI: mensagens em tempo real (ChatMessagesFeed) + participantes
 │
+├── projects/
+│   ├── +page.server.ts         ← Load: lista de projetos do usuário
+│   ├── +page.svelte            ← UI: grid de projetos
+│   ├── new/
+│   │   ├── +page.server.ts     ← Action: criar projeto + colunas padrão
+│   │   └── +page.svelte        ← UI: formulário de criação
+│   ├── [id]/
+│   │   ├── +page.server.ts     ← Load + Actions: gerenciar sprints + participantes
+│   │   ├── +page.svelte        ← UI: detalhe do projeto com sprints e participantes
+│   │   └── edit/
+│   │       ├── +page.server.ts ← Action: atualizar projeto
+│   │       └── +page.svelte    ← UI: formulário de edição
+│   └── [id]/edit/
+│       ├── +page.server.ts
+│       └── +page.svelte
+│
 ├── kanban/
-│   ├── +page.server.ts         ← Load + Actions: criar/mover/deletar cartões e colunas + comentários
-│   └── +page.svelte            ← UI: quadro Kanban interativo (KanbanBoard) com Drag and Drop
+│   ├── +page.server.ts         ← Load + Actions: criar/mover/deletar cartões e colunas + comentários (filtrado por projeto). Cookie `lastKanbanProject` para lembrar último projeto acessado. Sem `?project=` + sem cookie → project: null + lista de projetos
+│   └── +page.svelte            ← UI: quadro Kanban com seletor de projeto + sprint ativa. Empty state quando nenhum projeto selecionado
 │
 ├── notifications/
 │   ├── +page.server.ts         ← Load: lista paginada de notificações do usuário
@@ -136,7 +152,8 @@ src/lib/
 │   ├── userRecord.ts           ← Type: UserRecord
 │   ├── todoRecord.ts           ← Types: TodoListRecord, TodoItemRecord
 │   ├── chatRecord.ts           ← Types: ChatRoomRecord, ChatMessageRecord, AuthParticipant
-│   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord, KanbanCardCommentRecord, etc.
+│   ├── kanbanRecord.ts         ← Types: KanbanColumnRecord, KanbanCardRecord (+ project, sprint), KanbanCardCommentRecord, etc.
+│   ├── projectRecord.ts        ← Types: ProjectRecord, SprintRecord
 │   ├── kanbanHistory.ts        ← Server helper: registra modificações e histórico imutável
 │   ├── logger.ts               ← logError: logging padronizado para operações best-effort
 │   ├── notificationRecord.ts   ← Type: NotificationRecord
@@ -157,6 +174,8 @@ src/lib/
 │   ├── ChatMessagesFeed.test.ts  ← Testes
 │   ├── kanbanAccess.ts         ← canCreateCard, canUpdateCard, canDeleteCard, etc. e reordenação de posições
 │   ├── kanbanAccess.test.ts    ← Testes
+│   ├── projectAccess.ts        ← isProjectAdmin, canViewProject, canManageProject, getTargetSprint, etc.
+│   ├── projectAccess.test.ts   ← Testes
 │   ├── KanbanBoard.svelte.ts   ← Classe reativa: gerência de cards/colunas realtime com dedup
 │   ├── KanbanBoard.test.ts     ← Testes
 │   ├── notification.ts         ← Lógica pura de notificações do sistema
@@ -179,6 +198,7 @@ src/lib/
 │   ├── chatSchemas.test.ts     ← Testes
 │   ├── kanbanSchemas.ts        ← createCardSchema, createColumnSchema, addCommentSchema, etc.
 │   ├── kanbanSchemas.test.ts   ← Testes
+│   ├── projectSchemas.ts       ← createProjectSchema, createSprintSchema, addParticipantSchema
 │   ├── pushSchemas.ts          ← subscribeSchema, unsubscribeSchema
 │   ├── pushSchemas.test.ts     ← Testes
 │   ├── notificationSchemas.ts  ← listQuerySchema (filtros page/perPage/type/read)
@@ -224,11 +244,12 @@ src/lib/
 │   │   └── IconUnlock.svelte
 │   ├── kanban/
 │   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
+│   └── projects/               ← Componentes de projeto (embutidos nas rotas /projects)
 │   └── planning-poker/
 │       ├── CardDeck.svelte     ← Baralho Fibonacci para votação
 │       ├── ParticipantsList.svelte ← Lista de participantes com status do voto
 │       ├── TaskEditor.svelte   ← Editor de descrição de tarefa
-│       ├── TaskList.svelte     ← Lista de tarefas do backlog da sala
+│       ├── TaskList.svelte     ← Lista de tarefas do backlog da sala com filtros + botão "Nova Task" (admin, via prop onCreateTask)
 │       └── VoteResults.svelte  ← Resultados da votação (revelados ou ocultos)
 │
 └── index.ts                    ← (vazio) barrel export
@@ -412,6 +433,7 @@ pocketbase/
     ├── 0018_create_push_subscriptions_collection.js ← Coleção push_subscriptions (endpoint único, API Rules de posse, updateRule = null)
     ├── 0019_create_notifications_collection.js      ← Coleção notifications (notificações do sistema)
     └── 0020_notifications_read_not_required.js      ← Corrige campo read da coleção notifications: required=false (bool required rejeita false)
+    └── 0021_create_projects_sprints.js               ← Coleções projects, sprints; add project/sprint em kanban_columns/cards; add project em poker_rooms + seed projeto "Geral"
 ```
 
 ---
@@ -564,10 +586,10 @@ docs/
 | Pacote/App           | Unit    | E2E          | Total    |
 | -------------------- | ------- | ------------ | -------- |
 | `todo-domain`        | 60      | —            | 60       |
-| `runes`              | 177     | 8 specs      | 185+     |
+| `runes`              | 179     | 8 specs      | 187+     |
 | `deprecated/classic` | 17      | 2 specs      | 19+      |
 | `deprecated/remote`  | 15      | —            | 15       |
-| **Total**            | **269** | **10 specs** | **279+** |
+| **Total**            | **271** | **10 specs** | **281+** |
 
 ---
 

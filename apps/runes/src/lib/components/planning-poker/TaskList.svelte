@@ -5,6 +5,7 @@
 	import ExternalLink from 'lucide-svelte/icons/external-link';
 	import Send from 'lucide-svelte/icons/send';
 	import ClipboardList from 'lucide-svelte/icons/clipboard-list';
+	import Plus from 'lucide-svelte/icons/plus';
 	import type { PokerTaskRecord } from '$lib/server/pokerRecord';
 
 	let {
@@ -16,7 +17,8 @@
 		onSetPoints,
 		onExport,
 		onRemoveFromVoting,
-		onEditTask
+		onEditTask,
+		onCreateTask
 	} = $props();
 
 	let filterStatus = $state<'all' | 'backlog' | 'voting' | 'estimated' | 'exported'>('all');
@@ -70,17 +72,30 @@
 			Backlog da Sala ({tasks.length})
 		</h3>
 
-		<!-- Filtro de Status -->
-		<div class="flex flex-wrap gap-1 bg-base-100 border border-base-300 p-0.5 rounded-xl">
-			{#each ['all', 'backlog', 'voting', 'estimated', 'exported'] as status}
+		<div class="flex flex-wrap items-center gap-2">
+			{#if isAdmin && roomStatus === 'open' && onCreateTask}
 				<button
-					class="btn btn-xs capitalize font-semibold px-2.5
-						{filterStatus === status ? 'btn-primary' : 'btn-ghost text-base-content/60'}"
-					onclick={() => (filterStatus = status as any)}
+					class="btn btn-ghost btn-xs flex items-center gap-1 text-primary"
+					onclick={onCreateTask}
+					data-testid="btn-open-create-task"
 				>
-					{status === 'all' ? 'todas' : status === 'voting' ? 'votando' : status === 'estimated' ? 'estimadas' : status}
+					<Plus class="w-3.5 h-3.5" />
+					Nova Task
 				</button>
-			{/each}
+			{/if}
+
+			<!-- Filtro de Status -->
+			<div class="flex flex-wrap gap-1 bg-base-100 border border-base-300 p-0.5 rounded-xl">
+				{#each ['all', 'backlog', 'voting', 'estimated', 'exported'] as status}
+					<button
+						class="btn btn-xs capitalize font-semibold px-2.5
+							{filterStatus === status ? 'btn-primary' : 'btn-ghost text-base-content/60'}"
+						onclick={() => (filterStatus = status as any)}
+					>
+						{status === 'all' ? 'todas' : status === 'voting' ? 'votando' : status === 'estimated' ? 'estimadas' : status}
+					</button>
+				{/each}
+			</div>
 		</div>
 	</div>
 

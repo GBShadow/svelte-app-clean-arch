@@ -11,7 +11,6 @@
 	import TaskEditor from '$lib/components/planning-poker/TaskEditor.svelte';
 	import Dices from 'lucide-svelte/icons/dices';
 	import LogOut from 'lucide-svelte/icons/log-out';
-	import Plus from 'lucide-svelte/icons/plus';
 	import HelpCircle from 'lucide-svelte/icons/help-circle';
 	import X from 'lucide-svelte/icons/x';
 	import type {
@@ -362,29 +361,18 @@
 			/>
 
 			<!-- Backlog de Tarefas -->
-			<div class="relative">
-				<TaskList
-					tasks={pPokerRoom.tasks}
-					currentTaskId={pPokerRoom.room?.current_task || ''}
-					isAdmin={pPokerRoom.myParticipant?.role === 'admin'}
-					roomStatus={pPokerRoom.room?.status ?? 'open'}
-					onSelectTask={handleSelectTask}
-					onSetPoints={handleSetPoints}
-					onExport={handleExport}
-					onRemoveFromVoting={handleRemoveFromVoting}
-					onEditTask={openEditTaskModal}
-				/>
-				{#if pPokerRoom.room?.status === 'open'}
-					<button
-						class="btn btn-ghost btn-xs absolute top-6 right-6 flex items-center gap-1 text-primary hover:bg-base-300"
-						onclick={() => (showCreateTaskModal = true)}
-						data-testid="btn-open-create-task"
-					>
-						<Plus class="w-3.5 h-3.5" />
-						Nova Task
-					</button>
-				{/if}
-			</div>
+			<TaskList
+				tasks={pPokerRoom.tasks}
+				currentTaskId={pPokerRoom.room?.current_task || ''}
+				isAdmin={pPokerRoom.myParticipant?.role === 'admin'}
+				roomStatus={pPokerRoom.room?.status ?? 'open'}
+				onSelectTask={handleSelectTask}
+				onSetPoints={handleSetPoints}
+				onExport={handleExport}
+				onRemoveFromVoting={handleRemoveFromVoting}
+				onEditTask={openEditTaskModal}
+				onCreateTask={() => (showCreateTaskModal = true)}
+			/>
 		</div>
 	</div>
 </div>

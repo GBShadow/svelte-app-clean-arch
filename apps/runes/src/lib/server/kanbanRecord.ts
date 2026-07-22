@@ -5,6 +5,7 @@ export type KanbanColumnRecord = {
 	name: string;
 	position: number;
 	type: 'backlog' | 'done' | 'custom';
+	project: string;
 	created: string;
 	updated: string;
 };
@@ -20,12 +21,16 @@ export type KanbanCardRecord = {
 	points: number | null;
 	tags: string[] | null;
 	dueDate: string | null;
+	project: string;
+	sprint: string | null;
 	created: string;
 	updated: string;
 	expand?: {
 		column?: KanbanColumnRecord;
 		created_by?: AuthParticipant;
 		assignees?: AuthParticipant[];
+		project?: { id: string; title: string };
+		sprint?: { id: string; title: string; status: string };
 	};
 };
 

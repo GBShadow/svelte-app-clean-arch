@@ -4,7 +4,8 @@ export const createColumnSchema = z.object({
 	name: z
 		.string()
 		.min(1, { message: 'Nome da coluna obrigatório.' })
-		.max(100, { message: 'Nome da coluna muito longo (máx. 100 caracteres).' })
+		.max(100, { message: 'Nome da coluna muito longo (máx. 100 caracteres).' }),
+	projectId: z.string().min(1, { message: 'Projeto obrigatório.' })
 });
 
 export const createCardSchema = z.object({
@@ -14,6 +15,8 @@ export const createCardSchema = z.object({
 		.max(200, { message: 'Título muito longo (máx. 200 caracteres).' }),
 	description: z.string().optional().default(''),
 	columnId: z.string().min(1, { message: 'Coluna destino obrigatória.' }),
+	projectId: z.string().min(1, { message: 'Projeto obrigatório.' }),
+	sprintId: z.string().nullable().optional(),
 	assigneeIds: z.array(z.string()).optional().default([]),
 	tags: z.array(z.string()).optional().default([]),
 	dueDate: z
@@ -36,6 +39,7 @@ export const updateCardSchema = z.object({
 		.optional(),
 	description: z.string().optional(),
 	columnId: z.string().optional(),
+	sprintId: z.string().nullable().optional(),
 	assigneeIds: z.array(z.string()).optional(),
 	tags: z.array(z.string()).optional(),
 	dueDate: z

@@ -5,8 +5,9 @@ import type { PokerRoomRecord, PokerTaskRecord, PokerParticipantRecord, PokerVot
 describe('PlanningPokerRoom Reactive State Class', () => {
 	const mockRoom: PokerRoomRecord = {
 		id: 'room-1',
-		name: 'Poker Test',
-		created_by: 'user-admin',
+		name: 'Sprint 15',
+		created_by: 'user-1',
+		project: 'proj-1',
 		current_task: 'task-1',
 		revealed: false,
 		status: 'open',
@@ -74,7 +75,7 @@ describe('PlanningPokerRoom Reactive State Class', () => {
 			subscribeFn
 		);
 
-		expect(pPoker.room?.name).toBe('Poker Test');
+		expect(pPoker.room?.name).toBe('Sprint 15');
 		expect(pPoker.currentTask?.title).toBe('Task Alpha');
 		expect(pPoker.myParticipant?.role).toBe('voter');
 		expect(pPoker.numericAverage).toBe(0);

@@ -100,3 +100,4 @@ Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
 - `checkpoint` — salva estado da sessão para retomar depois em nova sessão
 - `spec-driven` — agente de processo spec-driven
+- `commit-and-pr-docs` — atualizar toda documentação ao criar commits e PRs

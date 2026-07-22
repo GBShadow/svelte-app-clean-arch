@@ -9,10 +9,13 @@
 </script>
 
 <div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold font-display">{data.list.title}</h1>
+	<div class="flex items-center gap-2">
+		<a href="/todos" class="btn btn-ghost btn-sm btn-square shrink-0 tooltip tooltip-right" data-testid="btn-back-lists" data-tip="Voltar" aria-label="Voltar">
+			<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+		</a>
+		<h1 class="text-2xl font-bold font-display flex-1 min-w-0 truncate">{data.list.title}</h1>
 		{#if data.list.public}
-			<span class="badge badge-info font-mono" data-testid="list-public-badge">Pública</span>
+			<span class="badge badge-info font-mono shrink-0" data-testid="list-public-badge">Pública</span>
 		{/if}
 	</div>
 
@@ -87,7 +90,7 @@
 					{#if data.isOwner}
 						<form method="POST" action="?/removeItem">
 							<input type="hidden" name="itemId" value={item.id} />
-							<button type="submit" class="btn btn-ghost btn-xs gap-1" data-testid="btn-remove-item-{item.id}">
+							<button type="submit" class="btn btn-ghost btn-xs gap-1 text-error hover:bg-error/10" data-testid="btn-remove-item-{item.id}">
 								<IconTrash class="size-3.5" />
 								Remover
 							</button>

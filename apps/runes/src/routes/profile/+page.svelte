@@ -4,6 +4,7 @@
 	import BellOff from 'lucide-svelte/icons/bell-off';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import type { PageProps } from './$types';
+	import AccentPicker from '$lib/components/AccentPicker.svelte';
 	import {
 		disablePushNotifications,
 		enablePushNotifications,
@@ -153,6 +154,14 @@
 					Ativar notificações
 				</button>
 			{/if}
+		</div>
+	</div>
+
+	<div class="card bg-base-100 border border-base-300 shadow-sm">
+		<div class="card-body gap-3">
+			<h2 class="card-title text-base">Acentuar</h2>
+			<p class="text-sm opacity-70">Escolha a paleta de cores da aplicação.</p>
+			<AccentPicker />
 		</div>
 	</div>
 </div>

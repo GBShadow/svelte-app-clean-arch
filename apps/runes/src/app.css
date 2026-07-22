@@ -10,6 +10,75 @@
 	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* Accent palettes — primary, secondary, accent + content */
+[data-accent="magenta"] {
+	--color-primary: oklch(0.73 0.22 330);
+	--color-primary-content: oklch(0.12 0.03 330);
+	--color-secondary: oklch(0.68 0.14 20);
+	--color-secondary-content: oklch(0.12 0.02 20);
+	--color-accent: oklch(0.7 0.18 270);
+	--color-accent-content: oklch(0.12 0.03 270);
+}
+[data-accent="roxo"] {
+	--color-primary: oklch(0.68 0.2 295);
+	--color-primary-content: oklch(0.12 0.03 295);
+	--color-secondary: oklch(0.75 0.18 340);
+	--color-secondary-content: oklch(0.12 0.03 340);
+	--color-accent: oklch(0.8 0.14 195);
+	--color-accent-content: oklch(0.12 0.02 195);
+}
+[data-accent="ciano"] {
+	--color-primary: oklch(0.8 0.14 195);
+	--color-primary-content: oklch(0.12 0.02 195);
+	--color-secondary: oklch(0.76 0.16 155);
+	--color-secondary-content: oklch(0.12 0.02 155);
+	--color-accent: oklch(0.72 0.2 310);
+	--color-accent-content: oklch(0.12 0.03 310);
+}
+[data-accent="verde"] {
+	--color-primary: oklch(0.76 0.18 155);
+	--color-primary-content: oklch(0.12 0.03 155);
+	--color-secondary: oklch(0.8 0.14 195);
+	--color-secondary-content: oklch(0.12 0.02 195);
+	--color-accent: oklch(0.8 0.18 85);
+	--color-accent-content: oklch(0.12 0.03 85);
+}
+[data-accent="ambar"] {
+	--color-primary: oklch(0.8 0.18 85);
+	--color-primary-content: oklch(0.12 0.03 85);
+	--color-secondary: oklch(0.72 0.16 5);
+	--color-secondary-content: oklch(0.12 0.02 5);
+	--color-accent: oklch(0.78 0.16 210);
+	--color-accent-content: oklch(0.12 0.02 210);
+}
+[data-accent="rosa"] {
+	--color-primary: oklch(0.72 0.18 5);
+	--color-primary-content: oklch(0.12 0.03 5);
+	--color-secondary: oklch(0.8 0.18 85);
+	--color-secondary-content: oklch(0.12 0.03 85);
+	--color-accent: oklch(0.68 0.2 295);
+	--color-accent-content: oklch(0.12 0.03 295);
+}
+[data-accent="azul"] {
+	--color-primary: oklch(0.72 0.16 245);
+	--color-primary-content: oklch(0.12 0.02 245);
+	--color-secondary: oklch(0.78 0.14 210);
+	--color-secondary-content: oklch(0.12 0.02 210);
+	--color-accent: oklch(0.76 0.18 155);
+	--color-accent-content: oklch(0.12 0.03 155);
+}
+
+/* 12px entre label e input */
+.form-control {
+	gap: 0.75rem;
+}
+.label {
+	margin-bottom: 0.75rem;
+}
+.form-control > .label {
+	margin-bottom: 0;
+}
+
 /* Estado vazio: convite a agir, não só ausência — ver frontend-design skill */
 .empty-state {
 	background-color: var(--color-base-100);

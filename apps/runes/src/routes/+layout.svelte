@@ -3,14 +3,21 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { onAuthEvent, postAuthEvent } from '$lib/client/authChannel';
+	import User from 'lucide-svelte/icons/user';
 	import IconLogout from '$lib/components/icons/IconLogout.svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
 	import { notificationStore } from '$lib/client/notifications.svelte';
+	import { accent } from '$lib/client/accent.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
 
-	onMount(() => onAuthEvent(() => invalidateAll()));
+	onMount(() => {
+		onAuthEvent(() => invalidateAll());
+		const a = accent.value;
+		document.documentElement.dataset.accent = a;
+	});
 
 	if (data.user) {
 		const token = (data as any).pbToken;
@@ -30,8 +37,8 @@
 	}
 </script>
 
-<div class="min-h-screen bg-base-200">
-	<div class="navbar bg-base-100 border-b border-base-300">
+<div class="flex flex-col min-h-dvh bg-base-200">
+	<div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30">
 		<div class="flex-1">
 			<a href="/" class="btn btn-ghost text-xl font-mono normal-case" data-testid="logo-link">
 				<span class="text-primary">&#10095;</span> hub
@@ -39,12 +46,31 @@
 		</div>
 		<div class="flex-none flex items-center gap-4">
 			{#if data.user}
-				<span class="text-sm text-base-content/60 hidden sm:block">{data.user.name}</span>
+				<div class="dropdown dropdown-end hidden sm:block">
+					<button type="button" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-user-menu">
+						{data.user.name}
+					</button>
+					<ul class="dropdown-content z-20 bg-base-100 border border-base-300 rounded-box shadow-lg p-1.5 min-w-40" data-testid="user-dropdown">
+						<li>
+							<a href="/profile" class="btn btn-ghost btn-sm justify-start gap-2 w-full font-normal" data-testid="btn-profile">
+								<User class="size-4" />
+								Perfil
+							</a>
+						</li>
+						<li>
+							<form method="POST" action="/logout" onsubmit={handleLogout}>
+								<button type="submit" class="btn btn-ghost btn-sm justify-start gap-2 w-full font-normal text-error" data-testid="btn-logout">
+									<IconLogout class="size-4" />
+									Sair
+								</button>
+							</form>
+						</li>
+					</ul>
+				</div>
 				<NotificationBell />
-				<form method="POST" action="/logout" onsubmit={handleLogout}>
-					<button type="submit" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-logout">
+				<form method="POST" action="/logout" onsubmit={handleLogout} class="sm:hidden">
+					<button type="submit" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-logout-mobile">
 						<IconLogout class="size-4" />
-						Sair
 					</button>
 				</form>
 			{/if}
@@ -61,3 +87,5 @@
 		{@render children()}
 	</main>
 </div>
+
+<Toast />

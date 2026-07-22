@@ -17,6 +17,18 @@
 			.join('')
 	);
 
+	const textSize = $derived.by(() => {
+		const m = size.match(/size-(\d+)/);
+		if (!m) return 'text-xs';
+		const n = parseInt(m[1]);
+		if (n >= 24) return 'text-3xl';
+		if (n >= 16) return 'text-2xl';
+		if (n >= 12) return 'text-xl';
+		if (n >= 10) return 'text-lg';
+		if (n >= 8) return 'text-base';
+		return 'text-xs';
+	});
+
 	const src = $derived(
 		avatar ? `${PUBLIC_POCKETBASE_URL}/api/files/auth/${userId}/${avatar}?thumb=64x64` : null
 	);
@@ -34,6 +46,6 @@
 		class="rounded-full bg-neutral text-neutral-content flex items-center justify-center font-mono {size}"
 		data-testid="avatar-{userId}"
 	>
-		<span class="text-xs">{initials}</span>
+		<span class="{textSize} font-medium">{initials}</span>
 	</div>
 {/if}

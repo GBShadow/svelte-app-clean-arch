@@ -4,10 +4,10 @@
 
 	let {
 		apps,
-		pendingCount
+		hasChatUnread = false
 	}: {
 		apps: AppEntry[];
-		pendingCount?: number;
+		hasChatUnread?: boolean;
 	} = $props();
 </script>
 
@@ -18,7 +18,7 @@
 			name={app.name}
 			description={app.description}
 			href={app.route}
-			badge={app.id === 'todos' && pendingCount !== undefined ? `${pendingCount} pendentes` : undefined}
+			pulseDot={app.id === 'chat' && hasChatUnread}
 		/>
 	{/each}
 </div>

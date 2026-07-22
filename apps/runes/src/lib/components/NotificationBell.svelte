@@ -5,12 +5,6 @@
 	import { notificationStore } from '$lib/client/notifications.svelte';
 
 	let open = $state(false);
-	let pulse = $state(false);
-
-	$effect(() => {
-		const count = notificationStore.unreadCount;
-		if (count > 0 && !pulse) pulse = true;
-	});
 
 	function toggle() {
 		open = !open;
@@ -47,7 +41,7 @@
 		<Bell class="size-5" />
 		{#if notificationStore.unreadCount > 0}
 			<span
-				class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-content text-xs font-medium animate-pulse"
+				class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-content text-xs font-medium"
 				data-testid="notification-badge"
 			>
 				{notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount}

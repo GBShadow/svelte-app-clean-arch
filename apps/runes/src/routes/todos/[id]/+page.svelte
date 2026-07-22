@@ -3,16 +3,21 @@
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import IconUnlock from '$lib/components/icons/IconUnlock.svelte';
+	import { enhance } from '$app/forms';
+	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 </script>
 
 <div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold font-display">{data.list.title}</h1>
+	<div class="flex items-center gap-2">
+		<a href="/todos" class="btn btn-ghost btn-sm btn-square shrink-0 tooltip tooltip-right" data-testid="btn-back-lists" data-tip="Voltar" aria-label="Voltar">
+			<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+		</a>
+		<h1 class="text-2xl font-bold font-display flex-1 min-w-0 truncate">{data.list.title}</h1>
 		{#if data.list.public}
-			<span class="badge badge-info font-mono" data-testid="list-public-badge">Pública</span>
+			<span class="badge badge-info font-mono shrink-0" data-testid="list-public-badge">Pública</span>
 		{/if}
 	</div>
 
@@ -23,7 +28,7 @@
 	{#if data.isOwner}
 		<div class="card bg-base-100 border border-base-300 shadow-sm">
 			<div class="card-body gap-4">
-				<form method="POST" action="?/updateTitle" novalidate class="flex gap-2" data-testid="update-title-form">
+				<form method="POST" action="?/updateTitle" novalidate class="flex gap-2" data-testid="update-title-form" use:enhance={withToast({ successMessage: 'Título atualizado!' })}>
 					<input
 						type="text"
 						name="title"
@@ -35,7 +40,7 @@
 					<button type="submit" class="btn btn-primary" data-testid="btn-save-title">Salvar título</button>
 				</form>
 
-				<form method="POST" action="?/togglePublic" data-testid="toggle-public-form">
+				<form method="POST" action="?/togglePublic" data-testid="toggle-public-form" use:enhance={withToast({ successMessage: 'Visibilidade alterada!' })}>
 					<button type="submit" class="btn btn-outline btn-sm gap-1.5" data-testid="btn-toggle-public">
 						{#if data.list.public}
 							<IconLock class="size-4" />
@@ -47,7 +52,7 @@
 					</button>
 				</form>
 
-				<form method="POST" action="?/delete" data-testid="delete-list-form">
+				<form method="POST" action="?/delete" data-testid="delete-list-form" use:enhance={withToast({ successMessage: 'Lista excluída!' })}>
 					<button type="submit" class="btn btn-error btn-sm w-fit gap-1.5" data-testid="btn-delete-list">
 						<IconTrash class="size-4" />
 						Excluir lista
@@ -85,9 +90,9 @@
 					<span class:line-through={item.done} class="flex-1" data-testid="item-desc-{item.id}">{item.description}</span>
 
 					{#if data.isOwner}
-						<form method="POST" action="?/removeItem">
+						<form method="POST" action="?/removeItem" use:enhance={withToast({ successMessage: 'Tarefa removida!' })}>
 							<input type="hidden" name="itemId" value={item.id} />
-							<button type="submit" class="btn btn-ghost btn-xs gap-1" data-testid="btn-remove-item-{item.id}">
+							<button type="submit" class="btn btn-ghost btn-xs gap-1 text-error hover:bg-error/10" data-testid="btn-remove-item-{item.id}">
 								<IconTrash class="size-3.5" />
 								Remover
 							</button>
@@ -97,7 +102,7 @@
 			{/each}
 
 			{#if data.isOwner}
-				<form method="POST" action="?/addItem" novalidate class="flex gap-2 mt-2" data-testid="add-item-form">
+				<form method="POST" action="?/addItem" novalidate class="flex gap-2 mt-2" data-testid="add-item-form" use:enhance={withToast({ successMessage: 'Tarefa adicionada!' })}>
 					<input
 						type="text"
 						name="description"

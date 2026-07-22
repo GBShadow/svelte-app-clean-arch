@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
 	import RichTextEditor from '$lib/components/kanban/RichTextEditor.svelte';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
@@ -98,7 +99,7 @@
 									<Edit2 class="w-3.5 h-3.5" />
 									Editar
 								</button>
-								<form method="POST" action="?/deleteGlobalTask" use:enhance>
+								<form method="POST" action="?/deleteGlobalTask" use:enhance={withToast({ successMessage: 'Tarefa excluída!' })}>
 									<input type="hidden" name="taskId" value={task.id} />
 									<button type="submit" class="btn btn-ghost btn-xs text-error flex items-center gap-1" data-testid="btn-delete-global-{task.id}">
 										<Trash2 class="w-3.5 h-3.5" />

@@ -336,7 +336,7 @@
 				<div class="flex flex-wrap gap-2 justify-end">
 					{#if pPokerRoom.room?.revealed}
 						<button
-							class="btn btn-neutral btn-sm"
+							class="btn btn-warning btn-sm"
 							onclick={handleResetVotes}
 							data-testid="btn-reset-votes"
 						>

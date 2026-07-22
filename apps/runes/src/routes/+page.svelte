@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import AppGrid from '$lib/components/AppGrid.svelte';
 	import { appRegistry } from '$lib/appRegistry';
+	import { notificationStore } from '$lib/client/notifications.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -9,6 +11,16 @@
 	const visibleApps = $derived(
 		user?.isAdmin ? appRegistry : appRegistry.filter((a) => !a.adminOnly)
 	);
+
+	const hasChatUnread = $derived(
+		notificationStore.notifications.some(
+			(n) => n.type === 'chat' && !n.read
+		)
+	);
+
+	onMount(() => {
+		notificationStore.load({ page: 1 });
+	});
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-8">
@@ -24,6 +36,6 @@
 
 	<!-- Grid de apps -->
 	<div class="w-full max-w-5xl">
-		<AppGrid apps={visibleApps} pendingCount={data.pendingCount} />
+		<AppGrid apps={visibleApps} hasChatUnread={hasChatUnread} />
 	</div>
 </div>

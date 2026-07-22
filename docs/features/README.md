@@ -19,6 +19,8 @@ Documentação de funcionalidades implementadas no monorepo.
 | Quadro Kanban reativo e seguro (runes) | runes | 2026-07-12 | [2026-07-12-kanban.md](./2026-07-12-kanban.md) |
 | Planning Poker em tempo real | runes | 2026-07-12 | [2026-07-12-planning-poker.md](./2026-07-12-planning-poker.md) |
 | Notificações Push (self-hosted) | runes | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
+| Projetos, Sprints e contexto no Kanban + Poker | runes | 2026-07-21 | [2026-07-21-projects-sprints-kanban.md](./2026-07-21-projects-sprints-kanban.md) |
+| UI improvements — accent, toast, chat, kanban, todos | runes | 2026-07-22 | [2026-07-22-ui-improvements.md](./2026-07-22-ui-improvements.md) |
 
 ## Nova feature
 

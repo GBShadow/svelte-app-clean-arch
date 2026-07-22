@@ -25,6 +25,7 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 | `kanban-fixes-e-poker-backlog` | 2026-07-14 | [2026-07-14-kanban-fixes-e-poker-backlog.pr.md](./2026-07-14-kanban-fixes-e-poker-backlog.pr.md) | _(ver chat-sender-preservar/poker-backlog-global)_ |
 | `notifications` | 2026-07-15 | _(pendente)_ | [2026-07-15-notifications.jira.md](./2026-07-15-notifications.jira.md) |
 | `chat-admin-access` | 2026-07-15 | _(pendente)_ | [2026-07-15-chat-admin-access.jira.md](./2026-07-15-chat-admin-access.jira.md) |
+| `ui-improvements` | 2026-07-22 | [2026-07-22-ui-improvements.pr.md](./2026-07-22-ui-improvements.pr.md) | _(ver PR #9)_ |
 
 ## Convenção de nomes
 

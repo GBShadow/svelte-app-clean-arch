@@ -37,7 +37,7 @@ pnpm test
 pnpm dev:runes
 ```
 
-Cenários manuais e testes automatizados (incluir `TodoMemoryGateway`).
+Cenários manuais e testes automatizados. Todo código de produção foi precedido pelo teste que o exige (TDD: Red-Green-Refactor).
 
 ## Decisões de design
 

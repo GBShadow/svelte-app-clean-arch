@@ -29,6 +29,7 @@ O que deve existir ao final, em 1–2 frases.
 
 - RF1: O sistema deve ...
 - RF2: ...
+- RF-TDD: **Todo código de produção deve ser precedido pelo teste que o exige** (Red-Green-Refactor). Nenhuma implementação é aceita sem o teste correspondente escrito primeiro.
 
 ## Requisitos não funcionais
 
@@ -52,7 +53,8 @@ _(performance, acessibilidade, segurança, testes — se aplicável)_
 
 - [ ] AC1: Dado ..., quando ..., então ...
 - [ ] AC2: ...
-- [ ] Testes unitários puros (`<feature>Access.test.ts`) e E2E Playwright cobrindo os cenários acima.
+- [ ] Testes unitários puros escritos **antes** da implementação (TDD): (`<feature>Access.test.ts`) e E2E Playwright cobrindo os cenários acima.
+- [ ] `pnpm test` passa antes da abertura do PR.
 
 ## Design (Ports & Adapters — padrão real do projeto)
 

@@ -23,6 +23,7 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | 2026-07-12 | [2026-07-12-poker-backlog-global.md](./2026-07-12-poker-backlog-global.md) |
 | Notificações Push de Chat e Sistema (runes) | Implementada | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
 | Chat — acesso administrativo (runes) | Spec em aprovação | 2026-07-15 | [2026-07-15-chat-admin-access.md](./2026-07-15-chat-admin-access.md) |
+| Campanha de Testes — Cobertura Total | Spec em aprovação | 2026-07-22 | [2026-07-22-testing-campaign.md](./2026-07-22-testing-campaign.md) |
 
 > **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.
 

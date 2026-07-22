@@ -9,6 +9,7 @@ Sem uma spec, o alinhamento sobre "o que construir" acontece implicitamente dura
 - **Alinhamento acontece antes do código**, quando ainda é barato mudar de ideia.
 - A spec vira **checklist de aceite** — dá pra saber quando a feature está pronta.
 - Jira, feature doc e PR deixam de ser redigidos "do zero" e passam a **referenciar** a spec, evitando retrabalho e divergência entre os documentos.
+- **TDD é obrigatório**: os critérios de aceite da spec viram testes primeiro (Red), a implementação só os faz passar (Green), e então refatora (Refactor). Nada é implementado sem um teste falhando primeiro.
 
 ## Visão geral do fluxo
 
@@ -26,7 +27,7 @@ Todos os arquivos de uma mesma feature compartilham o **mesmo `<slug>`** em keba
 |-------|-------|---------|----------|
 | 1. Spec | `docs/specs/` | `<slug>.md` | [`_template.md`](./specs/_template.md) |
 | 2. Jira | `docs/workflow/` | `<slug>.jira.md` | [`_template-jira.md`](./workflow/_template-jira.md) |
-| 3. Implementação | código | — | `.cursor/rules/architecture/runes-ports-adapters.mdc` |
+| 3. Implementação com TDD | código | Red-Green-Refactor | `.cursor/rules/architecture/runes-ports-adapters.mdc` + TDD |
 | 4. Feature doc | `docs/features/` | `<slug>.md` | [`_template.md`](./features/_template.md) |
 | 5. PR | `docs/workflow/` | `<slug>.pr.md` | [`_template-pr.md`](./workflow/_template-pr.md) |
 
@@ -57,7 +58,7 @@ Copie [`_template-jira.md`](./workflow/_template-jira.md) para `docs/workflow/<s
 
 Sem credenciais de Jira integradas, este arquivo é um rascunho pronto para colar na ferramenta real. Nunca invente uma Jira Key — deixe o placeholder `[JIRA-KEY]`.
 
-### 3. Implementar
+### 3. Implementar com TDD (Red-Green-Refactor)
 
 Siga `.cursor/rules/architecture/runes-ports-adapters.mdc` — novas funcionalidades usam o padrão **runes**:
 
@@ -65,9 +66,20 @@ Siga `.cursor/rules/architecture/runes-ports-adapters.mdc` — novas funcionalid
 UI → Container (onMount + service.load()) → Service (.svelte.ts) → Gateway (todo-domain) → API → Store
 ```
 
-Use a spec como referência de escopo: se durante a implementação surgir a necessidade de algo fora do que foi especificado, é sinal de que a spec precisa ser atualizada (ou a mudança precisa de uma spec própria), não de seguir em frente silenciosamente.
+**Cada critério de aceite da spec segue o ciclo TDD obrigatoriamente:**
 
-Escreva testes usando `TodoMemoryGateway`, cobrindo os critérios de aceite da spec.
+1. **Red** — escreva o teste que cobre o AC (deve falhar porque a implementação não existe). Use `TodoMemoryGateway` ou mocks diretos para domínio puro, e testes de herança com `describe.each` para variações de permissão.
+2. **Green** — implemente o mínimo necessário para o teste passar. Nada além do que o teste pede.
+3. **Refactor** — ajuste o design sem quebrar os testes. Só então passe para o próximo AC.
+
+**Regras do processo:**
+- Nenhuma linha de código de produção é escrita antes do teste que a exige.
+- Testes da camada de domínio (`apps/runes/src/lib/domain/`) são puros — sem acesso a banco, rede ou SvelteKit.
+- Testes de validação (`apps/runes/src/lib/validation/`) cobrem schemas Zod com casos válidos e inválidos.
+- Testes E2E (`apps/runes/e2e/`) cobrem o fluxo completo renderizado, mas vêm depois da implementação do domínio — não substituem os testes unitários.
+- A bateria completa (`pnpm test`) precisa passar antes de seguir para a documentação.
+
+Use a spec como referência de escopo: se durante a implementação surgir a necessidade de algo fora do que foi especificado, é sinal de que a spec precisa ser atualizada (ou a mudança precisa de uma spec própria), não de seguir em frente silenciosamente.
 
 ### 4. Documentar a feature (`docs/features/<slug>.md`)
 

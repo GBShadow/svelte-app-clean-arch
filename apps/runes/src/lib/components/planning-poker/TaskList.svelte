@@ -225,7 +225,7 @@
 	{/if}
 
 	<!-- Painel de Exportação para o Kanban (Admin) -->
-	{#if isAdmin && exportableTasks.length > 0}
+	{#if isAdmin && roomStatus === 'finalized' && exportableTasks.length > 0}
 		<div class="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4">
 			<div class="text-xs text-primary-content/80 text-center sm:text-left">
 				<span class="font-bold text-primary block text-sm mb-0.5">Exportar para o Kanban</span>

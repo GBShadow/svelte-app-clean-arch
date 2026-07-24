@@ -4,7 +4,8 @@ import {
 	createTaskSchema,
 	voteSchema,
 	setFinalPointsSchema,
-	changeRoleSchema
+	changeRoleSchema,
+	exportToKanbanSchema
 } from './pokerSchemas';
 
 describe('Planning Poker Validation Schemas', () => {
@@ -69,6 +70,34 @@ describe('Planning Poker Validation Schemas', () => {
 
 		it('deve rejeitar papéis inválidos', () => {
 			expect(changeRoleSchema.safeParse({ participantId: 'p1', role: 'other' }).success).toBe(false);
+		});
+	});
+
+	describe('exportToKanbanSchema', () => {
+		it('deve aceitar lista de taskIds válidos', () => {
+			const res = exportToKanbanSchema.safeParse({ taskIds: ['id1', 'id2'] });
+			expect(res.success).toBe(true);
+		});
+
+		it('deve aceitar um único taskId', () => {
+			const res = exportToKanbanSchema.safeParse({ taskIds: ['id1'] });
+			expect(res.success).toBe(true);
+		});
+
+		it('deve rejeitar lista vazia', () => {
+			const res = exportToKanbanSchema.safeParse({ taskIds: [] });
+			expect(res.success).toBe(false);
+			if (!res.success) {
+				expect(res.error.issues[0].message).toBe('Selecione pelo menos uma task para exportar.');
+			}
+		});
+
+		it('deve rejeitar lista com string vazia', () => {
+			const res = exportToKanbanSchema.safeParse({ taskIds: [''] });
+			expect(res.success).toBe(false);
+			if (!res.success) {
+				expect(res.error.issues[0].message).toBe('ID de task inválido.');
+			}
 		});
 	});
 });

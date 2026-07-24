@@ -84,3 +84,9 @@ export const editGlobalTaskSchema = z.object({
 export const linkGlobalTasksSchema = z.object({
 	taskIds: z.array(z.string().min(1)).min(1, 'Selecione pelo menos uma tarefa.')
 });
+
+export const exportToKanbanSchema = z.object({
+	taskIds: z
+		.array(z.string().min(1, 'ID de task inválido.'))
+		.min(1, 'Selecione pelo menos uma task para exportar.')
+});

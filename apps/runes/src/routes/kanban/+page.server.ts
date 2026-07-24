@@ -80,11 +80,49 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 			expand: 'created_by,responsaveis,participants'
 		});
 	} catch {
-		throw error(404, 'Projeto não encontrado');
+		cookies.delete('lastKanbanProject', { path: '/kanban' });
+		const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+			sort: 'title',
+			expand: 'participants'
+		});
+		const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
+		return {
+			project: null,
+			projects: accessibleProjects,
+			sprints: [],
+			activeSprint: null,
+			plannedSprint: null,
+			columns: [],
+			cards: [],
+			users: [],
+			comments: [],
+			history: [],
+			token: locals.pb.authStore.token,
+			canManageProject: false
+		};
 	}
 
 	if (!canViewProject(locals.user, project)) {
-		throw error(403, 'Acesso negado');
+		cookies.delete('lastKanbanProject', { path: '/kanban' });
+		const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+			sort: 'title',
+			expand: 'participants'
+		});
+		const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
+		return {
+			project: null,
+			projects: accessibleProjects,
+			sprints: [],
+			activeSprint: null,
+			plannedSprint: null,
+			columns: [],
+			cards: [],
+			users: [],
+			comments: [],
+			history: [],
+			token: locals.pb.authStore.token,
+			canManageProject: false
+		};
 	}
 
 	cookies.set('lastKanbanProject', projectId, {

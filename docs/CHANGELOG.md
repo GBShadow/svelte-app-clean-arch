@@ -2,6 +2,13 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-23] Correções: poker export + kanban cookie
+
+- **Poker export fix**: schema `exportToKanbanSchema` adicionado e validado na action. Substituído `continue` silencioso por `fail(400)` com mensagem clara. Painel de export condicional a `roomStatus === 'finalized'`. Toast de sucesso/erro no `handleExport`. Testes do schema adicionados.
+- **Kanban cookie fix**: quando o projeto salvo em `lastKanbanProject` é deletado ou perde acesso, o cookie é limpo e o usuário cai no seletor de projetos em vez de receber 404.
+- **Regra**: seção "Commits e PRs" em `AGENTS.md` reforçada como OBRIGATÓRIA — toda documentação relevante deve ser atualizada antes de commitar/abrir PR.
+- **Documentação**: `docs/specs/2026-07-23-poker-export-fix.md`, `docs/workflow/2026-07-23-poker-export-fix.jira.md`, `docs/memory/`.
+
 ## [2026-07-22] UI improvements — accent, chat, kanban, todos, toast
 
 - **Sistema de acentos**: store reativa (`accent.svelte.ts`) com persistência em localStorage, seletor de paleta (`AccentPicker.svelte`) com 7 cores, inline script em `app.html` para evitar flash.

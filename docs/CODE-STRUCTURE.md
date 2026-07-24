@@ -472,7 +472,11 @@ docs/
 │   ├── 2026-07-12-chat-sender-preservar.md
 │   ├── 2026-07-12-poker-backlog-global.md
 │   ├── 2026-07-15-notifications.md
-│   └── 2026-07-15-chat-admin-access.md
+│   ├── 2026-07-15-chat-admin-access.md
+│   ├── 2026-07-22-testing-campaign.md
+│   └── 2026-07-23-poker-export-fix.md
+│
+├── memory/                     ← Memória de sessões de agentes
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
@@ -530,7 +534,8 @@ docs/
 │   ├── 2026-07-12-poker-backlog-global.jira.md
 │   ├── 2026-07-14-kanban-fixes-e-poker-backlog.pr.md
 │   ├── 2026-07-15-notifications.jira.md
-│   └── 2026-07-15-chat-admin-access.jira.md
+│   ├── 2026-07-15-chat-admin-access.jira.md
+│   └── 2026-07-23-poker-export-fix.jira.md
 │
 └── testing/
     └── playwright.md           ← Guia de testes e2e
@@ -581,7 +586,9 @@ docs/
 | `.npmrc`                        | Config npm (raiz)                                                                                     |
 | `.vscode/settings.json`         | Configurações do VS Code                                                                              |
 | `.gitignore` (raiz)             | Arquivos ignorados pelo git                                                                           |
-| `.agents/skills/`               | Skills Freebuff (8 skills)                                                                            |
+| `.agents/skills/`               | Skills Freebuff (9 skills)                                                                            |
+| `.opencode/agents/`             | Agentes opencode                                                                                      |
+| `.opencode/command/review.md`   | Comando `review`                                                                                      |
 | `.claude/agents/spec-driven.md` | Agente Claude (processo)                                                                              |
 | `.claude/settings.local.json`   | Permissões do Claude                                                                                  |
 

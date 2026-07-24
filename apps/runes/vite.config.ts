@@ -24,6 +24,28 @@ export default defineConfig({
 		expect: { requireAssertions: true },
 		environment: 'node',
 		include: ['src/**/*.{test,spec}.{js,ts}'],
-		exclude: ['src/lib/server/**']
+		coverage: {
+			provider: 'v8',
+			enabled: false,
+			include: ['src/**'],
+			exclude: [
+				'src/lib/server/**',
+				'src/**/*.{test,spec}.{js,ts}',
+				'src/**/*.d.ts',
+				'src/app.d.ts',
+				'src/**/*.svelte',
+				'src/hooks.server.ts',
+				'src/service-worker.ts',
+				'src/app.html',
+				'src/routes/**'
+			],
+			thresholds: {
+				statements: 80,
+				branches: 70,
+				functions: 80,
+				lines: 80
+			},
+			reporter: ['text', 'lcov', 'html']
+		}
 	}
 });

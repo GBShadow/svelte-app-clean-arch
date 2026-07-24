@@ -98,3 +98,13 @@ export async function cleanupKanbanColumn(request: APIRequestContext, name: stri
 export async function cleanupPokerRoom(request: APIRequestContext, name: string): Promise<void> {
 	await cleanupRecords(request, 'poker_rooms', 'name = {:name}', { name });
 }
+
+/** Removes a temporary project. Columns and sprints cascade with the project. */
+export async function cleanupProject(request: APIRequestContext, title: string): Promise<void> {
+	await cleanupRecords(request, 'projects', 'title = {:title}', { title });
+}
+
+/** Removes a temporary notification by title (system notifications site-wide). */
+export async function cleanupNotification(request: APIRequestContext, title: string): Promise<void> {
+	await cleanupRecords(request, 'notifications', 'title = {:title}', { title });
+}

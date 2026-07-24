@@ -46,6 +46,32 @@ AAAA-MM-DD, PR/commit <link ou hash>` no final. Não delete o histórico do item
 - **Impacto:** Não é possível validar E2E localmente (ex.: `kanban.spec.ts`) neste ambiente; a verificação fica limitada a `svelte-check` + `vitest`. Risco de regressões de UI/realtime não capturadas em CI local.
 - **Sugestão de resolução:** Configurar `tsconfig-paths`/`playwright` para usar o `vite-tsconfig-paths` ou apontar o `tsconfig` do SvelteKit no `playwright.config.ts` (`tsconfig: './tsconfig.json'` + `resolveConfig` do SvelteKit), ou mover a lógica de teste para não importar módulos server que dependam de `$env`. Priorizar validação manual via `pnpm dev:full` enquanto isso.
 
+
+
+### Coleção sprints — API Rules excessivamente permissivas (MÉDIA)
+
+- **Identificado em:** 2026-07-22, durante auditoria de segurança da spec `testing-campaign`
+- **Local:** `pocketbase/pb_migrations/0021_create_projects_sprints.js`
+- **Descrição:** As regras `createRule`, `updateRule` e `deleteRule` da coleção `sprints` são `"@request.auth.isAdmin = true || @request.auth.id != ''"` — qualquer usuário autenticado pode criar, alterar ou deletar sprints via chamada direta à API PocketBase.
+- **Impacto:** MÉDIO — a interface do app (server actions em `projects/[id]/+page.server.ts`) já faz a verificação correta de `canManageProject`, então o vetor de ataque é apenas via chamada direta à API. Mas sprints órfãs (sem projeto) podem ser criadas.
+- **Sugestão de resolução:** Restringir rules para `"project.responsaveis ?= @request.auth.id || @request.auth.isAdmin = true"` (depende de o campo `project` existir na coleção `sprints` — verificar se é uma relação direta).
+
 ## Resolvidos
 
-_Nenhum item resolvido ainda._
+### Kanban — addComment sem verificação de permissão (ALTA)
+
+- **Identificado em:** 2026-07-22, durante auditoria de segurança da spec `testing-campaign`
+- **Local:** `apps/runes/src/routes/kanban/+page.server.ts:695`
+- **Descrição:** A action `addComment` verificava apenas `!!locals.user` (autenticação), sem verificar se o usuário tem acesso ao card/projeto. Qualquer usuário autenticado podia comentar em qualquer card.
+- **Impacto:** ALTO
+- **Sugestão de resolução:** Carregar card e projeto, verificar `canViewProject` antes de criar o comentário.
+- **Resolvido em:** 2026-07-22, nesta sessão — `kanban/+page.server.ts` addComment agora carrega card → projeto → `canViewProject` antes de criar o comentário.
+
+### Kanban — createCard/updateCard/moveCard sem escopo de projeto (ALTA)
+
+- **Identificado em:** 2026-07-22, durante auditoria de segurança da spec `testing-campaign`
+- **Local:** `apps/runes/src/lib/domain/kanbanAccess.ts:3-6`
+- **Descrição:** As funções `canCreateCard(userId)` e `canUpdateCard(userId)` retornavam `true` para qualquer `userId` definido — qualquer autenticado criava/editava/movia cards em projetos que não participava.
+- **Impacto:** ALTO
+- **Sugestão de resolução:** Modificar funções para receber `user`+`project` e verificar participação.
+- **Resolvido em:** 2026-07-22, nesta sessão — `kanbanAccess.ts`: `canCreateCard`/`canUpdateCard` agora aceitam `(user, project)` e verificam `project.participants.includes(user.id)`. Server actions `createCard`/`updateCard`/`moveCard` carregam o projeto antes da operação.

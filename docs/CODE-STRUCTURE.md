@@ -213,27 +213,32 @@ src/lib/
 │   └── passwordGate.test.ts    ← Testes
 │
 ├── client/                     ← Lógica client-side
+│   ├── accent.svelte.ts        ← Store reativa de acento (paleta de 7 cores) com persistência localStorage
 │   ├── authChannel.ts          ← BroadcastChannel: sync login/logout entre abas
 │   ├── authChannel.test.ts     ← Testes
+│   ├── enhanceWithToast.ts     ← Helper withToast(): wrapper use:enhance para exibir toast em success/error
+│   ├── notifications.svelte.ts ← Estado reativo client-side: lista paginada, contagem não lidas, markAsRead
 │   ├── pocketbaseClient.ts     ← createBrowserClient: cliente PocketBase client-side autenticado (subscriptions realtime)
 │   ├── pushDecision.ts         ← shouldSuppressChatPush: decisão de supressão, testável sem mocks de `self`
 │   ├── pushDecision.test.ts    ← Testes
 │   ├── pushSubscription.ts     ← Registra SW, solicita permissão, pushManager.subscribe/getSubscription, chama /api/push/*
-│   └── notifications.svelte.ts ← Estado reativo client-side: lista paginada, contagem não lidas, markAsRead
+│   └── toast.svelte.ts         ← Store reativa de toasts (fila + auto-dismiss) + helper withToast() para use:enhance
 │
 ├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?) — inclui "Chat"
 │
 ├── components/                 ← Componentes Svelte reutilizáveis
+│   ├── AccentPicker.svelte     ← Seletor de paleta de acento (7 cores) com preview
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
 │   ├── AppGrid.svelte          ← Grid responsivo que renderiza os AppCard
-│   ├── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder)
+│   ├── Avatar.svelte           ← Avatar de usuário (imagem ou iniciais como placeholder, tamanho dinâmico via prop)
 │   ├── ChangePasswordForm.svelte ← Formulário de troca de senha
 │   ├── NotificationBell.svelte ← Ícone de sino com badge de contagem de não lidas
 │   ├── NotificationCenter.svelte ← Painel de notificações (dropdown)
+│   ├── Toast.svelte            ← Container de toasts (DaisyUI alert + timer + swipe)
 │   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
 │   ├── UserList.svelte         ← Tabela de listagem de usuários
 │   ├── chat/
-│   │   ├── NewMessageIndicator.svelte ← Indicador de nova mensagem não lida
+│   │   ├── NewMessageIndicator.svelte ← Indicador de nova mensagem não lida (pulse dot)
 │   │   └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
 │   ├── icons/                  ← Ícones SVG inline
 │   │   ├── IconEdit.svelte
@@ -244,7 +249,7 @@ src/lib/
 │   │   └── IconUnlock.svelte
 │   ├── kanban/
 │   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
-│   └── projects/               ← Componentes de projeto (embutidos nas rotas /projects)
+│   ├── projects/               ← Componentes de projeto (embutidos nas rotas /projects)
 │   └── planning-poker/
 │       ├── CardDeck.svelte     ← Baralho Fibonacci para votação
 │       ├── ParticipantsList.svelte ← Lista de participantes com status do voto
@@ -467,7 +472,11 @@ docs/
 │   ├── 2026-07-12-chat-sender-preservar.md
 │   ├── 2026-07-12-poker-backlog-global.md
 │   ├── 2026-07-15-notifications.md
-│   └── 2026-07-15-chat-admin-access.md
+│   ├── 2026-07-15-chat-admin-access.md
+│   ├── 2026-07-22-testing-campaign.md
+│   └── 2026-07-23-poker-export-fix.md
+│
+├── memory/                     ← Memória de sessões de agentes
 │
 ├── features/                   ← Feature docs (pós-implementação)
 │   ├── _template.md
@@ -525,7 +534,8 @@ docs/
 │   ├── 2026-07-12-poker-backlog-global.jira.md
 │   ├── 2026-07-14-kanban-fixes-e-poker-backlog.pr.md
 │   ├── 2026-07-15-notifications.jira.md
-│   └── 2026-07-15-chat-admin-access.jira.md
+│   ├── 2026-07-15-chat-admin-access.jira.md
+│   └── 2026-07-23-poker-export-fix.jira.md
 │
 └── testing/
     └── playwright.md           ← Guia de testes e2e
@@ -559,6 +569,7 @@ docs/
 | `.agents/skills/pocketbase-collections.md`               | PocketBase (Freebuff)         | Toda coleção precisa dos campos `created`/`updated` |
 | `.cursor/rules/meta/tech-debt.mdc`                      | Débito técnico                | Registrar débito identificado (não corrigido) em `docs/TECH-DEBT.md` |
 | `.agents/skills/tech-debt.md`                           | Débito técnico (Freebuff)     | Equivalente à regra acima                          |
+| `.agents/skills/commit-and-pr-docs.md`                  | Commit/PR docs (Freebuff)     | Atualizar docs ao criar commits e PRs              |
 | `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---
@@ -575,7 +586,9 @@ docs/
 | `.npmrc`                        | Config npm (raiz)                                                                                     |
 | `.vscode/settings.json`         | Configurações do VS Code                                                                              |
 | `.gitignore` (raiz)             | Arquivos ignorados pelo git                                                                           |
-| `.agents/skills/`               | Skills Freebuff (7 skills)                                                                            |
+| `.agents/skills/`               | Skills Freebuff (9 skills)                                                                            |
+| `.opencode/agents/`             | Agentes opencode                                                                                      |
+| `.opencode/command/review.md`   | Comando `review`                                                                                      |
 | `.claude/agents/spec-driven.md` | Agente Claude (processo)                                                                              |
 | `.claude/settings.local.json`   | Permissões do Claude                                                                                  |
 
@@ -586,10 +599,10 @@ docs/
 | Pacote/App           | Unit    | E2E          | Total    |
 | -------------------- | ------- | ------------ | -------- |
 | `todo-domain`        | 60      | —            | 60       |
-| `runes`              | 179     | 8 specs      | 187+     |
+| `runes`              | 195     | 8 specs      | 203+     |
 | `deprecated/classic` | 17      | 2 specs      | 19+      |
 | `deprecated/remote`  | 15      | —            | 15       |
-| **Total**            | **271** | **10 specs** | **281+** |
+| **Total**            | **287** | **10 specs** | **297+** |
 
 ---
 

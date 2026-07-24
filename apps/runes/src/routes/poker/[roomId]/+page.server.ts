@@ -7,7 +7,8 @@ import {
 	changeRoleSchema,
 	setFinalPointsSchema,
 	editTaskSchema,
-	linkGlobalTasksSchema
+	linkGlobalTasksSchema,
+	exportToKanbanSchema
 } from '$lib/validation/pokerSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
 import {
@@ -630,8 +631,10 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const taskIds = formData.getAll('taskIds') as string[];
 
-		if (taskIds.length === 0) {
-			return fail(400, { errors: { general: 'Selecione pelo menos uma task para exportar.' } });
+		const parsed = exportToKanbanSchema.safeParse({ taskIds });
+		if (!parsed.success) {
+			const msg = parsed.error.issues[0]?.message || 'Selecione pelo menos uma task para exportar.';
+			return fail(400, { errors: { general: msg } });
 		}
 
 		const adminPb = await getAdminClient();
@@ -685,8 +688,14 @@ export const actions: Actions = {
 			for (const taskId of taskIds) {
 				const task = await adminPb.collection('poker_tasks').getOne<PokerTaskRecord>(taskId);
 
-				if (task.room !== roomId || task.status === 'exported' || task.final_points === null) {
-					continue;
+				if (task.room !== roomId) {
+					return fail(400, { errors: { general: `Task "${task.title}" não pertence a esta sala.` } });
+				}
+				if (task.final_points === null) {
+					return fail(400, { errors: { general: `Task "${task.title}" ainda não possui pontuação final definida.` } });
+				}
+				if (task.status === 'exported') {
+					return fail(400, { errors: { general: `Task "${task.title}" já foi exportada para o Kanban.` } });
 				}
 
 				const card = await adminPb.collection('kanban_cards').create({

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PUBLIC_POCKETBASE_URL: http://127.0.0.1:8090
+  PB_ADMIN_EMAIL: admin@example.com
+  PB_ADMIN_PASSWORD: admin123456
+  SEED_ADMIN_EMAIL: seed-admin@example.com
+  SEED_ADMIN_PASSWORD: changeme123456
+  PUBLIC_VAPID_PUBLIC_KEY: BIEhs3uV8sBfPnQJZIZKHyhDJfR2VJNSYnMa1sD0OaJAgXg2x48-F-zF9t7nqY8c3I5kZBVgOMzB5Z3dRMBfTlE
+  VAPID_PRIVATE_KEY: mOCK_PRIVATE_KEY_FOR_CI
+  VAPID_SUBJECT: mailto:ci@example.com
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm check
+
+      - run: pnpm test
+
+      - run: pnpm test:coverage
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: |
+            apps/runes/coverage/
+            packages/todo-domain/coverage/

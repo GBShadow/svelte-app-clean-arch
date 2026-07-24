@@ -80,11 +80,49 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 			expand: 'created_by,responsaveis,participants'
 		});
 	} catch {
-		throw error(404, 'Projeto não encontrado');
+		cookies.delete('lastKanbanProject', { path: '/kanban' });
+		const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+			sort: 'title',
+			expand: 'participants'
+		});
+		const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
+		return {
+			project: null,
+			projects: accessibleProjects,
+			sprints: [],
+			activeSprint: null,
+			plannedSprint: null,
+			columns: [],
+			cards: [],
+			users: [],
+			comments: [],
+			history: [],
+			token: locals.pb.authStore.token,
+			canManageProject: false
+		};
 	}
 
 	if (!canViewProject(locals.user, project)) {
-		throw error(403, 'Acesso negado');
+		cookies.delete('lastKanbanProject', { path: '/kanban' });
+		const allProjects = await adminPb.collection('projects').getFullList<ProjectRecord>({
+			sort: 'title',
+			expand: 'participants'
+		});
+		const accessibleProjects = allProjects.filter((p) => canViewProject(locals.user, p));
+		return {
+			project: null,
+			projects: accessibleProjects,
+			sprints: [],
+			activeSprint: null,
+			plannedSprint: null,
+			columns: [],
+			cards: [],
+			users: [],
+			comments: [],
+			history: [],
+			token: locals.pb.authStore.token,
+			canManageProject: false
+		};
 	}
 
 	cookies.set('lastKanbanProject', projectId, {
@@ -361,7 +399,6 @@ export const actions: Actions = {
 
 	createCard: async ({ request, locals }) => {
 		if (!locals.user) return fail(401);
-		if (!canCreateCard(locals.user.id)) return fail(403);
 
 		const formData = await request.formData();
 		const title = formData.get('title') as string;
@@ -402,6 +439,14 @@ export const actions: Actions = {
 		}
 
 		const adminPb = await getAdminClient();
+
+		let createProject: ProjectRecord;
+		try {
+			createProject = await adminPb.collection('projects').getOne(validation.data.projectId);
+		} catch {
+			return fail(404);
+		}
+		if (!canViewProject(locals.user, createProject)) return fail(403);
 
 		const existingCards = await adminPb.collection('kanban_cards').getFullList({
 			filter: `column = "${validation.data.columnId}"`
@@ -449,7 +494,6 @@ export const actions: Actions = {
 
 	updateCard: async ({ request, locals }) => {
 		if (!locals.user) return fail(401);
-		if (!canUpdateCard(locals.user.id)) return fail(403);
 
 		const formData = await request.formData();
 		const cardId = formData.get('cardId') as string;
@@ -495,6 +539,14 @@ export const actions: Actions = {
 			return fail(404);
 		}
 
+		let updateProject: ProjectRecord;
+		try {
+			updateProject = await adminPb.collection('projects').getOne(oldCard.project);
+		} catch {
+			return fail(404);
+		}
+		if (!canViewProject(locals.user, updateProject)) return fail(403);
+
 		const updateData: Record<string, any> = {};
 		if (validation.data.title !== undefined) updateData.title = validation.data.title;
 		if (validation.data.description !== undefined) updateData.description = validation.data.description;
@@ -538,7 +590,6 @@ export const actions: Actions = {
 
 	moveCard: async ({ request, locals }) => {
 		if (!locals.user) return fail(401);
-		if (!canUpdateCard(locals.user.id)) return fail(403);
 
 		const formData = await request.formData();
 		const cardId = formData.get('cardId') as string;
@@ -557,6 +608,14 @@ export const actions: Actions = {
 		} catch {
 			return fail(404);
 		}
+
+		let moveProject: ProjectRecord;
+		try {
+			moveProject = await adminPb.collection('projects').getOne(card.project);
+		} catch {
+			return fail(404);
+		}
+		if (!canViewProject(locals.user, moveProject)) return fail(403);
 
 		const oldColumnId = card.column;
 		const targetColumnId = validation.data.columnId;
@@ -706,6 +765,21 @@ export const actions: Actions = {
 
 		const adminPb = await getAdminClient();
 
+		let commentCard: KanbanCardRecord;
+		try {
+			commentCard = (await adminPb.collection('kanban_cards').getOne(validation.data.cardId)) as KanbanCardRecord;
+		} catch {
+			return fail(404);
+		}
+
+		let commentProject: ProjectRecord;
+		try {
+			commentProject = await adminPb.collection('projects').getOne(commentCard.project);
+		} catch {
+			return fail(404);
+		}
+		if (!canViewProject(locals.user, commentProject)) return fail(403);
+
 		try {
 			await locals.pb.collection('kanban_card_comments').create({
 				card: validation.data.cardId,
@@ -716,27 +790,24 @@ export const actions: Actions = {
 			return fail(500);
 		}
 
-		try {
-			const card = (await adminPb.collection('kanban_cards').getOne(validation.data.cardId)) as KanbanCardRecord;
-			const notifyAssigneeIds = card.assignees.filter((id) => id !== locals.user?.id);
-			if (notifyAssigneeIds.length > 0) {
-				createKanbanCommentedNotification(
-					notifyAssigneeIds, card.title, card.id, locals.user.name ?? 'Alguém'
-				).catch((err) => logError('kanban:addComment:notification', err));
+		const notifyAssigneeIds = commentCard.assignees.filter((id) => id !== locals.user?.id);
+		if (notifyAssigneeIds.length > 0) {
+			createKanbanCommentedNotification(
+				notifyAssigneeIds, commentCard.title, commentCard.id, locals.user.name ?? 'Alguém'
+			).catch((err) => logError('kanban:addComment:notification', err));
 
-				const pushPayload = buildKanbanPushPayload({
-					cardTitle: card.title,
-					cardId: card.id,
-					action: 'commented',
-					commenterName: locals.user.name ?? 'Alguém'
-				});
-				if (pushPayload) {
-					resolveUserIdsToAuthIds(notifyAssigneeIds)
-						.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
-						.catch((err) => logError('kanban:addComment:push', err));
-				}
+			const pushPayload = buildKanbanPushPayload({
+				cardTitle: commentCard.title,
+				cardId: commentCard.id,
+				action: 'commented',
+				commenterName: locals.user.name ?? 'Alguém'
+			});
+			if (pushPayload) {
+				resolveUserIdsToAuthIds(notifyAssigneeIds)
+					.then((authIdMap) => sendSystemPush([...authIdMap.values()], pushPayload))
+					.catch((err) => logError('kanban:addComment:push', err));
 			}
-		} catch {}
+		}
 
 		return { success: true };
 	},

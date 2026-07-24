@@ -10,14 +10,31 @@ import {
 } from './kanbanAccess';
 
 describe('kanbanAccess - Cards', () => {
+	const project = { participants: ['user1', 'user2'] };
+	const emptyProject = { participants: [] };
+
 	test('canCreateCard', () => {
-		expect(canCreateCard('user1')).toBe(true);
-		expect(canCreateCard(undefined)).toBe(false);
+		const admin = { id: 'admin1', isAdmin: true };
+		const participant = { id: 'user1', isAdmin: false };
+		const outsider = { id: 'outsider', isAdmin: false };
+
+		expect(canCreateCard(admin, emptyProject)).toBe(true);
+		expect(canCreateCard(participant, project)).toBe(true);
+		expect(canCreateCard(outsider, project)).toBe(false);
+		expect(canCreateCard(null, project)).toBe(false);
+		expect(canCreateCard(undefined, project)).toBe(false);
 	});
 
 	test('canUpdateCard', () => {
-		expect(canUpdateCard('user1')).toBe(true);
-		expect(canUpdateCard(undefined)).toBe(false);
+		const admin = { id: 'admin1', isAdmin: true };
+		const participant = { id: 'user1', isAdmin: false };
+		const outsider = { id: 'outsider', isAdmin: false };
+
+		expect(canUpdateCard(admin, emptyProject)).toBe(true);
+		expect(canUpdateCard(participant, project)).toBe(true);
+		expect(canUpdateCard(outsider, project)).toBe(false);
+		expect(canUpdateCard(null, project)).toBe(false);
+		expect(canUpdateCard(undefined, project)).toBe(false);
 	});
 
 	test('canDeleteCard', () => {

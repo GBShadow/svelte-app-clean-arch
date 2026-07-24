@@ -74,9 +74,10 @@ resolver um item já listado, mova-o para "Resolvidos" com data e PR/commit. Ver
 
 Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco) em **inglês**. Texto voltado ao usuário — UI e mensagens de erro/validação retornadas ao usuário — em **português**. Documentação (specs, PR, Jira, features, CHANGELOG) em português.
 
-## Commits e PRs
+## Commits e PRs — OBRIGATÓRIO
 
-Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste repositório.
+- Sem trailer de co-autoria (`Co-Authored-By: Claude ...`) em commits ou PRs deste repositório.
+- **Toda documentação relevante deve ser atualizada antes de commitar ou abrir PR.** Consulte `.agents/skills/commit-and-pr-docs.md` para a lista de documentos a verificar (CODE-STRUCTURE, CHANGELOG, features, ROUTES, LESSONS-LEARNED, TECH-DEBT, etc.). Commits e PRs que alteram código sem atualizar a documentação correspondente serão rejeitados.
 
 ## Comandos disponíveis
 

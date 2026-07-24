@@ -13,8 +13,8 @@
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import HelpCircle from 'lucide-svelte/icons/help-circle';
 	import X from 'lucide-svelte/icons/x';
+	import { toastStore } from '$lib/client/toast.svelte';
 	import type {
-		PokerRoomRecord,
 		PokerParticipantRecord,
 		PokerTaskRecord,
 		PokerVoteRecord
@@ -174,7 +174,13 @@
 		for (const id of taskIds) {
 			formData.append('taskIds', id);
 		}
-		await fetch('?/exportToKanban', { method: 'POST', body: formData });
+		const res = await fetch('?/exportToKanban', { method: 'POST', body: formData });
+		if (res.ok) {
+			toastStore.add('Tasks exportadas para o Kanban!', 'success');
+		} else {
+			const data = await res.json();
+			toastStore.add(data.errors?.general || 'Erro ao exportar tasks.', 'error');
+		}
 	}
 
 	async function handleFinalize() {

@@ -96,14 +96,26 @@ src/routes/
 │   │   ├── +page.server.ts     ← Action: criar projeto + colunas padrão
 │   │   └── +page.svelte        ← UI: formulário de criação
 │   ├── [id]/
-│   │   ├── +page.server.ts     ← Load + Actions: gerenciar sprints + participantes
-│   │   ├── +page.svelte        ← UI: detalhe do projeto com sprints e participantes
+│   │   ├── +page.server.ts     ← Load + Actions: gerenciar sprints + participantes (+ retroBySprint)
+│   │   ├── +page.svelte        ← UI: detalhe do projeto com sprints, participantes e links para retro/specs
 │   │   └── edit/
 │   │       ├── +page.server.ts ← Action: atualizar projeto
 │   │       └── +page.svelte    ← UI: formulário de edição
-│   └── [id]/edit/
-│       ├── +page.server.ts
-│       └── +page.svelte
+│   ├── [id]/edit/
+│   │   ├── +page.server.ts
+│   │   └── +page.svelte
+│   └── [projectId]/
+│       ├── specs/
+│       │   ├── +page.server.ts ← Load + Actions: listar/criar docs de especificação
+│       │   ├── +page.svelte    ← UI: abas Minhas/Com acesso, filtros, criar doc
+│       │   └── [docId]/
+│       │       ├── +page.server.ts ← Load + Actions: editar doc, permissões, createTask
+│       │       └── +page.svelte    ← UI: editor markdown, tasks vinculadas, permissões
+│       └── sprints/
+│           └── [sprintId]/
+│               └── retro/
+│                   ├── +page.server.ts ← Load + Actions: retro (colunas, cards, participantes, finalize)
+│                   └── +page.svelte    ← UI: board reativo RetroBoard + realtime
 │
 ├── kanban/
 │   ├── +page.server.ts         ← Load + Actions: criar/mover/deletar cartões e colunas + comentários (filtrado por projeto). Cookie `lastKanbanProject` para lembrar último projeto acessado. Sem `?project=` + sem cookie → project: null + lista de projetos
@@ -158,7 +170,10 @@ src/lib/
 │   ├── logger.ts               ← logError: logging padronizado para operações best-effort
 │   ├── notificationRecord.ts   ← Type: NotificationRecord
 │   ├── notificationStore.ts    ← getNotifications/getUnreadCount/markAsRead/markAllAsRead via admin client
-│   ├── pokerRecord.ts          ← Types: PokerRoomRecord, PokerTaskRecord, PokerParticipantRecord, PokerVoteRecord
+│   ├── pokerRecord.ts          ← Types: PokerRoomRecord, PokerTaskRecord (+ source_spec), PokerParticipantRecord, PokerVoteRecord
+│   ├── retroRecord.ts          ← Types: RetroRecord, RetroColumnRecord, RetroCardRecord, RetroParticipantRecord
+│   ├── specRecord.ts           ← Types: SpecDocumentRecord, SpecPermissionRecord, SpecTagRecord
+│   ├── editToken.ts            ← generateEditToken / verifyEditToken (SHA-256) para cards anônimos da retro
 │   ├── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
 │   ├── pushRecord.ts           ← Type: PushSubscriptionRecord
 │   ├── vapidKeys.ts            ← Leitura de PUBLIC_VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY/VAPID_SUBJECT
@@ -184,6 +199,9 @@ src/lib/
 │   ├── planningPokerAccess.test.ts ← Testes
 │   ├── PlanningPokerRoom.svelte.ts ← Classe reativa: estado da sala de poker em tempo real
 │   ├── PlanningPokerRoom.test.ts   ← Testes
+│   ├── retroAccess.ts          ← canViewRetro, canManageRetro, canParticipate, reorderPositions
+│   ├── RetroBoard.svelte.ts    ← Classe reativa: colunas/cards/participantes da retro + realtime
+│   ├── specAccess.ts           ← filterDocumentsByAccess, canViewDoc, canEditDoc, canManagePermissions
 │   ├── pushPayload.ts          ← truncateMessage, isSafeRedirectUrl, buildChatPushPayload, buildSystemPushPayload
 │   └── pushPayload.test.ts     ← Testes
 │
@@ -205,6 +223,8 @@ src/lib/
 │   ├── notificationSchemas.test.ts ← Testes
 │   ├── pokerSchemas.ts         ← createRoomSchema, voteSchema, etc.
 │   ├── pokerSchemas.test.ts    ← Testes
+│   ├── retroSchemas.ts         ← createCard, renameColumn, addParticipant, etc.
+│   ├── specSchemas.ts          ← createDoc, updateDoc, createTaskFromDoc, etc.
 │   ├── formErrors.ts           ← fieldErrorsFrom: converte ZodError → Record<string, string>
 │   └── formErrors.test.ts      ← Testes
 │
@@ -250,6 +270,13 @@ src/lib/
 │   ├── kanban/
 │   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
 │   ├── projects/               ← Componentes de projeto (embutidos nas rotas /projects)
+│   ├── retro/
+│   │   ├── RetroCard.svelte    ← Card anônimo com edição/exclusão via token
+│   │   ├── RetroColumn.svelte  ← Coluna com criar card, rename, DnD
+│   │   └── RetroParticipants.svelte ← Lista + add/remove participantes
+│   ├── specs/
+│   │   ├── SpecPermissionManager.svelte ← Conceder/revogar view|edit
+│   │   └── SpecTaskCreator.svelte ← Form createTask no backlog (enhance)
 │   └── planning-poker/
 │       ├── CardDeck.svelte     ← Baralho Fibonacci para votação
 │       ├── ParticipantsList.svelte ← Lista de participantes com status do voto

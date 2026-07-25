@@ -1,0 +1,66 @@
+---
+description: Form actions via fetch (deserialize + headers), boards realtime com createBrowserClient + $effect sync, e listas de data.* com enhance/invalidate — nunca os anti-padrões da retro/spec
+alwaysApply: true
+---
+
+# Client: form actions + boards realtime
+
+## O problema (caso real: retro + SpecTaskCreator, 2026-07-25)
+
+Na retrospectiva, criar/renomear colunas e cards só apareciam após F5; criar card
+falhava para o responsável. Na spec, criar task não atualizava a lista. Várias
+causas empilhadas — todas evitáveis com o checklist abaixo.
+
+## NÃO FAZER
+
+1. **`fetch(window.location.href, { body: { action: '…' } })`**
+   Named actions do SvelteKit vão no query string: `fetch('?/actionName', …)`.
+   Campo `action` no body é irrelevante.
+
+2. **`fetch('?/action')` + `res.json()`**
+   Use `deserialize` de `$app/forms` e leia `result.data`:
+   ```ts
+   import { deserialize } from '$app/forms';
+   const result = deserialize(await res.text());
+   if (result.type === 'success') { /* result.data?.… */ }
+   ```
+   Headers no `fetch` manual:
+   `Accept: application/json`, `x-sveltekit-action: true`,
+   `Content-Type: application/x-www-form-urlencoded` (quando body é URLSearchParams).
+
+3. **`pb.authStore.save(token, null)` para realtime**
+   API Rules com `@request.auth.id` precisam do record. Use
+   `createBrowserClient(token, user)` de `$lib/client/pocketbaseClient.ts`.
+
+4. **Board só no `onMount` sem `$effect(() => board.sync(data…))`**
+   Após `enhance`/`invalidateAll`, `data` muda e o board local fica stale.
+   Padrão: board no init do componente + `$effect` sync + `onMount(board.start)`.
+
+5. **`fetch` que altera lista de `data.*` sem `update`/`invalidateAll`**
+   Preferir `<form method="POST" action="?/…" use:enhance>` com `await update()`.
+
+6. **Criar entidade com participantes sem o criador**, se create/move exige
+   `canParticipate` — o responsável toma 403 na feature que acabou de criar.
+
+7. **Nome de campo divergente** entre form client, Zod schema e `formData.get`
+   (ex.: `participantId` vs `userId`).
+
+## FAZER
+
+Espelhar o kanban / retro pós-fix:
+
+- Realtime: `createBrowserClient(data.token, data.user)`
+- Board: init + `$effect(() => board.sync(...data))` + `onMount(() => board.start())`
+- Mutation com payload de retorno: `deserialize` (+ `invalidateAll` se realtime falhar)
+- Lista de `data`: form + `use:enhance` + `update()`
+- `createX` com membros: auto-adicionar o criador como participante
+
+Referências: `apps/runes/src/routes/kanban/+page.svelte`,
+`apps/runes/src/routes/projects/[projectId]/sprints/[sprintId]/retro/+page.svelte`,
+`apps/runes/src/lib/components/specs/SpecTaskCreator.svelte`.
+
+## Ver também
+
+- `.agents/skills/client-realtime-and-actions.md` — skill Freebuff equivalente
+- `docs/LESSONS-LEARNED.md` — incidente completo
+- `.cursor/rules/meta/rules-sync.mdc` — manter Cursor ↔ Freebuff ↔ Claude sincronizados

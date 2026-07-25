@@ -50,6 +50,7 @@ describe('PlanningPokerRoom Reactive State Class', () => {
 			status: 'backlog',
 			is_global_backlog: false,
 			exported_card: null,
+			source_spec: null,
 			created: '',
 			updated: ''
 		}

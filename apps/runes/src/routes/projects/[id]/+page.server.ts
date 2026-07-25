@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
 import type { UserRecord } from '$lib/server/userRecord';
+import type { RetroRecord } from '$lib/server/retroRecord';
 import {
 	canViewProject,
 	canManageProject,
@@ -41,10 +42,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		sort: 'name'
 	});
 
+	const retros = await adminPb.collection('retrospectives').getFullList<RetroRecord>({
+		filter: adminPb.filter('project = {:id}', { id: params.id })
+	});
+
+	const retroBySprint: Record<string, string> = {};
+	for (const r of retros) {
+		retroBySprint[r.sprint] = r.status;
+	}
+
 	const canManage = canManageProject(locals.user, project);
 	const canDelete = canDeleteProject(locals.user, project);
 
-	return { project, sprints, users, canManage, canDelete };
+	return { project, sprints, users, retroBySprint, canManage, canDelete };
 };
 
 export const actions: Actions = {

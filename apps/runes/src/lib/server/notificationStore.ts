@@ -223,6 +223,32 @@ export async function createPokerNotification(
 	return createNotification(userId, payload);
 }
 
+export async function createRetroFinalizedNotification(
+	participantIds: string[],
+	projectTitle: string,
+	sprintTitle: string,
+	projectId: string,
+	sprintId: string
+): Promise<NotificationRecord[]> {
+	const authIdMap = await resolveUserIdsToAuthIds(participantIds);
+	if (authIdMap.size === 0) return [];
+
+	const payload = buildNotificationPayload(
+		'retro',
+		'Retrospectiva finalizada',
+		`A retrospectiva da sprint "${sprintTitle}" no projeto "${projectTitle}" foi finalizada.`,
+		`/projects/${projectId}/sprints/${sprintId}/retro`,
+		{ projectId, sprintId }
+	);
+
+	const results: NotificationRecord[] = [];
+	for (const [, authId] of authIdMap) {
+		const record = await createNotification(authId, payload);
+		results.push(record);
+	}
+	return results;
+}
+
 async function createNotification(
 	userId: string,
 	payload: ReturnType<typeof buildNotificationPayload>

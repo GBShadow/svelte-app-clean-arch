@@ -1,4 +1,4 @@
-export type NotificationType = 'chat' | 'system' | 'kanban' | 'poker';
+export type NotificationType = 'chat' | 'system' | 'kanban' | 'poker' | 'retro';
 
 export interface NotificationRecord {
 	id: string;
@@ -60,6 +60,8 @@ export function getTypeIcon(type: NotificationType): string {
 			return 'Kanban';
 		case 'poker':
 			return 'Users';
+		case 'retro':
+			return 'MessageSquareQuote';
 	}
 }
 
@@ -73,6 +75,8 @@ export function getTypeLabel(type: NotificationType): string {
 			return 'Kanban';
 		case 'poker':
 			return 'Poker';
+		case 'retro':
+			return 'Retro';
 	}
 }
 

@@ -19,6 +19,7 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | architecture  | `pocketbase-api-rules.mdc`   | API Rules (`update`/`delete`) devem restringir campos, não só posse/participação — assumir chamada direta à API |
 | architecture  | `icon-library-imports.mdc`   | Ícones (lucide-svelte etc.) importados por sub-path, nunca via barrel — barrel compila o pacote inteiro         |
 | architecture  | `error-handling.mdc`         | Todo catch de operação best-effort precisa logar o erro — nunca `.catch(() => {})` silencioso                   |
+| architecture  | `client-realtime-and-actions.mdc` | Form actions via fetch (`deserialize`+headers), boards realtime (`createBrowserClient`+`$effect` sync), listas de `data.*` com enhance |
 | documentation | `feature-documentation.mdc`  | Doc em `docs/features/` + CHANGELOG                                                                             |
 | workflow      | `spec-driven.mdc`            | Spec em `docs/specs/<slug>.md` (antes de implementar)                                                           |
 | workflow      | `pr-description.mdc`         | PR em `docs/workflow/<slug>.pr.md`                                                                              |
@@ -46,6 +47,7 @@ Skills Freebuff (`.agents/skills/`):
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
 - `icon-library-imports` — ícones (lucide-svelte etc.) importados por sub-path, nunca via barrel
 - `error-handling` — todo catch de operação best-effort precisa logar o erro, nunca `.catch(() => {})` silencioso
+- `client-realtime-and-actions` — form actions client + boards realtime: o que NÃO fazer (deserialize, auth record, board.sync, enhance)
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md` (documento vivo)
 - `verify-before-accept` — disciplina de evidência: lidere com o teste, cubra o caminho real, verifique seus próprios fixes

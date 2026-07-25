@@ -28,6 +28,7 @@ describe('KanbanBoard', () => {
 			dueDate: null,
 			project: 'proj1',
 			sprint: null,
+			source_spec: null,
 			created: '',
 			updated: ''
 		},
@@ -44,6 +45,7 @@ describe('KanbanBoard', () => {
 			dueDate: null,
 			project: 'proj1',
 			sprint: null,
+			source_spec: null,
 			created: '',
 			updated: ''
 		}

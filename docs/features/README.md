@@ -21,6 +21,8 @@ Documentação de funcionalidades implementadas no monorepo.
 | Notificações Push (self-hosted) | runes | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
 | Projetos, Sprints e contexto no Kanban + Poker | runes | 2026-07-21 | [2026-07-21-projects-sprints-kanban.md](./2026-07-21-projects-sprints-kanban.md) |
 | UI improvements — accent, toast, chat, kanban, todos | runes | 2026-07-22 | [2026-07-22-ui-improvements.md](./2026-07-22-ui-improvements.md) |
+| Retrospectiva de Sprint | runes | 2026-07-24 | [2026-07-24-sprint-retrospective.md](./2026-07-24-sprint-retrospective.md) |
+| Documentos de Especificação | runes | 2026-07-24 | [2026-07-24-specification-documents.md](./2026-07-24-specification-documents.md) |
 
 ## Nova feature
 

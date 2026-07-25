@@ -14,6 +14,8 @@
 	import Shield from 'lucide-svelte/icons/shield';
 	import X from 'lucide-svelte/icons/x';
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';
+	import FileText from 'lucide-svelte/icons/file-text';
+	import MessageSquareQuote from 'lucide-svelte/icons/message-square-quote';
 	import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
 	import type { UserRecord } from '$lib/server/userRecord';
 
@@ -42,9 +44,16 @@
 		showSprintForm = false;
 	}
 
+	const retroBySprint = $derived(data.retroBySprint as Record<string, string>);
+
 	const activeSprint = $derived(sprints.find((s) => s.status === 'active'));
 	const plannedSprints = $derived(sprints.filter((s) => s.status === 'planned'));
 	const finishedSprints = $derived(sprints.filter((s) => s.status === 'finished'));
+
+	function hasRetro(sprintId: string): boolean {
+		const status = retroBySprint[sprintId];
+		return status === 'open' || status === 'finalized';
+	}
 
 	function formatDate(dateStr: string): string {
 		return new Date(dateStr).toLocaleDateString('pt-BR');
@@ -110,6 +119,10 @@
 			<FolderKanban class="w-4 h-4" />
 			Ver Kanban
 		</a>
+		<a href="/projects/{project.id}/specs" class="btn btn-outline btn-sm gap-1">
+			<FileText class="w-4 h-4" />
+			Especificações
+		</a>
 	</div>
 
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -120,7 +133,15 @@
 				{#if canManage}
 					<button
 						class="btn btn-ghost btn-sm gap-1"
-						onclick={() => (showSprintForm = !showSprintForm)}
+						onclick={() => {
+							showSprintForm = !showSprintForm;
+							if (showSprintForm) {
+								const nextNum = sprints.length + 1;
+								sprintTitle = `Sprint ${nextNum}`;
+								sprintStartDate = '';
+								sprintEndDate = '';
+							}
+						}}
 					>
 						<Plus class="w-4 h-4" />
 						Nova Sprint
@@ -200,13 +221,28 @@
 							<span class="badge badge-sm badge-primary">Ativa</span>
 						</h3>
 						{#if canManage}
-							<form method="POST" action="?/finalizeSprint" use:enhance={withToast({ successMessage: 'Sprint finalizada!' })}>
-								<input type="hidden" name="sprintId" value={activeSprint.id} />
-								<button type="submit" class="btn btn-ghost btn-xs text-warning gap-1">
-									<Check class="w-3 h-3" />
-									Finalizar
-								</button>
-							</form>
+							<div class="flex items-center gap-1">
+								{#if hasRetro(activeSprint.id)}
+									<a href="/projects/{project.id}/sprints/{activeSprint.id}/retro" class="btn btn-ghost btn-xs gap-1">
+										<MessageSquareQuote class="w-3 h-3" />
+										Retro
+									</a>
+								{/if}
+								<form method="POST" action="?/finalizeSprint" use:enhance={withToast({ successMessage: 'Sprint finalizada!' })}>
+									<input type="hidden" name="sprintId" value={activeSprint.id} />
+									<button type="submit" class="btn btn-ghost btn-xs text-warning gap-1">
+										<Check class="w-3 h-3" />
+										Finalizar
+									</button>
+								</form>
+							</div>
+						{:else}
+							{#if hasRetro(activeSprint.id)}
+								<a href="/projects/{project.id}/sprints/{activeSprint.id}/retro" class="btn btn-ghost btn-xs gap-1">
+									<MessageSquareQuote class="w-3 h-3" />
+									Retro
+								</a>
+							{/if}
 						{/if}
 					</div>
 					<p class="text-xs text-base-content/60">
@@ -226,6 +262,12 @@
 							</p>
 						</div>
 						<div class="flex items-center gap-2">
+							{#if hasRetro(sprint.id)}
+								<a href="/projects/{project.id}/sprints/{sprint.id}/retro" class="btn btn-ghost btn-xs gap-1">
+									<MessageSquareQuote class="w-3 h-3" />
+									Retro
+								</a>
+							{/if}
 							<span class="badge badge-sm badge-ghost">Planejada</span>
 							{#if canManage}
 								<form method="POST" action="?/startSprint" use:enhance={withToast({ successMessage: 'Sprint iniciada!' })}>
@@ -257,7 +299,15 @@
 											{formatDate(sprint.startDate)} — {formatDate(sprint.endDate)}
 										</p>
 									</div>
-									<span class="badge badge-sm badge-neutral opacity-60">Finalizada</span>
+									<div class="flex items-center gap-2">
+										{#if hasRetro(sprint.id)}
+											<a href="/projects/{project.id}/sprints/{sprint.id}/retro" class="btn btn-ghost btn-xs gap-1">
+												<MessageSquareQuote class="w-3 h-3" />
+												Retro
+											</a>
+										{/if}
+										<span class="badge badge-sm badge-neutral opacity-60">Finalizada</span>
+									</div>
 								</div>
 							</div>
 						{/each}

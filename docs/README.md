@@ -49,6 +49,7 @@ Bugfixes triviais podem pular a etapa de spec.
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId em testes
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos, não só posse/participação
+- `client-realtime-and-actions` — form actions client + boards realtime: o que NÃO fazer
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado, não só corrigido
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md` (documento vivo)
 

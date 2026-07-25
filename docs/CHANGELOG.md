@@ -2,6 +2,19 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-25] Fix reatividade retro/spec + regra client-realtime-and-actions
+
+- **Retro**: criar card (403 se criador não era participante), UI de colunas/cards só após F5 — corrigido com `createBrowserClient`+record, `$effect` board.sync, `deserialize` em form actions via fetch, criador auto-participante, gestor pode criar/mover cards.
+- **Spec**: `SpecTaskCreator` passou a form+`use:enhance`+`update()` para a lista `linkedTasks` atualizar.
+- **Regra**: skill/regra `client-realtime-and-actions` (checklist NÃO FAZER) em `.agents/skills/` e `.cursor/rules/architecture/`.
+
+## [2026-07-24] Retrospectiva de Sprint + Documentos de Especificação
+
+- **Retrospectiva de Sprint**: quadro anônimo por sprint com colunas configuráveis, cards rich text, token de edição SHA-256, realtime, DnD, moderação do responsável, finalização com zeramento de tokens, notificações. Rotas: `/projects/[id]/sprints/[sprintId]/retro`. (spec: `docs/specs/2026-07-24-sprint-retrospective.md`)
+- **Documentos de Especificação**: sistema markdown por projeto com permissões view/edit, tags relacionais, filtros, abas "Minhas" / "Com acesso", link público, criação de tasks vinculadas no backlog global com propagação `source_spec` ao kanban. Rotas: `/projects/[id]/specs`. (spec: `docs/specs/2026-07-24-specification-documents.md`)
+- **PocketBase migrations**: 0022 (retro collections), 0023 (spec collections + source_spec em poker_tasks/kanban_cards)
+- **Testes**: 321 testes passando, 36 suites.
+
 ## [2026-07-23] Correções: poker export + kanban cookie
 
 - **Poker export fix**: schema `exportToKanbanSchema` adicionado e validado na action. Substituído `continue` silencioso por `fail(400)` com mensagem clara. Painel de export condicional a `roomStatus === 'finalized'`. Toast de sucesso/erro no `handleExport`. Testes do schema adicionados.

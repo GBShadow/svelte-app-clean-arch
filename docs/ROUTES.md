@@ -94,6 +94,31 @@
 | | | `actions.removeParticipant` — remover (exceto self) | Creator-only |
 | | `+page.svelte` | Mensagens realtime + participantes | |
 
+### Projetos, Specs e Retro
+
+| Rota | Arquivos | Funções | Proteção |
+|------|----------|---------|----------|
+| `/projects` | `+page.server.ts` | `load` — projetos do usuário | hooks global |
+| `/projects/new` | `+page.server.ts` | `actions.default` — criar projeto + colunas kanban padrão | hooks global |
+| `/projects/[id]` | `+page.server.ts` | `load` — projeto, sprints, `retroBySprint` | `canViewProject` |
+| | | `actions.*` — sprints, participantes | `canManageProject` |
+| | `+page.svelte` | Detalhe + links retro/specs | |
+| `/projects/[projectId]/specs` | `+page.server.ts` | `load` — docs filtrados por acesso | Participante do projeto |
+| | | `actions.createDoc` — criar documento | `canEdit` / dono |
+| | `+page.svelte` | Abas Minhas/Com acesso, filtros | |
+| `/projects/[projectId]/specs/[docId]` | `+page.server.ts` | `load` — doc, tags, permissions, linkedTasks/Cards | `canViewDoc` |
+| | | `actions.updateDoc` / `deleteDoc` / `togglePublic` | `canEditDoc` / dono |
+| | | `actions.addPermission` / `removePermission` | `canManagePermissions` |
+| | | `actions.createTask` — task no backlog com `source_spec` | `canEditDoc` |
+| | `+page.svelte` | Editor markdown + SpecTaskCreator + permissões | |
+| `/projects/[projectId]/sprints/[sprintId]/retro` | `+page.server.ts` | `load` — retro, colunas, cards, participantes, token PB | `canViewProject` |
+| | | `actions.createRetro` — retro + 3 colunas + criador participante | `canManageRetro` |
+| | | `actions.createColumn` / `renameColumn` / `deleteColumn` / `reorderColumns` | `canManageColumns` |
+| | | `actions.createCard` / `editCard` / `deleteCard` / `moveCard` | Participante ou gestor |
+| | | `actions.addParticipant` / `removeParticipant` | `canManageRetro` |
+| | | `actions.finalize` — finaliza + zera tokens + notifica | `canManageRetro` |
+| | `+page.svelte` | Board reativo (RetroBoard) + realtime | |
+
 ### Kanban
 
 | Rota | Arquivos | Funções | Proteção |
@@ -181,6 +206,9 @@
 | **Creator-only** (`isCreator`) | `/chat/[roomId]` (addParticipant, removeParticipant) |
 | **Domínio Kanban** (`canManageColumns`, `canCreateCard`, etc.) | `/kanban` (ações específicas) |
 | **Domínio Poker** (`canVote`, `canReveal`, `canManageRoom`, etc.) | `/poker/[roomId]` (ações específicas) |
+| **Domínio Projeto** (`canViewProject`, `canManageProject`) | `/projects/[id]`, specs, retro (load) |
+| **Domínio Spec** (`canViewDoc`, `canEditDoc`, `canManagePermissions`) | `/projects/.../specs/[docId]` |
+| **Domínio Retro** (`canManageRetro`, `canParticipate`) | `/projects/.../retro` (ações) |
 | **Auto-join** (cria participante se ausente) | `/poker/[roomId]` (load) |
 | **401 explícito** (sem redirect) | `/notifications`, `/api/*` |
 

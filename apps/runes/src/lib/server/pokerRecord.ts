@@ -25,6 +25,7 @@ export interface PokerTaskRecord {
 	status: 'backlog' | 'voting' | 'estimated' | 'exported';
 	is_global_backlog: boolean;
 	exported_card: string | null;
+	source_spec: string | null;
 	created: string;
 	updated: string;
 }

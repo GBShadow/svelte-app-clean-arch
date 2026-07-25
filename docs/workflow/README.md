@@ -26,6 +26,8 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 | `notifications` | 2026-07-15 | _(pendente)_ | [2026-07-15-notifications.jira.md](./2026-07-15-notifications.jira.md) |
 | `chat-admin-access` | 2026-07-15 | _(pendente)_ | [2026-07-15-chat-admin-access.jira.md](./2026-07-15-chat-admin-access.jira.md) |
 | `ui-improvements` | 2026-07-22 | [2026-07-22-ui-improvements.pr.md](./2026-07-22-ui-improvements.pr.md) | _(ver PR #9)_ |
+| `sprint-retrospective` | 2026-07-24 | [2026-07-24-sprint-retrospective.pr.md](./2026-07-24-sprint-retrospective.pr.md) | [2026-07-24-sprint-retrospective.jira.md](./2026-07-24-sprint-retrospective.jira.md) |
+| `specification-documents` | 2026-07-24 | [2026-07-24-specification-documents.pr.md](./2026-07-24-specification-documents.pr.md) | [2026-07-24-specification-documents.jira.md](./2026-07-24-specification-documents.jira.md) |
 
 ## Convenção de nomes
 

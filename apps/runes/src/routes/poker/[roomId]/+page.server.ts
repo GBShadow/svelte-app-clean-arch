@@ -708,7 +708,8 @@ export const actions: Actions = {
 					assignees: [],
 					position: positionCounter++,
 					points: task.final_points,
-					tags: []
+					tags: [],
+					source_spec: (task as any).source_spec || null
 				});
 
 				await adminPb.collection('poker_tasks').update(taskId, {

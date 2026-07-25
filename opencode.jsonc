@@ -1,0 +1,37 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
+  "model": "opencode-go/deepseek-v4-pro",
+  "agent": {
+    "build": {
+      "model": "opencode-go/deepseek-v4-pro"
+    },
+    "plan": {
+      "model": "opencode-go/grok-4.5"
+    },
+    "explore": {
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "scout": {
+      "model": "opencode-go/qwen3.7-plus"
+    },
+    "code-reviewer": {
+      "model": "opencode-go/deepseek-v4-pro"
+    },
+    "spec-creator": {
+      "model": "opencode-go/glm-5.2"
+    },
+    "spec-driven": {
+      "model": "opencode-go/glm-5.2"
+    },
+    "docs-writer": {
+      "model": "opencode-go/glm-5.2"
+    },
+    "test-writer": {
+      "model": "opencode-go/kimi-k2.7-code"
+    },
+    "spec-reviewer": {
+      "model": "opencode-go/deepseek-v4-pro"
+    }
+  }
+}

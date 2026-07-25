@@ -23,6 +23,7 @@ export type KanbanCardRecord = {
 	dueDate: string | null;
 	project: string;
 	sprint: string | null;
+	source_spec: string | null;
 	created: string;
 	updated: string;
 	expand?: {

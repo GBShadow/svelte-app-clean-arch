@@ -49,6 +49,7 @@ Regras em `.cursor/rules/<pasta>/` e `.agents/skills/` — resumo em [`CLAUDE.md
 | `.cursor/rules/architecture/data-testid.mdc` | data-testid em componentes + getByTestId em testes |
 | `.cursor/rules/architecture/pocketbase-collections.mdc` | Toda coleção PocketBase precisa dos campos `created`/`updated` |
 | `.cursor/rules/architecture/pocketbase-api-rules.mdc` | API Rules de update/delete devem restringir campos, não só posse/participação |
+| `.cursor/rules/architecture/client-realtime-and-actions.mdc` | Form actions via fetch + boards realtime: anti-padrões e checklist |
 | `.cursor/rules/documentation/feature-documentation.mdc` | Doc features + CHANGELOG |
 | `.cursor/rules/workflow/spec-driven.mdc` | `docs/specs/<slug>.md` (antes de implementar) |
 | `.cursor/rules/workflow/pr-description.mdc` | `docs/workflow/<slug>.pr.md` |

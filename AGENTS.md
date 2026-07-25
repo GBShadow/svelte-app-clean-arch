@@ -97,6 +97,7 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 - `data-testid` — adicionar data-testid em componentes + usar getByTestId
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos
+- `client-realtime-and-actions` — form actions client + boards realtime: o que NÃO fazer
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
 - `checkpoint` — salva estado da sessão para retomar depois em nova sessão

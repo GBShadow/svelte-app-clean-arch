@@ -1,8 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
-import sanitizeHtml from 'sanitize-html';
-import { TASK_LIST_SANITIZE_ATTRIBUTES, TASK_LIST_SANITIZE_TAGS } from '$lib/server/richTextSanitize';
+import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
 import {
 	canViewRetro,
 	canManageRetro,
@@ -369,13 +368,7 @@ export const actions: Actions = {
 
 		const val = createCardSchema.safeParse({
 			columnId,
-			content: sanitizeHtml(content, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(TASK_LIST_SANITIZE_TAGS),
-				allowedAttributes: {
-					...sanitizeHtml.defaults.allowedAttributes,
-					...TASK_LIST_SANITIZE_ATTRIBUTES
-				}
-			})
+			content: normalizeMarkdown(content)
 		});
 
 		if (!val.success) {
@@ -439,13 +432,7 @@ export const actions: Actions = {
 
 		const val = editCardSchema.safeParse({
 			cardId,
-			content: sanitizeHtml(content, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(TASK_LIST_SANITIZE_TAGS),
-				allowedAttributes: {
-					...sanitizeHtml.defaults.allowedAttributes,
-					...TASK_LIST_SANITIZE_ATTRIBUTES
-				}
-			}),
+			content: normalizeMarkdown(content),
 			editToken
 		});
 

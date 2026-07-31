@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { RetroCardRecord } from '$lib/server/retroRecord';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 
 	let {
 		card,
@@ -48,18 +50,14 @@
 >
 	{#if isEditing}
 		<div class="flex flex-col gap-1">
-			<textarea
-				class="textarea textarea-bordered textarea-xs w-full"
-				bind:value={editContent}
-				rows="3"
-			></textarea>
+			<MarkdownEditor bind:value={editContent} dataTestid="retro-card-editor" />
 			<div class="flex gap-1">
 				<button class="btn btn-primary btn-xs" onclick={saveEdit}>Salvar</button>
 				<button class="btn btn-ghost btn-xs" onclick={() => { isEditing = false; }}>Cancelar</button>
 			</div>
 		</div>
 	{:else}
-		{@html card.content}
+		<MarkdownView content={card.content} />
 
 		{#if !isFinalized && (canEdit || canDelete)}
 			<div class="absolute top-1 right-1 hidden group-hover:flex gap-1">

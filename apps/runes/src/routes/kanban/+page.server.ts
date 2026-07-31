@@ -1,8 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
-import sanitizeHtml from 'sanitize-html';
-import { TASK_LIST_SANITIZE_ATTRIBUTES, TASK_LIST_SANITIZE_TAGS } from '$lib/server/richTextSanitize';
+import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
 import {
 	canCreateCard,
 	canUpdateCard,
@@ -416,15 +415,7 @@ export const actions: Actions = {
 
 		const validation = createCardSchema.safeParse({
 			title,
-			description: description
-				? sanitizeHtml(description, {
-						allowedTags: sanitizeHtml.defaults.allowedTags.concat(TASK_LIST_SANITIZE_TAGS),
-						allowedAttributes: {
-							...sanitizeHtml.defaults.allowedAttributes,
-							...TASK_LIST_SANITIZE_ATTRIBUTES
-						}
-					})
-				: '',
+			description: normalizeMarkdown(description || ''),
 			columnId,
 			projectId,
 			sprintId: sprintId || null,
@@ -511,15 +502,7 @@ export const actions: Actions = {
 		const validation = updateCardSchema.safeParse({
 			cardId,
 			title,
-			description: description
-				? sanitizeHtml(description, {
-						allowedTags: sanitizeHtml.defaults.allowedTags.concat(TASK_LIST_SANITIZE_TAGS),
-						allowedAttributes: {
-							...sanitizeHtml.defaults.allowedAttributes,
-							...TASK_LIST_SANITIZE_ATTRIBUTES
-						}
-					})
-				: undefined,
+			description: description ? normalizeMarkdown(description) : undefined,
 			assigneeIds,
 			tags,
 			dueDate: dueDate || null,

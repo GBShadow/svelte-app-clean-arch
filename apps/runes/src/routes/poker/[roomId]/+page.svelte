@@ -9,6 +9,7 @@
 	import VoteResults from '$lib/components/planning-poker/VoteResults.svelte';
 	import TaskList from '$lib/components/planning-poker/TaskList.svelte';
 	import TaskEditor from '$lib/components/planning-poker/TaskEditor.svelte';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 	import Dices from 'lucide-svelte/icons/dices';
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import HelpCircle from 'lucide-svelte/icons/help-circle';
@@ -286,8 +287,7 @@
 						<h2 class="text-xl font-extrabold text-base-content/90">{pPokerRoom.currentTask.title}</h2>
 						{#if pPokerRoom.currentTask.description}
 							<div class="prose prose-sm prose-neutral max-w-none text-base-content/70">
-								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-								{@html pPokerRoom.currentTask.description}
+								<MarkdownView content={pPokerRoom.currentTask.description} />
 							</div>
 						{/if}
 					</div>

@@ -2,6 +2,7 @@
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let { data, form }: PageProps = $props();
 
@@ -38,13 +39,8 @@
 
 			<div class="form-control">
 				<label class="label font-medium text-sm" for="description">Descrição *</label>
-				<textarea
-					id="description"
-					name="description"
-					required
-					class="textarea textarea-bordered w-full h-32"
-					bind:value={description}
-				></textarea>
+				<input type="hidden" name="description" value={description} />
+				<MarkdownEditor bind:value={description} dataTestid="project-desc-editor" />
 				{#if (form?.errors as any)?.description}
 					<span class="text-xs text-error mt-1">{(form?.errors as any)?.description}</span>
 				{/if}

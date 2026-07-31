@@ -23,8 +23,7 @@ import {
 	canRemoveFromVoting,
 	canEditTaskInRoom
 } from '$lib/domain/planningPokerAccess';
-import sanitizeHtml from 'sanitize-html';
-import { TASK_LIST_SANITIZE_ATTRIBUTES, TASK_LIST_SANITIZE_TAGS } from '$lib/server/richTextSanitize';
+import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
 import type {
 	PokerRoomRecord,
 	PokerParticipantRecord,
@@ -423,15 +422,7 @@ export const actions: Actions = {
 				})
 			);
 
-			// Sanitiza HTML
-			const cleanDescription = sanitizeHtml(validation.data.description, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'span', 'img', ...TASK_LIST_SANITIZE_TAGS]),
-				allowedAttributes: {
-					...sanitizeHtml.defaults.allowedAttributes,
-					...TASK_LIST_SANITIZE_ATTRIBUTES,
-					'*': ['class', 'style']
-				}
-			});
+			const cleanDescription = normalizeMarkdown(validation.data.description);
 
 			await adminPb.collection('poker_tasks').create({
 				room: roomId,
@@ -800,15 +791,7 @@ export const actions: Actions = {
 				return fail(403, { errors: { general: 'Ação não permitida ou sala finalizada.' } });
 			}
 
-			// Sanitiza HTML
-			const cleanDescription = sanitizeHtml(validation.data.description, {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2', 'span', 'img', ...TASK_LIST_SANITIZE_TAGS]),
-				allowedAttributes: {
-					...sanitizeHtml.defaults.allowedAttributes,
-					...TASK_LIST_SANITIZE_ATTRIBUTES,
-					'*': ['class', 'style']
-				}
-			});
+			const cleanDescription = normalizeMarkdown(validation.data.description);
 
 			await adminPb.collection('poker_tasks').update(validation.data.taskId, {
 				title: validation.data.title,

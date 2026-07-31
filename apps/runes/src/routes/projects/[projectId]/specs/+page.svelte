@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let {
 		data
@@ -17,7 +18,6 @@
 	let newTitle = $state('');
 	let newBody = $state('');
 	let newTags = $state('');
-	let isPreviewVisible = $state(false);
 
 	const filteredDocCount = $derived(data.docs.length);
 
@@ -41,7 +41,6 @@
 
 <div class="min-h-screen bg-base-200 p-4">
 	<div class="max-w-5xl mx-auto">
-		<!-- Header -->
 		<div class="flex items-center justify-between mb-6">
 			<div>
 				<a href="/projects/{data.project.id}" class="link link-neutral text-sm">
@@ -53,14 +52,12 @@
 				class="btn btn-primary"
 				onclick={() => {
 					showCreateForm = !showCreateForm;
-					isPreviewVisible = false;
 				}}
 			>
 				{showCreateForm ? 'Cancelar' : '+ Nova Especificação'}
 			</button>
 		</div>
 
-		<!-- Create form -->
 		{#if showCreateForm}
 			<div class="card bg-base-100 shadow mb-6">
 				<div class="card-body">
@@ -70,7 +67,6 @@
 						action="?/createDoc"
 						use:enhance={() => {
 							showCreateForm = false;
-							isPreviewVisible = false;
 							newBody = '';
 							return async ({ update }) => update();
 						}}
@@ -82,26 +78,12 @@
 							placeholder="Título"
 							required
 						/>
-						<textarea
-							name="body_md"
-							class="textarea textarea-bordered w-full mb-2 font-mono"
-							rows="4"
-							placeholder="Conteúdo em markdown (opcional)"
-							bind:value={newBody}
-						></textarea>
-						<button type="button" class="btn btn-outline btn-xs mb-2"
-							onclick={() => { isPreviewVisible = !isPreviewVisible; }}>
-							{isPreviewVisible ? 'Esconder preview' : 'Mostrar preview'}
-						</button>
-						{#if isPreviewVisible && newBody}
-							<div class="prose prose-sm max-w-none mb-2 p-3 bg-base-200 rounded-box">
-								{newBody}
-							</div>
-						{/if}
+						<input type="hidden" name="body_md" value={newBody} />
+						<MarkdownEditor bind:value={newBody} />
 						<input
 							type="text"
 							name="tags"
-							class="input input-bordered w-full mb-2"
+							class="input input-bordered w-full mb-2 mt-2"
 							placeholder="Tags (separadas por vírgula)"
 						/>
 						<button class="btn btn-primary btn-sm" type="submit">Criar</button>
@@ -110,7 +92,6 @@
 			</div>
 		{/if}
 
-		<!-- Tabs + filters -->
 		<div class="flex items-center gap-4 mb-4 flex-wrap">
 			<div class="tabs tabs-box">
 				<button
@@ -147,7 +128,6 @@
 			</select>
 		</div>
 
-		<!-- Document list -->
 		{#if data.docs.length === 0}
 			<div class="text-center py-16 text-base-content/60">
 				<p class="text-lg mb-2">

@@ -7,6 +7,7 @@
 	import ClipboardList from 'lucide-svelte/icons/clipboard-list';
 	import Plus from 'lucide-svelte/icons/plus';
 	import type { PokerTaskRecord } from '$lib/server/pokerRecord';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 
 	let {
 		tasks = [],
@@ -128,8 +129,7 @@
 								<h4 class="font-bold text-sm text-base-content/90">{task.title}</h4>
 								{#if task.description}
 									<div class="text-xs text-base-content/50 mt-1 max-w-lg prose prose-xs prose-neutral">
-										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-										{@html task.description}
+										<MarkdownView content={task.description} />
 									</div>
 								{/if}
 							</div>

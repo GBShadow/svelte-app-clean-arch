@@ -2,7 +2,8 @@
 	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
-	import RichTextEditor from '$lib/components/kanban/RichTextEditor.svelte';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Edit2 from 'lucide-svelte/icons/edit-2';
@@ -87,8 +88,7 @@
 							<h3 class="font-bold text-lg text-base-content/90" data-testid="task-title-{task.id}">{task.title}</h3>
 							{#if task.description}
 								<div class="text-sm text-base-content/75 prose prose-sm max-w-none">
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-									{@html task.description}
+									<MarkdownView content={task.description} />
 								</div>
 							{/if}
 						</div>
@@ -170,9 +170,8 @@
 						Descrição da Tarefa
 					</label>
 					<input type="hidden" name="description" value={description} />
-					<RichTextEditor
+					<MarkdownEditor
 						bind:value={description}
-						placeholder="Detalhes adicionais sobre a tarefa..."
 					/>
 					{#if (form?.errors as any)?.description}
 						<span class="text-xs text-error mt-1">{(form?.errors as any)?.description}</span>

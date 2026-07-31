@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let {
 		documentId: _documentId,
@@ -11,6 +12,7 @@
 
 	let taskMessage = $state('');
 	let created = $state(false);
+	let description = $state('');
 </script>
 
 <div class="card bg-base-200 p-3">
@@ -49,12 +51,8 @@
 				placeholder="Título da task"
 				required
 			/>
-			<textarea
-				name="description"
-				class="textarea textarea-bordered textarea-xs"
-				placeholder="Descrição (opcional)"
-				rows="2"
-			></textarea>
+			<input type="hidden" name="description" value={description} />
+			<MarkdownEditor bind:value={description} dataTestid="spec-task-desc-editor" />
 			<div class="flex gap-1">
 				<button class="btn btn-primary btn-xs" type="submit">Criar task</button>
 			</div>

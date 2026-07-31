@@ -5,6 +5,7 @@
 	import type { PageData } from './$types';
 	import SpecPermissionManager from '$lib/components/specs/SpecPermissionManager.svelte';
 	import SpecTaskCreator from '$lib/components/specs/SpecTaskCreator.svelte';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let {
 		data
@@ -13,14 +14,13 @@
 	} = $props();
 
 	let isEditing = $state(false);
-	let isPreviewVisible = $state(false);
 	let showPermissionManager = $state(false);
 	let showTaskCreator = $state(false);
 	let editTitle = $state('');
 	let editBody = $state('');
 	let editTags = $state('');
 	let saveMessage = $state('');
-	let taskMessage = $state('');
+	let viewTheme = $state<'dark' | 'light'>('dark');
 
 	onMount(() => {
 		editTitle = data.doc.title;
@@ -42,86 +42,87 @@
 			editTags = data.tags.join(', ');
 		}
 	}
+
+	function toggleTheme() {
+		viewTheme = viewTheme === 'dark' ? 'light' : 'dark';
+	}
 </script>
 
 <svelte:head>
 	<title>{data.doc.title} - Especificações</title>
 </svelte:head>
 
-<div class="min-h-screen bg-base-200 p-4">
-	<div class="max-w-4xl mx-auto">
-		<!-- Back link -->
-		<a href="/projects/{data.project.id}/specs" class="link link-neutral text-sm mb-2 inline-block">
+<div class="min-h-screen bg-base-200 flex flex-col">
+	<div class="flex-1 flex flex-col p-4 max-w-7xl mx-auto w-full">
+		<a href="/projects/{data.project.id}/specs" class="link link-neutral text-sm mb-2 inline-block shrink-0">
 			&larr; Voltar para especificações
 		</a>
 
-		<!-- Edit mode -->
+		{#if saveMessage}
+			<div class="alert alert-success mb-4 shrink-0">{saveMessage}</div>
+		{/if}
+
 		{#if isEditing && data.canEdit}
-			<div class="card bg-base-100 shadow mb-4">
-				<div class="card-body">
+			<div class="card bg-base-100 shadow mb-4 flex flex-col flex-1 min-h-0">
+				<div class="card-body flex flex-col flex-1 min-h-0">
 					<form
 						method="POST"
 						action="?/updateDoc"
+						class="flex flex-col flex-1 min-h-0"
 						use:enhance={() => {
-							isEditing = false;
-							saveMessage = 'Documento salvo!';
-							setTimeout(() => { saveMessage = ''; }, 3000);
-							return async ({ update }) => update();
+							return async ({ update }) => {
+								await update();
+								isEditing = false;
+								saveMessage = 'Documento salvo!';
+								setTimeout(() => { saveMessage = ''; }, 3000);
+							};
 						}}
 					>
-						<input type="hidden" name="tags" value={editTags} />
-						<input
-							type="text"
-							name="title"
-							class="input input-bordered w-full text-lg font-bold mb-3"
-							bind:value={editTitle}
-							required
-						/>
-						<div class="flex gap-2 mb-2">
-							<button
-								type="button"
-								class="btn btn-outline btn-xs"
-								onclick={() => { isPreviewVisible = !isPreviewVisible; }}
-							>
-								{isPreviewVisible ? 'Esconder preview' : 'Mostrar preview'}
-							</button>
-						</div>
-						{#if isPreviewVisible}
-							<div class="prose prose-sm max-w-none mb-3 p-3 bg-base-200 rounded-box">
-								{editBody}
+						<div class="shrink-0">
+							<input type="hidden" name="tags" value={editTags} />
+							<input
+								type="text"
+								name="title"
+								class="input input-bordered w-full text-lg font-bold mb-3"
+								bind:value={editTitle}
+								required
+							/>
+
+							<div class="flex items-center gap-2 mb-3">
+								<button class="btn btn-primary btn-sm" type="submit">Salvar</button>
+								<button class="btn btn-ghost btn-sm" type="button" onclick={toggleEdit}>Cancelar</button>
+								<div class="flex-1"></div>
+								<div class="tooltip tooltip-top" data-tip={viewTheme === 'dark' ? 'Tema claro' : 'Tema escuro'}>
+									<button type="button" class="btn btn-ghost btn-sm btn-square"
+										onclick={toggleTheme}
+									>
+										{viewTheme === 'dark' ? '☀️' : '🌙'}
+									</button>
+								</div>
 							</div>
-						{/if}
-						<textarea
-							name="body_md"
-							class="textarea textarea-bordered w-full font-mono mb-3"
-							rows="15"
-							bind:value={editBody}
-						></textarea>
-						<input
-							type="text"
-							class="input input-bordered w-full mb-3"
-							placeholder="Tags (separadas por vírgula)"
-							bind:value={editTags}
-						/>
-						<div class="flex gap-2">
-							<button class="btn btn-primary btn-sm" type="submit">Salvar</button>
-							<button class="btn btn-ghost btn-sm" type="button" onclick={toggleEdit}>Cancelar</button>
+
+							<input
+								type="text"
+								name="tags"
+								class="input input-bordered w-full mb-3"
+								placeholder="Tags (separadas por vírgula)"
+								bind:value={editTags}
+							/>
+						</div>
+
+						<input type="hidden" name="body_md" value={editBody} />
+						<div class="flex-1 min-h-0">
+							<MarkdownEditor bind:value={editBody} fullHeight bind:theme={viewTheme} />
 						</div>
 					</form>
 				</div>
 			</div>
 		{/if}
 
-		{saveMessage}
-		{#if saveMessage}
-			<div class="alert alert-success mb-4">{saveMessage}</div>
-		{/if}
-
-		<!-- View mode / document content -->
 		{#if !isEditing}
-			<div class="card bg-base-100 shadow mb-4">
-				<div class="card-body">
-					<div class="flex items-start justify-between mb-4">
+			<div class="card bg-base-100 shadow mb-4 flex flex-col flex-1 min-h-0">
+				<div class="card-body flex flex-col flex-1 min-h-0">
+					<div class="flex items-start justify-between mb-4 shrink-0">
 						<div>
 							<h1 class="text-2xl font-bold">{data.doc.title}</h1>
 							<p class="text-xs text-base-content/40 mt-1">
@@ -129,39 +130,48 @@
 								&middot; Atualizado {new Date(data.doc.updated).toLocaleDateString('pt-BR')}
 							</p>
 						</div>
-						<div class="flex gap-1">
+						<div class="flex items-center gap-1">
 							{#if data.canEdit}
 								<button class="btn btn-outline btn-sm" onclick={toggleEdit}>Editar</button>
 							{/if}
 							{#if data.canDelete}
-								<form method="POST" action="?/deleteDoc" use:enhance>
+								<form method="POST" action="?/deleteDoc" use:enhance class="inline">
 									<button class="btn btn-outline btn-sm text-error">Excluir</button>
 								</form>
 							{/if}
+							<div class="tooltip tooltip-top" data-tip={viewTheme === 'dark' ? 'Tema claro' : 'Tema escuro'}>
+								<button type="button" class="btn btn-ghost btn-sm btn-square ml-1"
+									onclick={toggleTheme}
+								>
+									{viewTheme === 'dark' ? '☀️' : '🌙'}
+								</button>
+							</div>
 						</div>
 					</div>
 
-					<!-- Tags -->
 					{#if data.tags.length > 0}
-						<div class="flex gap-1 mb-4">
+						<div class="flex gap-1 mb-4 shrink-0">
 							{#each data.tags as tag (tag)}
 								<span class="badge badge-ghost">{tag}</span>
 							{/each}
 						</div>
 					{/if}
 
-					<!-- Content -->
-					{#if data.doc.body_md}
-						<div class="prose prose-sm max-w-none">
-							{data.doc.body_md}
-						</div>
-					{:else}
-						<p class="text-base-content/40 italic">Nenhum conteúdo.</p>
-					{/if}
+					<div class="flex-1 min-h-0">
+						<MarkdownEditor
+							value={data.doc.body_md || 'Nenhum conteúdo.'}
+							readonly
+							fullHeight
+							bind:theme={viewTheme}
+						/>
+					</div>
+				</div>
+			</div>
 
-					<!-- Public link toggle -->
-					{#if data.canManagePermissions}
-						<div class="mt-4 pt-4 border-t border-base-200">
+			<div class="shrink-0 space-y-4">
+				{#if data.canManagePermissions}
+					<div class="card bg-base-100 shadow">
+						<div class="card-body p-4">
 							<div class="flex items-center gap-2">
 								<form method="POST" action="?/togglePublic" use:enhance>
 									<button class="btn btn-outline btn-xs">
@@ -173,11 +183,12 @@
 								</span>
 							</div>
 						</div>
-					{/if}
+					</div>
+				{/if}
 
-					<!-- Permissions -->
-					{#if data.canManagePermissions}
-						<div class="mt-4 pt-4 border-t border-base-200">
+				{#if data.canManagePermissions}
+					<div class="card bg-base-100 shadow">
+						<div class="card-body p-4">
 							<button
 								class="btn btn-outline btn-xs"
 								onclick={() => { showPermissionManager = !showPermissionManager; }}
@@ -192,13 +203,12 @@
 								/>
 							{/if}
 						</div>
-					{/if}
-				</div>
+					</div>
+				{/if}
 			</div>
 
-			<!-- Linked tasks -->
-			<div class="card bg-base-100 shadow mb-4">
-				<div class="card-body">
+			<div class="card bg-base-100 shadow mt-4 shrink-0">
+				<div class="card-body p-4">
 					<h2 class="card-title text-lg">Tasks vinculadas</h2>
 
 					{#if linkedTasks.length === 0 && linkedCards.length === 0}
@@ -230,7 +240,6 @@
 						</div>
 					{/if}
 
-					<!-- Create task button -->
 					{#if data.canEdit}
 						<div class="mt-3">
 							<button
@@ -253,10 +262,9 @@
 				</div>
 			</div>
 
-			<!-- Permissions list (non-owner view) -->
 			{#if !data.canManagePermissions && permissions.length > 0}
-				<div class="card bg-base-100 shadow">
-					<div class="card-body">
+				<div class="card bg-base-100 shadow mt-4 shrink-0">
+					<div class="card-body p-4">
 						<h3 class="font-semibold text-sm">Permissões concedidas a você</h3>
 						{#each permissions as perm (perm.id)}
 							{#if perm.expand?.user?.id === data.doc.created_by}

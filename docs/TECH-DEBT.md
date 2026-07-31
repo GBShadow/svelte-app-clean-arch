@@ -38,6 +38,13 @@ AAAA-MM-DD, PR/commit <link ou hash>` no final. Não delete o histórico do item
 
 ## Abertos
 
+### Migração bulk de HTML legado (Tiptap) → Markdown
+
+- **Identificado em:** 2026-07-31, durante migração Tiptap → Milkdown
+- **Local:** coleções `kanban_cards`, `poker_tasks`, `retrospective_cards` (campo `description`/`content`)
+- **Descrição:** Dados legados gravados pelo Tiptap estão em HTML. A migração é lazy — `normalizeMarkdown` converte no próximo save. Um script one-shot com PocketBase admin client (read → Turndown → update) limparia o passivo de uma vez.
+- **Impacto:** Baixo — o render via `MarkdownView` já converte HTML legado no display. Sem o script, registros antigos só migram quando editados.
+
 ### E2E Playwright falha ao resolver `$env` em imports do server
 
 - **Identificado em:** 2026-07-15, durante investigação de notificações do Kanban

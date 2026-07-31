@@ -3,6 +3,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { RetroColumnRecord, RetroCardRecord } from '$lib/server/retroRecord';
 	import RetroCard from './RetroCard.svelte';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let {
 		column,
@@ -178,12 +179,7 @@
 		<div class="p-2 border-t border-base-200">
 			{#if showNewCardInput}
 				<div class="flex flex-col gap-1">
-					<textarea
-						class="textarea textarea-bordered textarea-xs w-full"
-						placeholder="Digite seu card anônimo..."
-						bind:value={newCardContent}
-						rows="2"
-					></textarea>
+					<MarkdownEditor bind:value={newCardContent} dataTestid="retro-column-editor" />
 					<div class="flex gap-1">
 						<button class="btn btn-primary btn-xs" onclick={handleCreate}>Adicionar</button>
 						<button class="btn btn-ghost btn-xs" onclick={() => { showNewCardInput = false; }}>Cancelar</button>

@@ -174,7 +174,7 @@ src/lib/
 │   ├── retroRecord.ts          ← Types: RetroRecord, RetroColumnRecord, RetroCardRecord, RetroParticipantRecord
 │   ├── specRecord.ts           ← Types: SpecDocumentRecord, SpecPermissionRecord, SpecTagRecord
 │   ├── editToken.ts            ← generateEditToken / verifyEditToken (SHA-256) para cards anônimos da retro
-│   ├── richTextSanitize.ts     ← Allowlist compartilhada de sanitize-html (TaskList/TaskItem do Tiptap)
+│   ├── richTextSanitize.ts     ← Reexporta allowlist de sanitize-html para HTML renderizado a partir de Markdown (marked + GFM)
 │   ├── pushRecord.ts           ← Type: PushSubscriptionRecord
 │   ├── vapidKeys.ts            ← Leitura de PUBLIC_VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY/VAPID_SUBJECT
 │   ├── pushSubscriptionStore.ts ← getSubscriptionsForUsers/removeInvalidSubscription via getAdminClient() (contexto do remetente/RF8)
@@ -246,6 +246,14 @@ src/lib/
 │
 ├── appRegistry.ts               ← Registro estático de apps do hub (id, name, description, icon, route, adminOnly?) — inclui "Chat"
 │
+├── markdown/                    ← Processamento de Markdown (puro, compartilhado cliente/servidor)
+│   ├── looksLikeHtml.ts         ← Heurística: detecta se texto contém HTML
+│   ├── normalizeMarkdown.ts     ← Converte HTML legado → Markdown (Turndown); Markdown puro → sem alteração
+│   ├── renderMarkdownSafe.ts    ← Markdown → HTML (marked) → sanitize-html (GFM + task list)
+│   ├── looksLikeHtml.test.ts
+│   ├── normalizeMarkdown.test.ts
+│   └── renderMarkdownSafe.test.ts
+│
 ├── components/                 ← Componentes Svelte reutilizáveis
 │   ├── AccentPicker.svelte     ← Seletor de paleta de acento (7 cores) com preview
 │   ├── AppCard.svelte          ← Card individual do App Hub (ícone, nome, descrição, badge)
@@ -260,6 +268,9 @@ src/lib/
 │   ├── chat/
 │   │   ├── NewMessageIndicator.svelte ← Indicador de nova mensagem não lida (pulse dot)
 │   │   └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
+│   ├── editor/                 ← Editor e viewer baseados em Milkdown (Crepe) + Markdown
+│   │   ├── MarkdownEditor.svelte ← WYSIWYG Markdown (Crepe dynamic import, client-only)
+│   │   └── MarkdownView.svelte   ← Render MD → HTML sanitizado (leitura, reutilizável)
 │   ├── icons/                  ← Ícones SVG inline
 │   │   ├── IconEdit.svelte
 │   │   ├── IconLock.svelte
@@ -267,21 +278,19 @@ src/lib/
 │   │   ├── IconPlus.svelte
 │   │   ├── IconTrash.svelte
 │   │   └── IconUnlock.svelte
-│   ├── kanban/
-│   │   └── RichTextEditor.svelte ← Editor de texto rico baseado no Tiptap
 │   ├── projects/               ← Componentes de projeto (embutidos nas rotas /projects)
 │   ├── retro/
-│   │   ├── RetroCard.svelte    ← Card anônimo com edição/exclusão via token
-│   │   ├── RetroColumn.svelte  ← Coluna com criar card, rename, DnD
+│   │   ├── RetroCard.svelte    ← Card anônimo com edição (Milkdown) / view (MarkdownView)
+│   │   ├── RetroColumn.svelte  ← Coluna com criar card (Milkdown), rename, DnD
 │   │   └── RetroParticipants.svelte ← Lista + add/remove participantes
 │   ├── specs/
 │   │   ├── SpecPermissionManager.svelte ← Conceder/revogar view|edit
-│   │   └── SpecTaskCreator.svelte ← Form createTask no backlog (enhance)
+│   │   └── SpecTaskCreator.svelte ← Form createTask no backlog com Milkdown (enhance)
 │   └── planning-poker/
 │       ├── CardDeck.svelte     ← Baralho Fibonacci para votação
 │       ├── ParticipantsList.svelte ← Lista de participantes com status do voto
-│       ├── TaskEditor.svelte   ← Editor de descrição de tarefa
-│       ├── TaskList.svelte     ← Lista de tarefas do backlog da sala com filtros + botão "Nova Task" (admin, via prop onCreateTask)
+│       ├── TaskEditor.svelte   ← Editor de descrição de tarefa (Milkdown)
+│       ├── TaskList.svelte     ← Lista de tarefas do backlog da sala com filtros + botão "Nova Task" (admin, via prop onCreateTask). View com MarkdownView
 │       └── VoteResults.svelte  ← Resultados da votação (revelados ou ocultos)
 │
 └── index.ts                    ← (vazio) barrel export

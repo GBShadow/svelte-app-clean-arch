@@ -17,14 +17,13 @@
 		"test:e2e": "playwright install chromium && playwright test"
 	},
 	"dependencies": {
-		"@tiptap/core": "^3.27.3",
-		"@tiptap/extension-list": "^3.27.3",
-		"@tiptap/pm": "^3.27.3",
-		"@tiptap/starter-kit": "^3.27.3",
+		"@milkdown/crepe": "^7.21.3",
 		"lucide-svelte": "^1.0.1",
+		"marked": "^18.0.7",
 		"pocketbase": "^0.27.0",
 		"sanitize-html": "^2.17.6",
 		"svelte-dnd-action": "^0.9.70",
+		"turndown": "^7.2.4",
 		"web-push": "^3.6.7",
 		"zod": "^4.4.3"
 	},
@@ -36,7 +35,9 @@
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.2",
 		"@testing-library/svelte": "^5.3.1",
+		"@types/marked": "^6.0.0",
 		"@types/sanitize-html": "^2.16.1",
+		"@types/turndown": "^5.0.6",
 		"@types/web-push": "^3.6.4",
 		"@vitest/browser-playwright": "^4.1.8",
 		"@vitest/coverage-v8": "^4.1.9",

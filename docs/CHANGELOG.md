@@ -2,6 +2,16 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-07-31] Migração Tiptap/textarea → Milkdown (Crepe) + Markdown
+
+- **Editor**: substituído `RichTextEditor.svelte` (Tiptap, HTML) por `MarkdownEditor.svelte` (Milkdown Crepe, Markdown). Componente client-only com dynamic import.
+- **View**: novo `MarkdownView.svelte` — renderiza Markdown → HTML sanitizado (marked + sanitize-html), substitui todos os `{@html}` que renderizavam conteúdo de usuário.
+- **Helpers**: `looksLikeHtml`, `normalizeMarkdown` (Turndown p/ migração lazy de HTML legado), `renderMarkdownSafe` (GFM + task list).
+- **Server**: removido `sanitize-html` dos actions de kanban, poker, retro; substituído por `normalizeMarkdown`. Sanitização agora só no render (defesa XSS em camada única).
+- **Superfícies migradas**: Kanban (create/edit/view), Poker room/backlog (create/edit/view), Specs (create/edit/view), Retro (create/edit/view), Projects (create/edit/view), SpecTaskCreator.
+- **Removido**: `@tiptap/core`, `@tiptap/starter-kit`, `@tiptap/pm`, `@tiptap/extension-list`.
+- **Adicionado**: `@milkdown/crepe`, `marked`, `turndown`.
+
 ## [2026-07-25] Fix reatividade retro/spec + regra client-realtime-and-actions
 
 - **Retro**: criar card (403 se criador não era participante), UI de colunas/cards só após F5 — corrigido com `createBrowserClient`+record, `$effect` board.sync, `deserialize` em form actions via fetch, criador auto-participante, gestor pode criar/mover cards.

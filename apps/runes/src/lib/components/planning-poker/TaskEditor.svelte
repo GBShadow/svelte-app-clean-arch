@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RichTextEditor from '$lib/components/kanban/RichTextEditor.svelte';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 	import Plus from 'lucide-svelte/icons/plus';
 	import X from 'lucide-svelte/icons/x';
 
@@ -82,14 +82,13 @@
 					{/if}
 				</div>
 
-				<!-- Descrição Rica (Tiptap) -->
+				<!-- Descrição (Milkdown) -->
 				<div class="form-control w-full">
 					<label class="label text-xs font-semibold uppercase tracking-wider text-base-content/60" for="task-desc">
 						Descrição da Tarefa
 					</label>
-					<RichTextEditor
+					<MarkdownEditor
 						bind:value={description}
-						placeholder="Descreva a tarefa em detalhes..."
 					/>
 					{#if errors.description}
 						<span class="text-xs text-error mt-1">{errors.description}</span>

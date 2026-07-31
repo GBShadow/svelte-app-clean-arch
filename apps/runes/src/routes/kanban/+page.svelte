@@ -8,7 +8,8 @@
 	import { KanbanBoard } from '$lib/domain/KanbanBoard.svelte';
 	import { canDeleteCard } from '$lib/domain/kanbanAccess';
 	import Avatar from '$lib/components/Avatar.svelte';
-	import RichTextEditor from '$lib/components/kanban/RichTextEditor.svelte';
+	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 	import type { PageProps } from './$types';
 	import type {
 		KanbanColumnRecord,
@@ -329,7 +330,7 @@
 	<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
 		<div>
 			<h1 class="text-2xl font-extrabold font-display tracking-tight">{project.title}</h1>
-			<p class="text-sm opacity-60 mt-1">{project.description}</p>
+			<p class="text-sm opacity-60 mt-1"><MarkdownView content={project.description} /></p>
 		</div>
 
 		<div class="flex items-center gap-2 flex-wrap">
@@ -559,7 +560,7 @@
 					<div class="form-control">
 						<label class="label font-medium text-sm" for="new-card-desc">Descrição</label>
 						<input type="hidden" name="description" value={cardDescription} />
-						<RichTextEditor bind:value={cardDescription} />
+						<MarkdownEditor bind:value={cardDescription} />
 					</div>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -683,7 +684,7 @@
 						<div class="form-control">
 							<label class="label font-medium text-sm" for="edit-card-desc">Descrição</label>
 							<input type="hidden" name="description" value={cardDescription} />
-							<RichTextEditor bind:value={cardDescription} />
+							<MarkdownEditor bind:value={cardDescription} />
 						</div>
 
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">

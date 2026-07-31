@@ -6,6 +6,7 @@
 	import { canManageProject } from '$lib/domain/projectAccess';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
 	import Settings from 'lucide-svelte/icons/settings';
+	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
 	import Trash from 'lucide-svelte/icons/trash';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Play from 'lucide-svelte/icons/play';
@@ -91,7 +92,9 @@
 				{/if}
 				<div>
 					<h1 class="text-2xl font-bold">{project.title}</h1>
-					<p class="text-sm text-base-content/70 mt-2 whitespace-pre-wrap">{project.description}</p>
+					<p class="text-sm text-base-content/70 mt-2">
+						<MarkdownView content={project.description} />
+					</p>
 					<div class="flex items-center gap-4 mt-3 text-xs text-base-content/50">
 						<span>
 							Criado por {project.expand?.created_by?.name || 'Desconhecido'}

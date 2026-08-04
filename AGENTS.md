@@ -81,12 +81,20 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 
 ## Comandos disponíveis
 
+- `implement <slug>` — ciclo completo spec-driven: spec-creator/spec-reviewer → builders (backend/frontend) → test-writer → code-reviewer → docs-writer, com pausa em cada fase. Definição em `.opencode/command/implement.md`.
+- `checkpoint` — salva estado da sessão em `docs/sessions/` e sincroniza docs versionados (CHANGELOG, CODE-STRUCTURE, ROUTES, TECH-DEBT, LESSONS-LEARNED, features) via docs-writer, antes de /clear ou commit. Definição em `.opencode/command/checkpoint.md`.
+- `audit-sync` — auditoria de drift entre código e docs (ROUTES, CODE-STRUCTURE, CHANGELOG, TECH-DEBT, specs/features). Toca o stamp `.opencode/.audit-sync-stamp` (lido pelo plugin). Definição em `.opencode/command/audit-sync.md`.
 - `review` — revisão completa de código: análise técnica, lint/typecheck, testes,
   documentação (CODE-STRUCTURE, CHANGELOG, features, tech-debt), lições aprendidas e
   análise de impacto. Aceita commit, branch, PR ou nada (mudanças não commitadas).
   Definição em `.opencode/command/review.md`.
 
-## Skills disponíveis (`.agents/skills/`)
+## Skills disponíveis (`.opencode/skills/` — carregadas pelo opencode)
+
+As skills são versionadas em `.opencode/skills/<nome>/SKILL.md` (formato opencode). A fonte
+original para o ecossistema Claude/Cursor continua em `.agents/skills/` — **regra de sync:**
+qualquer mudança de regra deve refletir em ambos os lugares (`.opencode/skills/` e
+`.agents/skills/`).
 
 - `verify-before-accept` — disciplina de evidência (esta regra — detalhada acima)
 - `runes-ports-adapters` — guia de implementação runes
@@ -98,8 +106,17 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 - `pocketbase-collections` — toda coleção PocketBase precisa dos campos `created`/`updated`
 - `pocketbase-api-rules` — API Rules de update/delete devem restringir campos
 - `client-realtime-and-actions` — form actions client + boards realtime: o que NÃO fazer
+- `error-handling` — catch silencioso é bug invisível (`.catch(() => {})` nunca)
+- `icon-library-imports` — ícones por sub-path (`lucide-svelte/icons/*`), nunca barrel
 - `lessons-learned` — todo problema não trivial resolvido deve ser registrado
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
 - `checkpoint` — salva estado da sessão para retomar depois em nova sessão
 - `spec-driven` — agente de processo spec-driven
 - `commit-and-pr-docs` — atualizar toda documentação ao criar commits e PRs
+- `context7-mcp` — busca de docs de bibliotecas via Context7
+
+## Plugin de sessão (`.opencode/plugin/session-changes.ts`)
+
+- Edits/Writes em `apps/` e `packages/` são registrados em `.opencode/.session-changes.log` (gitignored) — consumido pelo `docs-writer` (`/checkpoint`, `/implement` Fase 5), que trunca o arquivo. **Não tocar manualmente.**
+- Alerta quando `docs/sessions/*.md` passa de 800 linhas (checkpoint não é diário append-only).
+- Alerta quando `pocketbase/pb_migrations/` é editado e `/audit-sync` não roda há 24h (stamp `.opencode/.audit-sync-stamp`).

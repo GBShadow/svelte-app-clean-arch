@@ -36,6 +36,10 @@ No Claude Code, `spec-driven` é um **agente** (`.claude/agents/spec-driven.md`)
 
 Skills Freebuff (`.agents/skills/`):
 
+> **Nota de sync:** o opencode carrega skills de `.opencode/skills/<nome>/SKILL.md` (espelho das
+> skills Freebuff, com frontmatter `name`/`description`). Qualquer mudança de regra deve refletir
+> em `.agents/skills/` **e** `.opencode/skills/` (ver AGENTS.md).
+
 - `spec-driven` — agente de processo spec-driven
 - `runes-ports-adapters` — guia de implementação runes
 - `classic-ports-adapters` — guia de implementação classic (deprecated)
@@ -122,9 +126,10 @@ Ver regra completa em `.cursor/rules/meta/code-structure.mdc`.
 
 1. Atualizar `.cursor/rules/<pasta>/<nome>.mdc` (Cursor)
 2. Atualizar `.agents/skills/<nome>.md` (Freebuff)
-3. Atualizar este `CLAUDE.md`
-4. Atualizar `README.md` e `docs/README.md`
-5. Atualizar `docs/CODE-STRUCTURE.md` (estrutura do código)
+3. Atualizar `.opencode/skills/<nome>/SKILL.md` (opencode — espelho da skill Freebuff)
+4. Atualizar este `CLAUDE.md`
+5. Atualizar `README.md` e `docs/README.md`
+6. Atualizar `docs/CODE-STRUCTURE.md` (estrutura do código)
 6. Atualizar `docs/CHANGELOG.md`, `docs/features/`, `docs/specs/`, `docs/workflow/` (se aplicável)
 
 ## Idioma

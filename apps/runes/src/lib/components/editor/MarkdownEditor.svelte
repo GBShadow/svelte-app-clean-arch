@@ -6,12 +6,14 @@
 		value = $bindable(''),
 		readonly = false,
 		fullHeight = false,
+		compact = false,
 		theme = $bindable<'dark' | 'light'>('dark'),
 		dataTestid = 'markdown-editor'
 	}: {
 		value?: string;
 		readonly?: boolean;
 		fullHeight?: boolean;
+		compact?: boolean;
 		theme?: 'dark' | 'light';
 		dataTestid?: string;
 	} = $props();
@@ -151,7 +153,7 @@
 	});
 </script>
 
-<div class="milkdown-editor-wrapper {fullHeight ? 'full-height' : ''}" data-testid={dataTestid}>
+<div class="milkdown-editor-wrapper {fullHeight ? 'full-height' : ''} {compact ? 'compact' : ''}" data-testid={dataTestid}>
 	<div
 		bind:this={element}
 		class="milkdown-editor-root"
@@ -199,5 +201,30 @@
 
 	:global(.milkdown-editor-wrapper.full-height .milkdown-editor-root .editor) {
 		min-height: 0;
+	}
+
+	/*
+	 * Compact mode (modais/forms): padding enxuto do Crepe, altura mínima
+	 * confortável e sem scroll/clipping interno — o conteúdo cresce e o
+	 * container externo (ex.: modal) é quem rola, então o slash menu
+	 * (floating-ui, absolute) nunca fica cortado pelo editor.
+	 */
+	:global(.milkdown-editor-wrapper.compact .milkdown-editor-root) {
+		overflow: visible;
+		flex: none;
+	}
+
+	:global(.milkdown-editor-wrapper.compact .milkdown-editor-root .editor) {
+		min-height: 260px;
+		overflow-y: visible;
+		flex: none;
+	}
+
+	:global(.milkdown-editor-wrapper.compact .ProseMirror) {
+		padding: 12px 16px;
+	}
+
+	:global(.milkdown-editor-wrapper.compact .milkdown-slash-menu) {
+		z-index: 60;
 	}
 </style>

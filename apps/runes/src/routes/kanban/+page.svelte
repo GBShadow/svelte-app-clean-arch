@@ -530,7 +530,7 @@
 <!-- Modal: Create Card -->
 {#if isNewCardOpen}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-xl flex flex-col max-h-[95vh]">
+		<div class="modal-box max-w-3xl flex flex-col max-h-[95vh]">
 			<h3 class="font-bold text-lg mb-4 shrink-0">Criar Novo Cartão</h3>
 			<form
 				method="POST"
@@ -560,7 +560,7 @@
 					<div class="form-control">
 						<label class="label font-medium text-sm" for="new-card-desc">Descrição</label>
 						<input type="hidden" name="description" value={cardDescription} />
-						<MarkdownEditor bind:value={cardDescription} />
+						<MarkdownEditor bind:value={cardDescription} compact />
 					</div>
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -633,7 +633,7 @@
 <!-- Modal: Edit Card -->
 {#if isEditCardOpen && selectedCard}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-3xl flex flex-col max-h-[95vh]">
+		<div class="modal-box max-w-5xl flex flex-col max-h-[95vh]">
 			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4 shrink-0">
 				<h3 class="font-bold text-lg">Detalhes do Cartão</h3>
 				<div class="flex items-center gap-2">
@@ -684,7 +684,7 @@
 						<div class="form-control">
 							<label class="label font-medium text-sm" for="edit-card-desc">Descrição</label>
 							<input type="hidden" name="description" value={cardDescription} />
-							<MarkdownEditor bind:value={cardDescription} />
+							<MarkdownEditor bind:value={cardDescription} compact />
 						</div>
 
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">

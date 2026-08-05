@@ -49,7 +49,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 			<div class="form-control">
 				<label class="label font-medium text-sm" for="description">Descrição *</label>
 				<input type="hidden" name="description" value={description} />
-				<MarkdownEditor bind:value={description} dataTestid="project-desc-editor" />
+				<MarkdownEditor bind:value={description} compact dataTestid="project-desc-editor" />
 				{#if (form?.errors as any)?.description}
 					<span class="text-xs text-error mt-1">{(form?.errors as any)?.description}</span>
 				{/if}

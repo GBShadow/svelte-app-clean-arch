@@ -173,6 +173,7 @@
 					<input type="hidden" name="description" value={description} />
 					<MarkdownEditor
 						bind:value={description}
+						compact
 					/>
 					{#if (form?.errors as any)?.description}
 						<span class="text-xs text-error mt-1">{(form?.errors as any)?.description}</span>

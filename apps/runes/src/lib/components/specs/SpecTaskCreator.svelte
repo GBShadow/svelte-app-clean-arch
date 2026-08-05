@@ -52,7 +52,7 @@
 				required
 			/>
 			<input type="hidden" name="description" value={description} />
-			<MarkdownEditor bind:value={description} dataTestid="spec-task-desc-editor" />
+			<MarkdownEditor bind:value={description} compact dataTestid="spec-task-desc-editor" />
 			<div class="flex gap-1">
 				<button class="btn btn-primary btn-xs" type="submit">Criar task</button>
 			</div>

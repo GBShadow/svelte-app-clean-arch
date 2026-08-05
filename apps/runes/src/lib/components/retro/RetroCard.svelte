@@ -50,7 +50,7 @@
 >
 	{#if isEditing}
 		<div class="flex flex-col gap-1">
-			<MarkdownEditor bind:value={editContent} dataTestid="retro-card-editor" />
+			<MarkdownEditor bind:value={editContent} compact dataTestid="retro-card-editor" />
 			<div class="flex gap-1">
 				<button class="btn btn-primary btn-xs" onclick={saveEdit}>Salvar</button>
 				<button class="btn btn-ghost btn-xs" onclick={() => { isEditing = false; }}>Cancelar</button>

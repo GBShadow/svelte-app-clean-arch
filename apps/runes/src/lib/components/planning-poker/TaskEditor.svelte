@@ -89,6 +89,7 @@
 					</label>
 					<MarkdownEditor
 						bind:value={description}
+						compact
 					/>
 					{#if errors.description}
 						<span class="text-xs text-error mt-1">{errors.description}</span>

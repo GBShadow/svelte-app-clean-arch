@@ -104,7 +104,7 @@
 </script>
 
 <div
-	class="flex-shrink-0 w-72 bg-base-100 rounded-box shadow flex flex-col max-h-[calc(100vh-12rem)]"
+	class="flex-shrink-0 w-[min(18rem,calc(100vw-2rem))] sm:w-72 bg-base-100 rounded-box shadow flex flex-col max-h-[calc(100vh-12rem)]"
 	ondragover={handleDragOver}
 	ondrop={handleDrop}
 >

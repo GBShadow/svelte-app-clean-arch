@@ -1,5 +1,7 @@
 <script lang="ts">
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import Search from 'lucide-svelte/icons/search';
 	import type { PageProps } from './$types';
 
@@ -13,14 +15,13 @@
 	);
 </script>
 
-<div class="flex flex-col gap-4 mx-auto w-full max-w-2xl">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold font-display">Minhas listas</h1>
+<PageShell width="md" testId="todos-page">
+	<PageHeader title="Minhas listas">
 		<a href="/todos/new" class="btn btn-primary btn-sm gap-1.5" data-testid="btn-new-list">
 			<IconPlus class="size-4" />
 			Nova lista
 		</a>
-	</div>
+	</PageHeader>
 
 	{#if data.lists.length > 0}
 		<label class="input input-bordered flex items-center gap-2 w-full">
@@ -70,4 +71,4 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</PageShell>

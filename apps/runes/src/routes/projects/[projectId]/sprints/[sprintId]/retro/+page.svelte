@@ -6,6 +6,7 @@
 	import RetroColumn from '$lib/components/retro/RetroColumn.svelte';
 	import RetroParticipants from '$lib/components/retro/RetroParticipants.svelte';
 	import { RetroBoard } from '$lib/domain/RetroBoard.svelte';
+import PageShell from '$lib/components/PageShell.svelte';
 	import { createBrowserClient } from '$lib/client/pocketbaseClient';
 	import type {
 		RetroRecord,
@@ -263,10 +264,10 @@
 	<title>Retrospectiva - {data.project?.title} / {data.sprint?.title}</title>
 </svelte:head>
 
-<div class="min-h-screen bg-base-200 p-4">
+<PageShell bleed class="px-2 sm:px-4 py-3" testId="retro-page">
 	<!-- Header -->
 	<div class="mb-6">
-		<div class="flex items-center justify-between mb-2">
+		<div class="flex items-center justify-between mb-2 page-header">
 			<div>
 				<a href="/projects/{data.project?.id}" class="link link-neutral text-sm">
 					{data.project?.title ?? 'Projeto'}
@@ -373,7 +374,7 @@
 		</div>
 
 		<!-- Bottom bar: participants + finalize -->
-		<div class="mt-6 flex items-start justify-between gap-4">
+		<div class="mt-6 flex flex-col-reverse sm:flex-row gap-4 items-stretch sm:items-start">
 			<RetroParticipants
 				{participants}
 				projectUsers={data.project?.expand?.participants ?? []}
@@ -432,4 +433,4 @@
 			{/if}
 		</div>
 	{/if}
-</div>
+</PageShell>

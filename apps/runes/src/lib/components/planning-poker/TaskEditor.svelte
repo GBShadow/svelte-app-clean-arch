@@ -45,7 +45,7 @@
 
 {#if show}
 	<div class="modal modal-open bg-black/60 backdrop-blur-xs flex items-center justify-center z-50">
-		<div class="modal-box max-w-2xl border border-base-300 bg-base-100 p-6 flex flex-col max-h-[90vh]">
+		<div class="modal-box modal-box-responsive max-w-2xl border border-base-300 bg-base-100 p-6 flex flex-col max-h-[90vh]">
 			<div class="flex justify-between items-center mb-6">
 				<h3 class="font-bold text-lg text-base-content flex items-center gap-2">
 					<Plus class="w-5 h-5 text-primary" />

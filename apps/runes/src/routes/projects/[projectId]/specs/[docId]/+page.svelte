@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import SpecPermissionManager from '$lib/components/specs/SpecPermissionManager.svelte';
 	import SpecTaskCreator from '$lib/components/specs/SpecTaskCreator.svelte';
 	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
@@ -52,11 +53,10 @@
 	<title>{data.doc.title} - Especificações</title>
 </svelte:head>
 
-<div class="min-h-screen bg-base-200 flex flex-col">
-	<div class="flex-1 flex flex-col p-4 max-w-7xl mx-auto w-full">
-		<a href="/projects/{data.project.id}/specs" class="link link-neutral text-sm mb-2 inline-block shrink-0">
-			&larr; Voltar para especificações
-		</a>
+<PageShell width="2xl" class="flex flex-col" testId="specs-doc-page">
+	<a href="/projects/{data.project.id}/specs" class="link link-neutral text-sm mb-2 inline-block shrink-0">
+		&larr; Voltar para especificações
+	</a>
 
 		{#if saveMessage}
 			<div class="alert alert-success mb-4 shrink-0">{saveMessage}</div>
@@ -275,5 +275,4 @@
 				</div>
 			{/if}
 		{/if}
-	</div>
-</div>
+</PageShell>

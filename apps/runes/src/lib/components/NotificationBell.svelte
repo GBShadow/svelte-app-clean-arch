@@ -56,7 +56,7 @@
 			onclick={close}
 			aria-label="Fechar notificações"
 		></button>
-		<div class="absolute right-0 top-full z-50 mt-2 w-96 max-h-96 bg-base-100 border border-base-300 rounded-box shadow-lg overflow-hidden" data-testid="notification-dropdown">
+		<div class="absolute right-0 top-full z-50 mt-2 w-[min(24rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] max-h-96 bg-base-100 border border-base-300 rounded-box shadow-lg overflow-hidden" data-testid="notification-dropdown">
 			<NotificationCenter onClose={close} />
 		</div>
 	{/if}

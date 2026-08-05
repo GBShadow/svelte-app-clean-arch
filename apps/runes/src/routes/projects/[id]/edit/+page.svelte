@@ -1,4 +1,5 @@
 <script lang="ts">
+import PageShell from '$lib/components/PageShell.svelte';
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
@@ -12,7 +13,7 @@
 	let description = $state(project.description);
 </script>
 
-<div class="mx-auto w-full max-w-2xl p-4">
+<PageShell width="lg">
 	<a href="/projects/{project.id}" class="btn btn-ghost btn-sm gap-2 mb-6">
 		<ArrowLeft class="w-4 h-4" />
 		Voltar
@@ -58,4 +59,4 @@
 			</div>
 		</form>
 	</div>
-</div>
+</PageShell>

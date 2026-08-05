@@ -46,9 +46,10 @@
 		</div>
 		<div class="flex-none flex items-center gap-4">
 			{#if data.user}
-				<div class="dropdown dropdown-end hidden sm:block">
+				<div class="dropdown dropdown-end">
 					<button type="button" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-user-menu">
-						{data.user.name}
+						<User class="size-4 sm:hidden" />
+						<span class="hidden sm:inline">{data.user.name}</span>
 					</button>
 					<ul class="dropdown-content z-20 bg-base-100 border border-base-300 rounded-box shadow-lg p-1.5 min-w-40" data-testid="user-dropdown">
 						<li>
@@ -68,11 +69,6 @@
 					</ul>
 				</div>
 				<NotificationBell />
-				<form method="POST" action="/logout" onsubmit={handleLogout} class="sm:hidden">
-					<button type="submit" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-logout-mobile">
-						<IconLogout class="size-4" />
-					</button>
-				</form>
 			{/if}
 		</div>
 	</div>
@@ -83,7 +79,7 @@
 		</div>
 	{/if}
 
-	<main class="container mx-auto p-4">
+	<main class="flex-1 w-full min-w-0">
 		{@render children()}
 	</main>
 </div>

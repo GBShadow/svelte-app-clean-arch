@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageShell from '$lib/components/PageShell.svelte';
 	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
@@ -42,7 +43,7 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-5xl p-4 flex flex-col gap-6">
+<PageShell width="lg" testId="poker-backlog-page">
 	<!-- Top Navigation and Title -->
 	<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-base-200 border border-base-300 p-6 rounded-2xl">
 		<div class="flex items-center gap-3">
@@ -113,12 +114,12 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</PageShell>
 
 <!-- Modal for Create / Edit -->
 {#if showModal}
 	<div class="modal modal-open bg-black/60 backdrop-blur-xs flex items-center justify-center z-50">
-		<div class="modal-box max-w-2xl border border-base-300 bg-base-100 p-6 flex flex-col max-h-[90vh]">
+		<div class="modal-box modal-box-responsive max-w-2xl border border-base-300 bg-base-100 p-6 flex flex-col max-h-[90vh]">
 			<div class="flex justify-between items-center mb-6">
 				<h3 class="font-bold text-lg text-base-content flex items-center gap-2">
 					<ClipboardList class="w-5 h-5 text-primary" />

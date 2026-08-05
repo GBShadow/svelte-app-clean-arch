@@ -3,6 +3,8 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
+	import PageShell from '$lib/components/PageShell.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 
 	let {
@@ -39,25 +41,16 @@
 	<title>Especificações - {data.project?.title}</title>
 </svelte:head>
 
-<div class="min-h-screen bg-base-200 p-4">
-	<div class="max-w-5xl mx-auto">
-		<div class="flex items-center justify-between mb-6">
-			<div>
-				<a href="/projects/{data.project.id}" class="link link-neutral text-sm">
-					{data.project.title}
-				</a>
-				<h1 class="text-2xl font-bold mt-1">Especificações</h1>
-			</div>
-			<button
-				class="btn btn-primary"
-				onclick={() => {
-					showCreateForm = !showCreateForm;
-				}}
-			>
-				{showCreateForm ? 'Cancelar' : '+ Nova Especificação'}
-			</button>
-		</div>
-
+<PageShell width="xl" testId="specs-list-page">
+	<a href="/projects/{data.project.id}" class="link link-neutral text-sm mb-2 inline-block">{data.project.title}</a>
+	<PageHeader title="Especificações">
+		<button
+			class="btn btn-primary"
+			onclick={() => { showCreateForm = !showCreateForm; }}
+		>
+			{showCreateForm ? 'Cancelar' : '+ Nova Especificação'}
+		</button>
+	</PageHeader>
 		{#if showCreateForm}
 			<div class="card bg-base-100 shadow mb-6">
 				<div class="card-body">
@@ -161,5 +154,4 @@
 				{/each}
 			</div>
 		{/if}
-	</div>
-</div>
+</PageShell>

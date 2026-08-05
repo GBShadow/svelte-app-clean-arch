@@ -10,6 +10,7 @@
 	import Avatar from '$lib/components/Avatar.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import type { ChatMessageRecord } from '$lib/server/chatRecord';
+import PageShell from '$lib/components/PageShell.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -101,7 +102,7 @@
 	);
 </script>
 
-<div class="flex flex-col mx-auto w-full h-[calc(100dvh_-_6rem)]">
+<PageShell bleed class="flex flex-col px-2 sm:px-4 pt-2 pb-2 h-[calc(100dvh_-_4rem)]" testId="chat-room-page">
 	<div class="flex flex-1 min-h-0 justify-center">
 		<div class="flex flex-col flex-1 min-h-0 gap-4" class:max-w-5xl={showParticipants} class:max-w-2xl={!showParticipants}>
 			<div class="flex items-center gap-2 shrink-0">
@@ -118,8 +119,7 @@
 					onclick={() => showParticipants = !showParticipants}
 					data-testid="btn-toggle-participants"
 				>
-					<Users class="size-4" />
-					Participantes
+					<Users class="size-4" /><span class="hidden sm:inline">Participantes</span>
 				</button>
 				<form method="POST" action="?/leaveRoom" data-testid="leave-room-form">
 					<button type="submit" class="btn btn-outline btn-sm text-error hover:bg-error/10 border-error" data-testid="btn-leave-room">Sair da sala</button>
@@ -201,7 +201,8 @@
 				</div>
 
 				{#if showParticipants}
-					<div class="w-72 shrink-0 self-start card bg-base-100 border border-base-300 shadow-sm">
+					<button class="fixed inset-0 z-30 bg-black/50 lg:hidden" onclick={() => showParticipants = false} aria-label="Fechar participantes" type="button" data-testid="btn-close-participants-drawer"></button>
+					<div class="fixed inset-y-0 right-0 z-40 w-[min(18rem,100vw)] shadow-xl lg:relative lg:inset-auto lg:z-auto lg:shadow-none lg:w-72 shrink-0 self-start card bg-base-100 border border-base-300">
 						<div class="card-body gap-3">
 							<p class="font-medium text-sm">Participantes</p>
 							<ul class="flex flex-col gap-1">
@@ -245,4 +246,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</PageShell>

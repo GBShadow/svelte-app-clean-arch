@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PageShell from '$lib/components/PageShell.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import type { ActionData, PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import Plus from 'lucide-svelte/icons/plus';
@@ -27,27 +29,16 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-4xl p-4">
-	<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-		<div>
-			<h1 class="text-3xl font-black tracking-tight text-primary flex items-center gap-3">
-				<Dices class="w-8 h-8" />
-				Planning Poker
-			</h1>
-			<p class="text-base-content/60 text-sm mt-1">
-				Estime o esforço de tarefas colaborativamente e em tempo real com seu time
-			</p>
-		</div>
-		<div class="flex items-center gap-2">
-			<a href="/poker/backlog" class="btn btn-outline" data-testid="btn-go-backlog">
-				Backlog Global
-			</a>
-			<button class="btn btn-primary" onclick={openModal} data-testid="btn-open-create-room">
-				<Plus class="w-4 h-4 mr-2" />
-				Nova Sala
-			</button>
-		</div>
-	</div>
+<PageShell width="lg" testId="poker-page">
+	<PageHeader title="Planning Poker" description="Estime o esforço de tarefas de forma colaborativa">
+		<a href="/poker/backlog" class="btn btn-outline" data-testid="btn-go-backlog">
+			Backlog Global
+		</a>
+		<button class="btn btn-primary" onclick={openModal} data-testid="btn-open-create-room">
+			<Plus class="w-4 h-4 mr-2" />
+			Nova Sala
+		</button>
+	</PageHeader>
 
 	<!-- Room List -->
 	{#if data.rooms.length === 0}
@@ -94,12 +85,12 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</PageShell>
 
 <!-- Create Room Modal -->
 {#if showModal}
 	<div class="modal modal-open bg-black/60 backdrop-blur-xs flex items-center justify-center z-50">
-		<div class="modal-box max-w-md border border-base-300 bg-base-100">
+		<div class="modal-box modal-box-responsive max-w-md border border-base-300 bg-base-100">
 			<h3 class="font-bold text-lg text-base-content mb-4">Nova Sala de Planning Poker</h3>
 
 			<form method="POST" action="?/createRoom" use:enhance class="space-y-4">

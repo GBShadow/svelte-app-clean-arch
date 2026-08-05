@@ -1,10 +1,8 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
 import {
-	canCreateCard,
-	canUpdateCard,
 	canDeleteCard,
 	canManageColumns,
 	canDeleteColumn,
@@ -18,7 +16,7 @@ import {
 	moveCardSchema,
 	addCommentSchema
 } from '$lib/validation/kanbanSchemas';
-import { canViewProject, canManageProject, isProjectParticipant } from '$lib/domain/projectAccess';
+import { canViewProject, canManageProject } from '$lib/domain/projectAccess';
 import { recordCardChanges, recordCardHistory } from '$lib/server/kanbanHistory';
 import { buildKanbanPushPayload } from '$lib/domain/pushPayload';
 import { sendSystemPush } from '$lib/server/webPush';

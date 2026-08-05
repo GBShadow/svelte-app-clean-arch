@@ -1,5 +1,5 @@
-import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import type { ProjectRecord } from '$lib/server/projectRecord';
 import { canViewProject } from '$lib/domain/projectAccess';

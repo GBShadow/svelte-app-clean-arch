@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PageShell from '$lib/components/PageShell.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import type { ActionData, PageProps } from './$types';
+	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import Plus from 'lucide-svelte/icons/plus';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';

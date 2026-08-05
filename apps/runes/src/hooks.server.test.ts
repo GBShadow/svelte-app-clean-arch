@@ -8,7 +8,6 @@ vi.mock('$lib/server/notificationStore', () => ({ deleteExpiredNotifications: vi
 import { createServerClient } from '$lib/server/pocketbase';
 import { isPasswordExpired } from '$lib/auth/passwordGate';
 import { deleteExpiredNotifications } from '$lib/server/notificationStore';
-import { redirect } from '@sveltejs/kit';
 
 function fakeUrl(path: string): URL {
 	return new URL(`http://localhost${path}`);

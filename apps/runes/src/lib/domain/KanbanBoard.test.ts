@@ -2,9 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { KanbanBoard } from './KanbanBoard.svelte';
 import type {
 	KanbanColumnRecord,
-	KanbanCardRecord,
-	KanbanCardCommentRecord,
-	KanbanCardHistoryRecord
+	KanbanCardRecord
 } from '$lib/server/kanbanRecord';
 
 describe('KanbanBoard', () => {

@@ -3,7 +3,6 @@
 	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import { toastStore } from '$lib/client/toast.svelte';
-	import { canManageProject } from '$lib/domain/projectAccess';
 	import PageShell from '$lib/components/PageShell.svelte';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
 	import Settings from 'lucide-svelte/icons/settings';
@@ -11,7 +10,6 @@
 	import Play from 'lucide-svelte/icons/play';
 	import Plus from 'lucide-svelte/icons/plus';
 	import Check from 'lucide-svelte/icons/check';
-	import User from 'lucide-svelte/icons/user';
 	import Shield from 'lucide-svelte/icons/shield';
 	import X from 'lucide-svelte/icons/x';
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';

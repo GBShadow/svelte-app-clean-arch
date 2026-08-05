@@ -14,7 +14,6 @@ import {
 	removePermissionSchema,
 	createTaskFromDocSchema
 } from '$lib/validation/specSchemas';
-import { logError } from '$lib/server/logger';
 import type { SpecDocumentRecord, SpecTagRecord, SpecPermissionRecord } from '$lib/server/specRecord';
 import type { PokerTaskRecord } from '$lib/server/pokerRecord';
 import type { KanbanCardRecord } from '$lib/server/kanbanRecord';

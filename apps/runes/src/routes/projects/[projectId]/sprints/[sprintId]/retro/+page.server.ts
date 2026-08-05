@@ -3,7 +3,6 @@ import type { Actions, PageServerLoad } from './$types';
 import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
 import {
-	canViewRetro,
 	canManageRetro,
 	canParticipate,
 	canModerate,

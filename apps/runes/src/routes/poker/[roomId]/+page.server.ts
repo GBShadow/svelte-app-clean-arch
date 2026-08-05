@@ -7,7 +7,6 @@ import {
 	changeRoleSchema,
 	setFinalPointsSchema,
 	editTaskSchema,
-	linkGlobalTasksSchema,
 	exportToKanbanSchema
 } from '$lib/validation/pokerSchemas';
 import { fieldErrorsFrom } from '$lib/validation/formErrors';

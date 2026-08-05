@@ -1,4 +1,4 @@
-import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
+import type { SprintRecord } from '$lib/server/projectRecord';
 
 export function isProjectAdmin(userId: string | undefined, project: { responsaveis: string[]; created_by: string }): boolean {
 	if (!userId) return false;

@@ -1,9 +1,6 @@
 <script lang="ts">
 	import List from 'lucide-svelte/icons/list';
 	import Play from 'lucide-svelte/icons/play';
-	import CheckCircle from 'lucide-svelte/icons/check-circle';
-	import ExternalLink from 'lucide-svelte/icons/external-link';
-	import Send from 'lucide-svelte/icons/send';
 	import ClipboardList from 'lucide-svelte/icons/clipboard-list';
 	import Plus from 'lucide-svelte/icons/plus';
 	import type { PokerTaskRecord } from '$lib/server/pokerRecord';

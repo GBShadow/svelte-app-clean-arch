@@ -1,8 +1,7 @@
 <script lang="ts">
 	import PageShell from '$lib/components/PageShell.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { onMount } from 'svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { notificationStore } from '$lib/client/notifications.svelte';
 	import { formatRelativeTime, getTypeIcon, getTypeLabel, isSafeRedirectUrl } from '$lib/domain/notification';
 	import MessageSquare from 'lucide-svelte/icons/message-square';

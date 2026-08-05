@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { withToast } from './enhanceWithToast';
 import { toastStore } from './toast.svelte';
 

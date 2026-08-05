@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { enhance, applyAction } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import { toastStore } from '$lib/client/toast.svelte';
 	import { goto } from '$app/navigation';
@@ -21,7 +21,6 @@
 	import { dndzone, TRIGGERS, type DndEvent } from 'svelte-dnd-action';
 	import Plus from 'lucide-svelte/icons/plus';
 	import X from 'lucide-svelte/icons/x';
-	import Search from 'lucide-svelte/icons/search';
 	import Calendar from 'lucide-svelte/icons/calendar';
 	import Award from 'lucide-svelte/icons/award';
 	import User from 'lucide-svelte/icons/user';
@@ -31,7 +30,6 @@
 	import Settings from 'lucide-svelte/icons/settings';
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';
 	import Play from 'lucide-svelte/icons/play';
-	import Check from 'lucide-svelte/icons/check';
 import PageShell from '$lib/components/PageShell.svelte';
 
 	let { data, form }: PageProps = $props();

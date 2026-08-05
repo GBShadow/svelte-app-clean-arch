@@ -8,7 +8,6 @@ import PageHeader from '$lib/components/PageHeader.svelte';
 	import ArrowRight from 'lucide-svelte/icons/arrow-right';
 	import User from 'lucide-svelte/icons/user';
 	import Shield from 'lucide-svelte/icons/shield';
-	import ImageIcon from 'lucide-svelte/icons/image';
 	import type { ProjectRecord } from '$lib/server/projectRecord';
 
 	let { data }: PageProps = $props();

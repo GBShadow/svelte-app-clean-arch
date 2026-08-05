@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 	import PageShell from '$lib/components/PageShell.svelte';
 	import SpecPermissionManager from '$lib/components/specs/SpecPermissionManager.svelte';

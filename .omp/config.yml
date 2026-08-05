@@ -1,0 +1,71 @@
+# Configuração local do OMP (oh-my-pi) para o svelte-app.
+# Espelha opencode.jsonc (modelos) + .opencode/opencode.jsonc (permissões).
+# Vale apenas para este repositório — não altera ~/.omp/agent/config.yml global.
+
+# Modelos (espelho do opencode.jsonc raiz — revisado 2026-08-05 p/ os melhores do opencode-go)
+#   deepseek-v4-pro: 1M ctx / 384k out / thinking high-max — melhor coder do catálogo
+#   grok-4.5:        500k ctx / 500k out / thinking até xhigh — melhor p/ planejamento
+#   kimi-k3:         1M ctx / 131k out / thinking até max — melhor p/ revisão profunda
+#   gpt-5.6-luna:    1.05M ctx / vision / thinking até max — mais capaz (2x usage)
+#   qwen3.7-max:     1M ctx / thinking até xhigh — flagship Qwen (qwen3.8-max é quebrado)
+modelRoles:
+  # opencode.jsonc: "model": "opencode-go/deepseek-v4-pro" (default/build)
+  default: opencode-go/deepseek-v4-pro
+  # opencode.jsonc: agent.plan.model = grok-4.5
+  plan: opencode-go/grok-4.5
+  # papel de revisão (@review): glm-5.2 global → kimi-k3 (mesmo do subagente reviewer)
+  reviewer: opencode-go/kimi-k3
+
+task:
+  agentModelOverrides:
+    # opencode.jsonc: agent.scout.model = qwen3.7-plus → flagship qwen3.7-max
+    scout: opencode-go/qwen3.7-max
+    # opencode.jsonc: agent.explore.model = deepseek-v4-flash (mecânico/rápido)
+    sonic: opencode-go/deepseek-v4-flash
+    # subagente de revisão: glm-5.2 global → kimi-k3 (1M ctx, thinking max)
+    reviewer: opencode-go/kimi-k3
+    # subagente de segurança: claude-opus-4-6 global (fora do opencode-go) → gpt-5.6-luna
+    security-reviewer: opencode-go/gpt-5.6-luna
+    # subagente de UI: qwen3.8-max global (quebrado) → qwen3.7-max
+    designer: opencode-go/qwen3.7-max
+    # worker genérico + simplificador: deepseek-v4-pro (mantém)
+    task: opencode-go/deepseek-v4-pro
+    code-simplifier: opencode-go/deepseek-v4-pro
+
+# Permissões (espelho do .opencode/opencode.jsonc)
+#   edit: allow | bash: "*": ask (allowlist abaixo) | webfetch: allow
+tools:
+  approvalMode: write # auto-approve read + workspace-write; bash pede confirmação
+  approval:
+    edit: allow
+    bash: prompt
+    fetch: allow # webfetch
+
+bash:
+  patterns:
+    - match: "pnpm *"
+      approval: allow
+    - match: "pnpm"
+      approval: allow
+    - match: "npm run *"
+      approval: allow
+    - match: "npm"
+      approval: allow
+    - match: "git status*"
+      approval: allow
+    - match: "git diff*"
+      approval: allow
+    - match: "git log*"
+      approval: allow
+    - match: "git branch*"
+      approval: allow
+    - match: "git show*"
+      approval: allow
+    - match: "git ls*"
+      approval: allow
+    - match: "ls *"
+      approval: allow
+    - match: "touch *"
+      approval: allow
+    - match: "cat *"
+      approval: allow

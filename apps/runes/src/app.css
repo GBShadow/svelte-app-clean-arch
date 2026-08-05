@@ -85,3 +85,26 @@
 	border: 1px dashed var(--color-base-300);
 	border-radius: var(--radius-box, 0.5rem);
 }
+
+
+/* Page shell widths — usados por PageShell.svelte */
+.page-shell { @apply mx-auto w-full px-4 py-4 sm:px-6; }
+.page-shell-sm { @apply max-w-md; }
+.page-shell-md { @apply max-w-2xl; }
+.page-shell-lg { @apply max-w-4xl; }
+.page-shell-xl { @apply max-w-5xl; }
+.page-shell-2xl { @apply max-w-7xl; }
+.page-shell-full { @apply max-w-none; }
+.page-shell-bleed { @apply max-w-none px-0 py-0 sm:px-0; }
+
+/* Headers de página: título + ações empilham no mobile */
+.page-header { @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6; }
+
+/* Filtros/toolbars densas */
+.toolbar-wrap { @apply flex flex-wrap items-center gap-2; }
+
+/* Boards horizontais */
+.board-scroll { @apply flex gap-4 overflow-x-auto pb-4 items-start; }
+
+/* Modais em mobile estreito */
+.modal-box-responsive { @apply w-[calc(100vw-1rem)] sm:w-full; }

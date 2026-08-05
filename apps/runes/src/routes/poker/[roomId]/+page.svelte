@@ -14,12 +14,14 @@
 	import LogOut from 'lucide-svelte/icons/log-out';
 	import HelpCircle from 'lucide-svelte/icons/help-circle';
 	import X from 'lucide-svelte/icons/x';
+import PageShell from '$lib/components/PageShell.svelte';
 	import { toastStore } from '$lib/client/toast.svelte';
 	import type {
 		PokerParticipantRecord,
 		PokerTaskRecord,
 		PokerVoteRecord
 	} from '$lib/server/pokerRecord';
+	import type { PokerRoomRecord } from '$lib/server/pokerRecord';
 
 	let { data }: PageProps = $props();
 
@@ -231,7 +233,7 @@
 	}}
 />
 
-<div class="mx-auto w-full max-w-7xl p-4 flex flex-col gap-6">
+<PageShell width="2xl" testId="poker-room-page">
 	<!-- Navbar da Sala -->
 	<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-base-200 border border-base-300 p-6 rounded-2xl">
 		<div class="flex items-center gap-3">
@@ -246,7 +248,7 @@
 				<p class="text-xs text-base-content/50 mt-0.5">Planning Poker Room</p>
 			</div>
 		</div>
-		<div class="flex flex-wrap items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2 toolbar-wrap">
 			{#if pPokerRoom.myParticipant?.role === 'admin' && pPokerRoom.room?.status === 'open'}
 				<button
 					class="btn btn-outline btn-warning btn-sm"
@@ -381,7 +383,7 @@
 			/>
 		</div>
 	</div>
-</div>
+</PageShell>
 
 <!-- Modal para criar Task -->
 <TaskEditor
@@ -402,7 +404,7 @@
 <!-- Modal para Vincular tarefas do Backlog Global -->
 {#if showLinkGlobalModal}
 	<div class="modal modal-open bg-black/60 backdrop-blur-xs flex items-center justify-center z-50">
-		<div class="modal-box max-w-md border border-base-300 bg-base-100 p-6 flex flex-col max-h-[80vh]">
+		<div class="modal-box modal-box-responsive max-w-md border border-base-300 bg-base-100 p-6 flex flex-col max-h-[80vh]">
 			<div class="flex justify-between items-center mb-6">
 				<h3 class="font-bold text-lg text-base-content flex items-center gap-2">
 					Vincular tarefas do Backlog Global

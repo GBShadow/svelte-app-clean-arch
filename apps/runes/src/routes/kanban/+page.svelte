@@ -32,6 +32,7 @@
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';
 	import Play from 'lucide-svelte/icons/play';
 	import Check from 'lucide-svelte/icons/check';
+import PageShell from '$lib/components/PageShell.svelte';
 
 	let { data, form }: PageProps = $props();
 
@@ -273,16 +274,16 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 w-full h-full min-h-[85vh]">
+<PageShell bleed class="px-2 sm:px-4 py-3" testId="kanban-page">
 	<!-- Project Selector & Sprint Info -->
-	<div class="bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
+	<div class="toolbar-wrap bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
 		<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
 			<div class="flex items-center gap-3 flex-wrap">
 				<!-- Project Switcher -->
 				<div class="flex items-center gap-2">
 					<FolderKanban class="w-5 h-5 text-primary" />
 					<select
-						class="select select-bordered select-sm font-semibold"
+						class="select select-bordered select-sm font-semibold w-full sm:w-auto"
 						value={project?.id ?? ''}
 						onchange={(e) => switchProject((e.target as HTMLSelectElement).value)}
 					>
@@ -327,7 +328,7 @@
 	{#if project}
 
 	<!-- Filters & Header -->
-	<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
+	<div class="toolbar-wrap bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
 		<div>
 			<h1 class="text-2xl font-extrabold font-display tracking-tight">{project.title}</h1>
 			<p class="text-sm opacity-60 mt-1"><MarkdownView content={project.description} /></p>
@@ -335,14 +336,14 @@
 
 		<div class="flex items-center gap-2 flex-wrap">
 			<!-- Sprint Filter -->
-			<select class="select select-bordered select-sm" bind:value={filterSprint}>
+			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterSprint}>
 				<option value="all">Todos os cartões</option>
 				<option value="sprint">Na sprint</option>
 				<option value="backlog">Backlog (sem sprint)</option>
 			</select>
 
 			<!-- Filter by User -->
-			<select class="select select-bordered select-sm" bind:value={filterUser}>
+			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterUser}>
 				<option value="">Filtrar por Responsável</option>
 				{#each data.users as u}
 					<option value={u.id}>{u.name}</option>
@@ -350,7 +351,7 @@
 			</select>
 
 			<!-- Filter by Tag -->
-			<select class="select select-bordered select-sm" bind:value={filterTag}>
+			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterTag}>
 				<option value="">Filtrar por Tag</option>
 				{#each uniqueTags as tag}
 					<option value={tag}>{tag}</option>
@@ -359,7 +360,7 @@
 
 			<!-- Filter by Points -->
 			<select
-				class="select select-bordered select-sm"
+				class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]"
 				value={filterPoints === null ? '' : String(filterPoints)}
 				onchange={(e) => {
 					const val = (e.target as HTMLSelectElement).value;
@@ -374,7 +375,7 @@
 
 			<!-- Filter by Date -->
 			<div class="relative">
-				<input type="date" class="input input-bordered input-sm pr-8" bind:value={filterDueDate} />
+				<input type="date" class="input input-bordered input-sm pr-8 w-full sm:w-auto" bind:value={filterDueDate} />
 				{#if filterDueDate}
 					<button
 						class="absolute right-2 top-1/2 -translate-y-1/2 text-xs opacity-60 hover:opacity-100"
@@ -408,7 +409,7 @@
 
 	<!-- Board -->
 	<div
-		class="flex gap-4 overflow-x-auto pb-4 items-start flex-1 min-h-[60vh] select-none"
+		class="flex gap-4 overflow-x-auto pb-4 items-start flex-1 min-h-[60vh] select-none board-scroll"
 		use:dndzone={{
 			items: board.columns,
 			type: 'columns',
@@ -420,7 +421,7 @@
 	>
 		{#each board.columns as column (column.id)}
 			<div
-				class="bg-base-200/60 border border-base-300 w-80 rounded-2xl flex flex-col max-h-[75vh] shadow-sm flex-shrink-0"
+				class="bg-base-200/60 border border-base-300 w-[min(20rem,calc(100vw-2rem))] sm:w-80 rounded-2xl flex flex-col max-h-[70dvh] shadow-sm flex-shrink-0"
 				data-testid="kanban-column-{column.id}"
 			>
 				<div class="p-4 flex items-center justify-between border-b border-base-300">
@@ -525,12 +526,12 @@
 		</p>
 	</div>
 {/if}
-</div>
+</PageShell>
 
 <!-- Modal: Create Card -->
 {#if isNewCardOpen}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-3xl flex flex-col max-h-[95vh]">
+		<div class="modal-box max-w-3xl flex flex-col max-h-[95vh] modal-box-responsive">
 			<h3 class="font-bold text-lg mb-4 shrink-0">Criar Novo Cartão</h3>
 			<form
 				method="POST"
@@ -633,7 +634,7 @@
 <!-- Modal: Edit Card -->
 {#if isEditCardOpen && selectedCard}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-5xl flex flex-col max-h-[95vh]">
+		<div class="modal-box max-w-5xl flex flex-col max-h-[95vh] modal-box-responsive">
 			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4 shrink-0">
 				<h3 class="font-bold text-lg">Detalhes do Cartão</h3>
 				<div class="flex items-center gap-2">
@@ -819,7 +820,7 @@
 				</div>
 			</div>
 
-			<div class="flex gap-2 justify-end pt-4 mt-4 border-t border-base-200 shrink-0">
+			<div class="flex flex-col-reverse sm:flex-row gap-2 justify-end pt-4 mt-4 border-t border-base-200 shrink-0">
 				<button type="button" class="btn btn-ghost" onclick={() => (isEditCardOpen = false)}>Fechar</button>
 				<button type="submit" form="update-card-form" class="btn btn-primary" data-testid="btn-save-card">Salvar Alterações</button>
 			</div>
@@ -830,7 +831,7 @@
 <!-- Modal: Manage Columns -->
 {#if isManageColumnsOpen}
 	<dialog class="modal modal-open">
-		<div class="modal-box max-w-md flex flex-col max-h-[95vh]">
+		<div class="modal-box max-w-md flex flex-col max-h-[95vh] modal-box-responsive">
 			<div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4 shrink-0">
 				<h3 class="font-bold text-lg">Gerenciar Colunas</h3>
 				<button class="btn btn-ghost btn-sm btn-circle" onclick={() => (isManageColumnsOpen = false)}>

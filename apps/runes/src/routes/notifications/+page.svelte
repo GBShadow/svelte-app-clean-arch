@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PageShell from '$lib/components/PageShell.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { onMount } from 'svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { notificationStore } from '$lib/client/notifications.svelte';
@@ -85,24 +87,21 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4">
-	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-		<h1 class="text-2xl font-bold font-display">Notificações</h1>
-		<div class="flex items-center gap-2">
-			<span class="badge badge-lg">{data.unreadCount} não lidas</span>
-			{#if data.unreadCount > 0}
-				<button
-					type="button"
-					class="btn btn-primary btn-sm"
-					onclick={handleMarkAllRead}
-					data-testid="btn-mark-all-read-page"
-				>
-					<Check class="size-4" />
-					Marcar todas como lidas
-				</button>
-			{/if}
-		</div>
-	</div>
+<PageShell width="lg" testId="notifications-page">
+	<PageHeader title="Notificações">
+		<span class="badge badge-lg">{data.unreadCount} não lidas</span>
+		{#if data.unreadCount > 0}
+			<button
+				type="button"
+				class="btn btn-primary btn-sm"
+				onclick={handleMarkAllRead}
+				data-testid="btn-mark-all-read-page"
+			>
+				<Check class="size-4" />
+				Marcar todas como lidas
+			</button>
+		{/if}
+	</PageHeader>
 
 	<div class="card bg-base-100 border border-base-300 shadow-sm">
 		<div class="card-body p-0">
@@ -212,4 +211,4 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</PageShell>

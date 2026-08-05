@@ -2,6 +2,8 @@
 	import { enhance } from '$app/forms';
 	import UserForm from '$lib/components/UserForm.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -14,8 +16,8 @@
 	const resetPasswordSuccess = $derived(form?.action === 'resetPassword' && form.success === true);
 </script>
 
-<div class="flex flex-col gap-6 max-w-lg mx-auto w-full">
-	<h1 class="text-2xl font-bold font-display">Editar usuário</h1>
+<PageShell width="lg" testId="users-edit-page">
+	<PageHeader title="Editar usuário" />
 
 	<form method="POST" action="?/update" novalidate data-testid="edit-user-form" class="card bg-base-100 border border-base-300 shadow-sm">
 		<div class="card-body gap-4">
@@ -81,4 +83,4 @@
 			</div>
 		</form>
 	{/if}
-</div>
+</PageShell>

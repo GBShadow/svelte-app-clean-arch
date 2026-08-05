@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PageShell from '$lib/components/PageShell.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Avatar from '$lib/components/Avatar.svelte';
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
 	import NotificationsBanner from '$lib/components/chat/NotificationsBanner.svelte';
@@ -19,14 +21,13 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 mx-auto w-full max-w-2xl">
-	<div class="flex items-center justify-between">
-		<h1 class="text-2xl font-bold font-display">Chat</h1>
+<PageShell width="md" testId="chat-page">
+	<PageHeader title="Chat">
 		<a href="/chat/new" class="btn btn-primary btn-sm gap-1.5" data-testid="btn-new-room">
 			<IconPlus class="size-4" />
 			Nova conversa
 		</a>
-	</div>
+	</PageHeader>
 
 	<NotificationsBanner />
 
@@ -61,4 +62,4 @@
 			{/each}
 		</ul>
 	{/if}
-</div>
+</PageShell>

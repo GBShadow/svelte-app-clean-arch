@@ -42,7 +42,7 @@
 	);
 </script>
 
-<div class="bg-base-100 rounded-box shadow p-4 max-w-xs">
+<div class="bg-base-100 rounded-box shadow p-4 w-full sm:max-w-xs">
 	<h3 class="font-semibold text-sm mb-2">Participantes ({participants.length})</h3>
 
 	{#if message}

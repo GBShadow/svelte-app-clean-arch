@@ -2,6 +2,14 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-08-05] Revisão de Design e Responsividade
+
+- **Shell**: removido `container mx-auto p-4` do layout global. Navbar com perfil sempre acessível (dropdown unificado, sem `btn-logout-mobile`). Dropdown de notificações com largura responsiva.
+- **Componentes**: `PageShell` (7 larguras: sm/md/lg/xl/2xl/full/bleed) + `PageHeader` (título + slot de ações responsivo). Utilitários CSS: `toolbar-wrap`, `board-scroll`, `modal-box-responsive`.
+- **25 rotas migradas**: todas as páginas autenticadas usam PageShell/PageHeader. Boards (kanban, retro, chat) em bleed com colunas adaptativas. Sidebar de participantes vira drawer overlay em `<lg`. Tabelas com overflow-x e colunas escondidas em mobile. Modais que não estouram em 375px.
+- **Zero regressão**: `pnpm check` limpo para nossas mudanças (8 erros preexistentes em testes não tocados), 342 testes passando, 0 `data-testid` removidos.
+- Spec: `docs/specs/2026-08-05-revisao-de-design.md`
+
 ## [2026-07-31] Migração Tiptap/textarea → Milkdown (Crepe) + Markdown
 
 - **Editor**: substituído `RichTextEditor.svelte` (Tiptap, HTML) por `MarkdownEditor.svelte` (Milkdown Crepe, Markdown). Componente client-only com dynamic import.

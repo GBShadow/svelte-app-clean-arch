@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import { withToast } from '$lib/client/enhanceWithToast';
+	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-lg mx-auto w-full">
-	<h1 class="text-2xl font-bold font-display">Nova lista</h1>
+<PageShell width="md" testId="new-todo-page">
+	<PageHeader title="Nova lista" />
 
 	<form method="POST" novalidate data-testid="new-list-form" class="card bg-base-100 border border-base-300 shadow-sm" use:enhance={withToast({ successMessage: 'Lista criada!' })}>
 		<div class="card-body gap-4">
@@ -26,4 +28,4 @@
 			<button type="submit" class="btn btn-primary mt-2" data-testid="btn-create-list">Criar</button>
 		</div>
 	</form>
-</div>
+</PageShell>

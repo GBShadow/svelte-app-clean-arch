@@ -1,11 +1,13 @@
 <script lang="ts">
+	import PageShell from '$lib/components/PageShell.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
-	<h1 class="text-2xl font-bold font-display">Nova conversa</h1>
+<PageShell width="md" testId="new-chat-page">
+	<PageHeader title="Nova conversa" />
 
 	{#if form?.errors?.general}
 		<div class="alert alert-error" role="alert" data-testid="error-general">{form.errors.general}</div>
@@ -41,4 +43,4 @@
 
 		<button type="submit" class="btn btn-primary w-fit" data-testid="btn-create-room">Criar sala</button>
 	</form>
-</div>
+</PageShell>

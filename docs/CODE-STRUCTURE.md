@@ -22,7 +22,8 @@ raiz/
 ├── docs/                ← Documentação completa
 ├── .cursor/rules/       ← Regras para IA (Cursor)
 ├── .agents/skills/      ← Skills Freebuff
-└── .claude/agents/      ← Agentes Claude
+├── .claude/agents/      ← Agentes Claude
+└── .omp/                ← Config local do OMP (oh-my-pi)
 ```
 
 ---
@@ -265,6 +266,8 @@ src/lib/
 │   ├── Toast.svelte            ← Container de toasts (DaisyUI alert + timer + swipe)
 │   ├── UserForm.svelte         ← Formulário de usuário (create/edit)
 │   ├── UserList.svelte         ← Tabela de listagem de usuários
+│   ├── PageShell.svelte        ← Wrapper de largura de página com 7 opções (sm/md/lg/xl/2xl/full/bleed)
+│   ├── PageHeader.svelte       ← Header responsivo: título + descrição + slot de ações
 │   ├── chat/
 │   │   ├── NewMessageIndicator.svelte ← Indicador de nova mensagem não lida (pulse dot)
 │   │   └── NotificationsBanner.svelte ← Banner contextual em /chat sugerindo ativar notificações
@@ -625,6 +628,11 @@ docs/
 | `.agents/skills/`               | Skills Freebuff (9 skills)                                                                            |
 | `.opencode/agents/`             | Agentes opencode                                                                                      |
 | `.opencode/command/review.md`   | Comando `review`                                                                                      |
+| `.omp/config.yml`               | Config local do OMP — modelos + permissões (espelho do opencode.jsonc)                                |
+| `.omp/mcp.json`                 | MCP servers nativos do OMP (svelte)                                                                   |
+| `.omp/agents/`                  | Agentes OMP (backend, frontend, infra, refactorer, debugger, e2e-writer, spec-creator, spec-reviewer, code-reviewer, test-writer, docs-writer) |
+| `.omp/commands/`                | Comandos OMP (implement, checkpoint, audit-sync, review)                                              |
+| `.omp/hooks/post/`              | Hook OMP `session-changes.ts` (log de mudanças + alertas)                                             |
 | `.claude/agents/spec-driven.md` | Agente Claude (processo)                                                                              |
 | `.claude/settings.local.json`   | Permissões do Claude                                                                                  |
 

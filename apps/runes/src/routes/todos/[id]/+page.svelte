@@ -3,6 +3,7 @@
 	import IconPlus from '$lib/components/icons/IconPlus.svelte';
 	import IconTrash from '$lib/components/icons/IconTrash.svelte';
 	import IconUnlock from '$lib/components/icons/IconUnlock.svelte';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
@@ -10,7 +11,7 @@
 	let { data, form }: PageProps = $props();
 </script>
 
-<div class="flex flex-col gap-4 max-w-xl mx-auto w-full">
+<PageShell width="md" testId="todo-detail-{data.list.id}">
 	<div class="flex items-center gap-2">
 		<a href="/todos" class="btn btn-ghost btn-sm btn-square shrink-0 tooltip tooltip-right" data-testid="btn-back-lists" data-tip="Voltar" aria-label="Voltar">
 			<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
@@ -119,4 +120,4 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</PageShell>

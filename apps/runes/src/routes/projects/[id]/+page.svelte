@@ -4,12 +4,12 @@
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import { toastStore } from '$lib/client/toast.svelte';
 	import { canManageProject } from '$lib/domain/projectAccess';
+	import PageShell from '$lib/components/PageShell.svelte';
 	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
 	import Settings from 'lucide-svelte/icons/settings';
 	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
-	import Trash from 'lucide-svelte/icons/trash';
-	import Plus from 'lucide-svelte/icons/plus';
 	import Play from 'lucide-svelte/icons/play';
+	import Plus from 'lucide-svelte/icons/plus';
 	import Check from 'lucide-svelte/icons/check';
 	import User from 'lucide-svelte/icons/user';
 	import Shield from 'lucide-svelte/icons/shield';
@@ -69,7 +69,7 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-4xl p-4">
+<PageShell width="lg" testId="project-detail-page">
 	<a href="/projects" class="btn btn-ghost btn-sm gap-2 mb-6">
 		<ArrowLeft class="w-4 h-4" />
 		Voltar
@@ -403,4 +403,4 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</PageShell>

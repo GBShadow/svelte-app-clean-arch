@@ -12,6 +12,8 @@
 		isPushSupported
 	} from '$lib/client/pushSubscription';
 
+import PageShell from '$lib/components/PageShell.svelte';
+
 	let { data, form }: PageProps = $props();
 
 	type NotificationState = 'loading' | 'unsupported' | 'default' | 'denied' | 'subscribed';
@@ -69,7 +71,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4 max-w-md mx-auto w-full">
+<PageShell width="sm" testId="profile-page">
 	<h1 class="text-2xl font-bold font-display">Meu perfil</h1>
 
 	{#if form?.errors?.general}
@@ -164,4 +166,4 @@
 			<AccentPicker />
 		</div>
 	</div>
-</div>
+</PageShell>

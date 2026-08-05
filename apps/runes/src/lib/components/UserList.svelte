@@ -5,12 +5,13 @@
 	let { users }: { users: UserRecord[] } = $props();
 </script>
 
+<div class="overflow-x-auto -mx-1 px-1">
 <table class="table table-zebra" data-testid="users-table">
 	<thead>
 		<tr>
 			<th class="font-display">Nome</th>
 			<th class="font-display">E-mail</th>
-			<th class="font-display">Cargo</th>
+			<th class="font-display hidden sm:table-cell">Cargo</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -18,8 +19,8 @@
 		{#each users as user (user.id)}
 			<tr data-testid="user-row-{user.id}">
 				<td>{user.name}</td>
-				<td class="font-mono text-sm">{user.email}</td>
-				<td class="font-mono text-sm">{user.jobTitle}</td>
+				<td class="font-mono text-sm max-w-[10rem] truncate sm:max-w-none">{user.email}</td>
+				<td class="font-mono text-sm hidden sm:table-cell">{user.jobTitle}</td>
 				<td class="text-right">
 					<a href="/users/{user.id}/edit" class="link inline-flex items-center gap-1" data-testid="edit-user-{user.id}">
 						<IconEdit class="size-3.5" />
@@ -30,6 +31,7 @@
 		{/each}
 	</tbody>
 </table>
+</div>
 
 {#if users.length === 0}
 	<div class="empty-state mt-2">

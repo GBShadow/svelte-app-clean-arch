@@ -1,4 +1,6 @@
 <script lang="ts">
+import PageShell from '$lib/components/PageShell.svelte';
+import PageHeader from '$lib/components/PageHeader.svelte';
 	import type { PageProps } from './$types';
 	import { canCreateProject } from '$lib/domain/projectAccess';
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';
@@ -15,24 +17,15 @@
 	const user = $derived(data.user as any);
 </script>
 
-<div class="mx-auto w-full max-w-5xl p-4">
-	<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-		<div>
-			<h1 class="text-3xl font-black tracking-tight text-primary flex items-center gap-3">
-				<FolderKanban class="w-8 h-8" />
-				Projetos
-			</h1>
-			<p class="text-base-content/60 text-sm mt-1">
-				Gerencie seus projetos e sprints
-			</p>
-		</div>
+<PageShell width="xl" testId="projects-page">
+	<PageHeader title="Projetos" description="Gerencie seus projetos e sprints">
 		{#if canCreateProject(user)}
 			<a href="/projects/new" class="btn btn-primary" data-testid="btn-new-project">
 				<Plus class="w-4 h-4" />
 				Novo Projeto
 			</a>
 		{/if}
-	</div>
+	</PageHeader>
 
 	{#if projects.length === 0}
 		<div class="flex flex-col items-center justify-center py-16 px-4 bg-base-200 border border-base-300 rounded-2xl text-center">
@@ -99,4 +92,4 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</PageShell>

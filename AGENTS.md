@@ -120,3 +120,92 @@ qualquer mudança de regra deve refletir em ambos os lugares (`.opencode/skills/
 - Edits/Writes em `apps/` e `packages/` são registrados em `.opencode/.session-changes.log` (gitignored) — consumido pelo `docs-writer` (`/checkpoint`, `/implement` Fase 5), que trunca o arquivo. **Não tocar manualmente.**
 - Alerta quando `docs/sessions/*.md` passa de 800 linhas (checkpoint não é diário append-only).
 - Alerta quando `pocketbase/pb_migrations/` é editado e `/audit-sync` não roda há 24h (stamp `.opencode/.audit-sync-stamp`).
+
+---
+
+<!-- BEGIN:AGENT-MEMORY -->
+## 🧠 Memória Persistente dos Agentes
+
+> Bloco gerado por `agent-memory/scripts/inject.py`. **Não edite à mão** — as
+> alterações vão em `~/projects/agent-memory` e são reinjetadas de lá.
+
+Repositório de memória: `~/projects/agent-memory`
+Antes de qualquer tarefa neste projeto, este brief já está carregado. Para o
+detalhe completo use a skill `agent-memory` ou os comandos abaixo.
+
+```bash
+python3 ~/projects/agent-memory/scripts/memory.py code "<arquivo-que-vou-editar>"
+python3 ~/projects/agent-memory/scripts/memory.py symptom "<mensagem-de-erro>"
+python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
+```
+
+Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `memory.py code <arquivo>` / `memory.py symptom "<erro>"`.
+
+### 🚫 Proibições técnicas (18)
+
+- NUNCA colocar `throw redirect()` dentro de um bloco `try-catch` genérico `REG-FE-002`
+- NUNCA usar `fetch(window.location.href, { body: { action: '...' } })` para Form Actions `REG-FE-002`
+- NUNCA fazer `res.json()` ao chamar uma Form Action via `fetch` `REG-FE-002`
+- NUNCA inicializar conexões realtime apenas no `onMount` sem `$effect` para sincronização `REG-FE-002`
+- NUNCA autenticar o realtime com `pb.authStore.save(token, null)` `REG-FE-002`
+- NUNCA mutar uma lista vinda de `data.*` via `fetch` sem invalidar `REG-FE-002`
+- NUNCA criar entidade com lista de participantes sem incluir o criador `REG-FE-002`
+- NUNCA divergir o nome do campo entre form, schema Zod e `formData.get` `REG-FE-002`
+- NUNCA usar `window.alert()` ou `window.prompt()` `REG-FE-001`
+- NUNCA usar classes do Tailwind fora do intervalo padrão (ex: `grid-cols-13`) `REG-FE-001`
+- NUNCA criar placeholders de avatar inline sem centralização explícita `REG-FE-001`
+- NUNCA omitir toggle de preview em campos Markdown (criação vs edição) `REG-FE-001`
+- NUNCA colocar lógica de negócio em `+server.ts` `REG-FE-003`
+- NUNCA instanciar gateway HTTP dentro de componente presentacional `REG-FE-003`
+- NUNCA pular os testes com `TodoMemoryGateway` `REG-FE-003`
+- NUNCA reimplementar Observable/Observer dentro de `apps/runes` `REG-FE-003`
+- _… +2 em REG-FE-003 — `memory.py search <ID>` para o texto completo._
+
+### 📋 Regras de negócio (13)
+
+- RN-KB-01: Todo novo projeto criado inicia automaticamente com as colunas essenciais: `A Fazer`… `REG-NEG-004`
+- RN-KB-02: O usuário que cria um projeto é automaticamente adicionado à lista de participantes e… `REG-NEG-004`
+- RN-KB-03: Ao abrir o formulário de criação de sprint, o nome padrão deve vir pré-preenchido como… `REG-NEG-004`
+- RN-KB-04: Um projeto pode ter no máximo uma Sprint em estado `Em Andamento` (Active) por vez. `REG-NEG-004`
+- RN-KB-05: Apenas membros participantes do projeto podem criar, mover ou comentar em cartões… `REG-NEG-004`
+- RN-PP-01: O baralho utiliza a escala de Fibonacci padrão: `0`, `1`, `2`, `3`, `5`, `8`, `13`… `REG-NEG-003`
+- RN-PP-02: Durante a fase ativa de votação, os participantes podem alterar seus votos a qualquer… `REG-NEG-003`
+- RN-PP-03: Apenas o criador/facilitador da sala de poker tem permissão para acionar as ações… `REG-NEG-003`
+- RN-PP-04: Na revelação, o sistema calcula a média aritmética dos votos numéricos e destaca a… `REG-NEG-003`
+- RN-RT-01: Todo card criado em uma retrospectiva é anônimo na visualização de todos os membros da… `REG-NEG-005`
+- RN-RT-02: Apenas o navegador que criou o card recebe o `editToken` (SHA-256) que permite editar… `REG-NEG-005`
+- RN-RT-03: Uma nova retrospectiva é inicializada com 3 colunas: `O que correu bem`, `O que pode… `REG-NEG-005`
+- _… +1 em REG-NEG-005 — `memory.py search <ID>` para o texto completo._
+
+### ⚠️ Débitos abertos
+
+- **baixa** — Migração em Massa de Registros Legados de HTML para Markdown `DEB-TEC-001`
+- **media** — Resolução de Módulos $env do SvelteKit no Runner do Playwright E2E `DEB-TEC-002`
+- **media** — API Rules Excessivamente Permissivas na Coleção Sprints `DEB-TEC-003`
+
+### 🔥 Já quebrou aqui antes
+
+- Falha Silenciosa em expand com viewRule Restritiva no PocketBase `ERR-FE-003`
+- PocketBase fields.add() Requer Instância de Tipo de Campo, Não Plain Object `ERR-FE-001`
+- throw redirect() do SvelteKit Silenciosamente Engolido Dentro de try-catch `ERR-FE-002`
+- Uso de Classe Inexistente no Tailwind (md:grid-cols-13) `ERR-FE-004`
+
+### ♻️ Já resolvido em outro projeto (aplica-se aqui)
+
+- Aprendizado: Isolamento e Determinismo em Testes Unitários — origem `null` `APR-GER-002`
+- Aprendizado: Padronização de Exceções de Domínio e Respostas de Erro HTTP — origem `null` `APR-GER-001`
+
+> Padrão agnóstico de stack. Antes de aplicar, confira a equivalência em `index-por-sintoma.md` (seção ♻️). Busca: `memory.py solve "<problema>"`.
+
+### 🏛️ Decisões vigentes
+
+- Orquestração de modelos por carga cognitiva com fallback funcional `DEC-TEC-005`
+- Adoção do Svelte 5 com Runes e Arquitetura Ports & Adapters `DEC-TEC-001`
+- Migração do Editor WYSIWYG Tiptap (HTML) para Milkdown / Markdown Puro `DEC-TEC-003`
+- PocketBase Isolado em Docker com Migrations JS Versionadas `DEC-TEC-004`
+- Votação Oculta até Revelação Coletiva no Planning Poker `DEC-NEG-001`
+- Cards Anônimos com Token Seguro de Edição na Retrospectiva `DEC-NEG-002`
+
+
+> ✂️ truncado no orçamento de 4600 chars — use `memory.py load svelte-app-clean-arch`.
+<!-- END:AGENT-MEMORY -->

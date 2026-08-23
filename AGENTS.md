@@ -163,7 +163,7 @@ Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `mem
 
 ### 📋 Regras de negócio (13)
 
-- RN-KB-01: Todo novo projeto criado inicia automaticamente com as colunas essenciais: `A Fazer`… `REG-NEG-004`
+- RN-KB-01: Todo novo projeto criado inicia automaticamente com três colunas: `Aguardando` (`type… `REG-NEG-004`
 - RN-KB-02: O usuário que cria um projeto é automaticamente adicionado à lista de participantes e… `REG-NEG-004`
 - RN-KB-03: Ao abrir o formulário de criação de sprint, o nome padrão deve vir pré-preenchido como… `REG-NEG-004`
 - RN-KB-04: Um projeto pode ter no máximo uma Sprint em estado `Em Andamento` (Active) por vez. `REG-NEG-004`
@@ -174,7 +174,7 @@ Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `mem
 - RN-PP-04: Na revelação, o sistema calcula a média aritmética dos votos numéricos e destaca a… `REG-NEG-003`
 - RN-RT-01: Todo card criado em uma retrospectiva é anônimo na visualização de todos os membros da… `REG-NEG-005`
 - RN-RT-02: Apenas o navegador que criou o card recebe o `editToken` (SHA-256) que permite editar… `REG-NEG-005`
-- RN-RT-03: Uma nova retrospectiva é inicializada com 3 colunas: `O que correu bem`, `O que pode… `REG-NEG-005`
+- RN-RT-03: Uma nova retrospectiva é inicializada com 3 colunas marcadas `is_default`: `O que foi… `REG-NEG-005`
 - _… +1 em REG-NEG-005 — `memory.py search <ID>` para o texto completo._
 
 ### ⚠️ Débitos abertos

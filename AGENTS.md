@@ -141,8 +141,13 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 
 Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `memory.py code <arquivo>` / `memory.py symptom "<erro>"`.
 
-### 🚫 Proibições técnicas (18)
+### 🚫 Proibições técnicas (27)
 
+- NUNCA publicar `@ApiOperation` sem o campo `description` ou apenas com `summary` raso `REG-DOC-001`
+- NUNCA omitir respostas de erro em `@ApiResponse` cobrindo apenas status 200/201 `REG-DOC-001`
+- NUNCA usar exemplos genéricos ou fictícios como `example: "string"` ou `example: 0` `REG-DOC-001`
+- NUNCA deixar DTOs de entrada ou saída sem decorators de propriedade `REG-DOC-001`
+- NUNCA esconder peculiaridades de parâmetros de rota `REG-DOC-001`
 - NUNCA colocar `throw redirect()` dentro de um bloco `try-catch` genérico `REG-FE-002`
 - NUNCA usar `fetch(window.location.href, { body: { action: '...' } })` para Form Actions `REG-FE-002`
 - NUNCA fazer `res.json()` ao chamar uma Form Action via `fetch` `REG-FE-002`
@@ -154,12 +159,7 @@ Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `mem
 - NUNCA usar `window.alert()` ou `window.prompt()` `REG-FE-001`
 - NUNCA usar classes do Tailwind fora do intervalo padrão (ex: `grid-cols-13`) `REG-FE-001`
 - NUNCA criar placeholders de avatar inline sem centralização explícita `REG-FE-001`
-- NUNCA omitir toggle de preview em campos Markdown (criação vs edição) `REG-FE-001`
-- NUNCA colocar lógica de negócio em `+server.ts` `REG-FE-003`
-- NUNCA instanciar gateway HTTP dentro de componente presentacional `REG-FE-003`
-- NUNCA pular os testes com `TodoMemoryGateway` `REG-FE-003`
-- NUNCA reimplementar Observable/Observer dentro de `apps/runes` `REG-FE-003`
-- _… +2 em REG-FE-003 — `memory.py search <ID>` para o texto completo._
+- _… +11 em REG-FE-001, REG-FE-003, REG-SEC-002 — `memory.py search <ID>` para o texto completo._
 
 ### 📋 Regras de negócio (13)
 
@@ -203,9 +203,6 @@ Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `mem
 - Adoção do Svelte 5 com Runes e Arquitetura Ports & Adapters `DEC-TEC-001`
 - Migração do Editor WYSIWYG Tiptap (HTML) para Milkdown / Markdown Puro `DEC-TEC-003`
 - PocketBase Isolado em Docker com Migrations JS Versionadas `DEC-TEC-004`
-- Votação Oculta até Revelação Coletiva no Planning Poker `DEC-NEG-001`
-- Cards Anônimos com Token Seguro de Edição na Retrospectiva `DEC-NEG-002`
-
 
 > ✂️ truncado no orçamento de 4600 chars — use `memory.py load svelte-app-clean-arch`.
 <!-- END:AGENT-MEMORY -->

@@ -139,7 +139,7 @@ python3 ~/projects/agent-memory/scripts/memory.py symptom "<mensagem-de-erro>"
 python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 ```
 
-Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `memory.py code <arquivo>` / `memory.py symptom "<erro>"`.
+> ⚙️ Gerado por `scripts/brief.py` — **não edite à mão**. Carregado em toda sessão. Detalhe completo: `memory.py code <arquivo>` / `memory.py symptom "<erro>"`.
 
 ### 🚫 Proibições técnicas (27)
 
@@ -194,15 +194,13 @@ Gerado por `scripts/brief.py`. Carregado em toda sessão. Detalhe completo: `mem
 
 - Aprendizado: Isolamento e Determinismo em Testes Unitários — origem `null` `APR-GER-002`
 - Aprendizado: Padronização de Exceções de Domínio e Respostas de Erro HTTP — origem `null` `APR-GER-001`
+- Proxy Reverso Nginx Perdendo Autenticação: 401 Após Login, Cookie Ausente e Authorization Sumindo no Upstream — origem `null` `ERR-INF-002`
+- SQLite 'database is locked' / SQLITE_BUSY no PocketBase em Container: pb_data Compartilhado, WAL em NFS e Migrações Concorrentes — origem `null` `ERR-INF-001`
 
 > Padrão agnóstico de stack. Antes de aplicar, confira a equivalência em `index-por-sintoma.md` (seção ♻️). Busca: `memory.py solve "<problema>"`.
 
 ### 🏛️ Decisões vigentes
 
-- Orquestração de modelos por carga cognitiva com fallback funcional `DEC-TEC-005`
-- Adoção do Svelte 5 com Runes e Arquitetura Ports & Adapters `DEC-TEC-001`
-- Migração do Editor WYSIWYG Tiptap (HTML) para Milkdown / Markdown Puro `DEC-TEC-003`
-- PocketBase Isolado em Docker com Migrations JS Versionadas `DEC-TEC-004`
 
 > ✂️ truncado no orçamento de 4600 chars — use `memory.py load svelte-app-clean-arch`.
 <!-- END:AGENT-MEMORY -->

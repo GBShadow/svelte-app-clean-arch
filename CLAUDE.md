@@ -24,6 +24,8 @@ Monorepo SvelteKit com **Ports & Adapters**: app `runes` + pacote compartilhado 
 | workflow      | `spec-driven.mdc`            | Spec em `docs/specs/<slug>.md` (antes de implementar)                                                           |
 | workflow      | `pr-description.mdc`         | PR em `docs/workflow/<slug>.pr.md`                                                                              |
 | workflow      | `jira-tasks.mdc`             | Jira em `docs/workflow/<slug>.jira.md`                                                                          |
+| workflow      | `spec-converge.mdc`          | Convergência append-only sobre `.tasks.md` — nunca reescreve tasks; classifica achados (`ausente | parcial | contradiz | não-solicitado`) |
+| workflow      | `bug-triage.mdc`             | Triagem de bug com veredito: assessment → fix → test (`verificado | parcial | falhou`)                                                    |
 | meta          | `rules-sync.mdc`             | Sincronizar Cursor ↔ Freebuff ↔ Claude                                                                          |
 | meta          | `commit-convention.mdc`      | Sem trailer de co-autoria em commits/PRs                                                                        |
 | meta          | `code-structure.mdc`         | Ler CODE-STRUCTURE.md antes; atualizar docs depois                                                              |
@@ -34,6 +36,19 @@ PR e Jira ficam na **mesma pasta** `docs/workflow/`, com o mesmo `<slug>`.
 
 No Claude Code, `spec-driven` é um **agente** (`.claude/agents/spec-driven.md`), não uma skill nativa — invocar via ferramenta `Agent` com `subagent_type: "spec-driven"`. Existe também um wrapper em `.claude/skills/spec-driven/SKILL.md` que delega para esse agente, para o caso de a skill ser acionada diretamente (ex.: `Skill(spec-driven)`/`/spec-driven`).
 
+Agentes de processo (`.opencode/agents/` e `.omp/agents/` — espelhados; invocar via ferramenta `Agent`/Task com `subagent_type`):
+
+| Agente | Papel |
+| --- | --- |
+| `spec-creator` | spec, esclarecimentos, plan e tasks (Fases 1 e 3) |
+| `spec-reviewer` | checklist (Fase 2) e analyze read-only (Fase 4) |
+| `spec-converge` | convergência append-only sobre `.tasks.md` (Fase 6) |
+| `bug-assess` | triagem de bug: assessment → fix → test, com veredito |
+| `frontend` / `backend` | implementação (Fase 5), com TDD |
+| `test-writer` | testes unitários (Vitest) e e2e (Playwright) |
+| `docs-writer` | feature doc, CHANGELOG e PR (Fase 7) |
+| `code-reviewer`, `debugger`, `infra`, `refactorer`, `e2e-writer` | apoio |
+
 Skills Freebuff (`.agents/skills/`):
 
 > **Nota de sync:** o opencode carrega skills de `.opencode/skills/<nome>/SKILL.md` (espelho das
@@ -41,6 +56,8 @@ Skills Freebuff (`.agents/skills/`):
 > em `.agents/skills/` **e** `.opencode/skills/` (ver AGENTS.md).
 
 - `spec-driven` — agente de processo spec-driven
+- `spec-converge` — convergência append-only sobre `.tasks.md` (nunca reescreve tasks, classifica achados)
+- `bug-triage` — triagem de bug com veredito: assessment → fix → test (`verificado | parcial | falhou`)
 - `runes-ports-adapters` — guia de implementação runes
 - `classic-ports-adapters` — guia de implementação classic (deprecated)
 - `feature-documentation` — documentação de funcionalidades
@@ -64,17 +81,27 @@ Skills Freebuff (`.agents/skills/`):
 2. Analisar todos os impactos de segurança do que será desenvolvido (ex: XSS em campos de texto rico, vazamento de dados via PocketBase realtime subscriptions e IDOR).
 3. Nunca ignorar as regras do banco de dados (ler regras `.cursor/rules/architecture/pocketbase-*.mdc` antes de desenhar entidades do PocketBase).
 
-## Documentação e workflow (spec-driven)
+## Documentação e workflow (spec-driven, 7 fases)
 
-| Quando                                          | Arquivo                        | Template                          |
-| ----------------------------------------------- | ------------------------------ | --------------------------------- |
-| Antes de implementar (nova feature não trivial) | `docs/specs/<slug>.md`         | `docs/specs/_template.md`         |
-| Criar tarefa Jira                               | `docs/workflow/<slug>.jira.md` | `docs/workflow/_template-jira.md` |
-| Concluir feature                                | `docs/features/<slug>.md`      | `docs/features/_template.md`      |
-| Changelog                                       | `docs/CHANGELOG.md`            | —                                 |
-| Criar PR                                        | `docs/workflow/<slug>.pr.md`   | `docs/workflow/_template-pr.md`   |
+Pipeline por feature com **5 artefatos principais** — `docs/specs/<slug>.md`, `<slug>.checklist.md`, `<slug>.plan.md`, `<slug>.tasks.md` e `docs/features/<slug>.md` — todos com o mesmo `<slug>`. `docs/workflow/<slug>.jira.md` e `<slug>.pr.md` são derivados (Jira deriva de `.tasks.md`).
 
-Fluxo: **spec → Jira → implementar → feature doc → PR**, mesmo `<slug>` em todos. Bugfixes triviais podem pular a spec.
+| Fase | Artefato | Template |
+| --- | --- | --- |
+| 1 Spec + Esclarecimentos | `docs/specs/<slug>.md` | `docs/specs/_template.md` |
+| 2 Checklist | `docs/specs/<slug>.checklist.md` | — |
+| 3 Plan + Tasks | `docs/specs/<slug>.plan.md` + `docs/specs/<slug>.tasks.md` | — |
+| 3 (derivado) Jira | `docs/workflow/<slug>.jira.md` | `docs/workflow/_template-jira.md` |
+| 7 Documentação | `docs/features/<slug>.md` | `docs/features/_template.md` |
+| 7 (derivado) Changelog/PR | `docs/CHANGELOG.md` + `docs/workflow/<slug>.pr.md` | `docs/workflow/_template-pr.md` |
+
+Regras de processo (resumo literal — lidas em toda sessão):
+
+- **R1 Spec sem stack.** A spec descreve o QUÊ e o PORQUÊ: proibido nome de framework, biblioteca, arquivo, rota, coleção, campo de banco, componente. Tudo isso vive no `.plan.md`. Única exceção: sistema externo já em produção quando o requisito é de compatibilidade.
+- **R2 Ambiguidade com teto.** Marque `[PRECISA ESCLARECER: pergunta]`, máximo 3 por spec. Default óbvio → assuma e registre em `## Premissas`. Mais de 3 = feature grande demais → `.roadmap.md`.
+- **R6 Checklist é do revisor.** Itens interrogativos sobre a REDAÇÃO do requisito, não sobre o software. O agente nunca marca `[x]`; quem implementa lê como gate e não altera marcadores.
+- **R8 Convergência append-only.** Nunca edita/apaga código, nunca reescreve tasks existentes. Classifica: `ausente | parcial | contradiz | não-solicitado`. Violação de constituição = `CRITICAL` primeiro. Próximo id `T{M+1:03d}`. Saída `✅ Convergido` ou `↻ N tarefas anexadas`.
+- **R10 Persistência flow-forward.** Spec aprovada é registro histórico. Mudança de rumo = nova spec com `Supersede:`; a antiga recebe `Status: superada por`. Proibido reescrever spec aprovada para caber no implementado.
+- **R12 TDD é MUST.** Nenhuma linha de produção sem o teste que a exige (Red-Green-Refactor). Permanece como `RNF-TDD` na spec.
 
 Índice: [docs/README.md](./docs/README.md)
 
@@ -127,18 +154,27 @@ Ver regra completa em `.cursor/rules/meta/code-structure.mdc`.
 1. Atualizar `.cursor/rules/<pasta>/<nome>.mdc` (Cursor)
 2. Atualizar `.agents/skills/<nome>.md` (Freebuff)
 3. Atualizar `.opencode/skills/<nome>/SKILL.md` (opencode — espelho da skill Freebuff)
-4. Atualizar este `CLAUDE.md`
-5. Atualizar `README.md` e `docs/README.md`
-6. Atualizar `docs/CODE-STRUCTURE.md` (estrutura do código)
-6. Atualizar `docs/CHANGELOG.md`, `docs/features/`, `docs/specs/`, `docs/workflow/` (se aplicável)
+4. Atualizar `.omp/agents/<nome>.md` e `.omp/commands/<nome>.md` (OMP) + `.opencode/agents/<nome>.md` (espelho)
+5. Atualizar este `CLAUDE.md`
+6. Atualizar `AGENTS.md` (Antigravity) — mesmo conteúdo relevante, fora do bloco `AGENT-MEMORY`
+7. Atualizar `README.md` e `docs/README.md`
+8. Atualizar `docs/CODE-STRUCTURE.md` (estrutura do código)
+9. Atualizar `docs/CHANGELOG.md`, `docs/features/`, `docs/specs/`, `docs/workflow/`, `docs/bugs/` (se aplicável)
 
 ## Idioma
 
 Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco) em **inglês**. Texto voltado ao usuário — UI e mensagens de erro/validação retornadas ao usuário — em **português**. Documentação (specs, PR, Jira, features, CHANGELOG) em português. Ver `.cursor/rules/architecture/language-convention.mdc`.
 
-## Runes (default)
+## Runes (padrão real — único app ativo)
 
-UI → Container (`onMount` + `service.load()`) → `TodoListService` (`$lib/domain/*.svelte.ts`, com `$state`/`$derived`) → `TodoHttpGateway` → `/api/` → `$lib/server/*Store.ts`. Testes com `TodoMemoryGateway`.
+`apps/runes`. Mutação por **form action**: `+page.server.ts` chama `locals.pb`; a
+decisão (permissão, cálculo, transição) fica em **função pura** em `$lib/domain/`;
+estado reativo de realtime em classe `.svelte.ts` (`$state`, dedup por `id`);
+validação com Zod em `$lib/validation/`; tipos de coleção em `$lib/server/*Record.ts`.
+
+Não existe `Gateway`/`HttpGateway`/`MemoryGateway` em feature PocketBase — é
+resquício de versão anterior e sua reintrodução viola o princípio `P-001` da
+constituição. `classic` e `remote` estão em `deprecated/` e não recebem feature nova.
 
 ## Verify-before-accept (disciplina de evidência)
 

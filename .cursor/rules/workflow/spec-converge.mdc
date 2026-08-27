@@ -1,0 +1,49 @@
+---
+description: Convergir spec vs. código após implementação (fase 6) — append-only de lacunas em docs/specs/<slug>.tasks.md
+globs: docs/specs/**
+alwaysApply: false
+---
+
+# Spec Convergence (fase 6)
+
+Quando roda: **após a implementação** (fase 5 concluída), **antes** de feature doc (`docs/features/<slug>.md`) e PR (`docs/workflow/<slug>.pr.md`). Agente dono: `spec-converge`.
+
+## O que compara
+
+Confronta a **intenção** registrada nos artefatos com o **código real**:
+
+- Inventário de intenção da spec: `RF-###`, `SC-###`, `AC-###` (e `RNF-###` quando houver).
+- Decisões do `docs/specs/<slug>.plan.md`.
+- Princípios MUST da constituição (`agent-memory: projetos/svelte-app-clean-arch/constituicao.md`).
+
+> **Nunca** usar o histórico do git como fonte de verdade — a comparação é artefato vs. código no estado atual, não o que foi commitado ou removido.
+
+## As 4 classes de lacuna
+
+Cada achado é classificado em exatamente um destes tipos:
+
+- `ausente` — intenção declarada sem correspondente no código.
+- `parcial` — intenção implementada apenas em parte.
+- `contradiz` — código diverge do que spec/plan decidiram.
+- `não-solicitado` — código faz além do especificado (escopo extra).
+
+## Regras de escrita (append-only)
+
+- **Nunca edita nem apaga código.**
+- **Nunca reescreve tasks existentes.**
+- **Nunca marca `[X]`** em task que não executou.
+- Violação de constituição é emitida **primeiro** e sempre como `CRITICAL`.
+- Próximo id = `T{M+1:03d}`, onde `M` é o maior número de task já usado em `docs/specs/<slug>.tasks.md`.
+- Anexa as novas tasks em nova seção `## Fase N: Convergência` (N = próxima fase após a última existente).
+
+## Estados finais
+
+- `✅ Convergido` — nenhuma lacuna aberta (todas resolvidas ou aceitas explicitamente).
+- `↻ N tarefas anexadas` — `N` lacunas transformadas em tasks de convergência, ainda não implementadas.
+
+## Proibido
+
+- Editar código de produto ou testes.
+- Reescrever tasks existentes.
+- Marcar `[X]` em task que não executou.
+- Declarar a feature pronta sem `✅ Convergido`.

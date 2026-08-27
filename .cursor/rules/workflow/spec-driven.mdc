@@ -1,19 +1,92 @@
 ---
-description: Criar spec (docs/specs/) antes de implementar nova funcionalidade não trivial
+description: Pipeline spec-driven de 7 fases — spec, plan, tasks e checklist em docs/specs/ antes de implementar (roadmap para épicos)
+globs: docs/specs/**
 alwaysApply: false
 ---
 
 # Spec-driven development
 
-Quando o usuário pedir **spec**, **especificação**, **nova funcionalidade** (não trivial) ou **spec-driven**:
+Quando o usuário pedir **spec**, **especificação**, **nova funcionalidade** (não trivial) ou **spec-driven**, siga o pipeline de **7 fases** abaixo. Cada feature produz **5 artefatos** em `docs/specs/`:
 
-1. Copiar [`docs/specs/_template.md`](../../docs/specs/_template.md) → `docs/specs/<slug>.md`
-2. **Revisão Obrigatória:** Ler `CLAUDE.md`, `docs/CODE-STRUCTURE.md` e regras de banco (`pocketbase-*.mdc`).
-3. Preencher junto com o usuário: contexto, objetivo, escopo, requisitos funcionais/não funcionais, critérios de aceite.
-4. **Segurança e Modelagem:** Analisar preventivamente XSS, IDOR, escalação e vazamentos via realtime. Definir as coleções com `created`/`updated` e API rules de bloqueio.
-5. **Validar com o usuário antes de implementar** — alinhamento é o objetivo da spec, não documentação retroativa.
-6. Atualizar índice em `docs/specs/README.md`.
-7. Só então seguir o fluxo normal: Jira → implementação → feature doc → PR (mesmo `<slug>`).
+| Artefato | Caminho | Fase |
+|----------|---------|------|
+| Spec (o QUÊ) | `docs/specs/<slug>.md` | 1 |
+| Plan (o COMO) | `docs/specs/<slug>.plan.md` | 2 |
+| Tasks | `docs/specs/<slug>.tasks.md` | 3 |
+| Checklist | `docs/specs/<slug>.checklist.md` | 1c |
+| Roadmap (só quando houver épico) | `docs/specs/<epico>.roadmap.md` | — |
+
+`<slug>` = kebab-case, com o prefixo de data já em uso: `YYYY-MM-DD-<nome>` (ex: `2026-07-12-kanban`).
+
+## Pipeline de 7 fases
+
+| Fase | Artefato | Agente dono | Gate de saída |
+|:---|:---|:---|:---|
+| 0 Constituição | `agent-memory: projetos/svelte-app-clean-arch/constituicao.md`, injetada no bloco AGENT-MEMORY do `AGENTS.md` | usuário | — |
+| 1 Spec (o QUÊ) | `docs/specs/<slug>.md` | `spec-creator` | ≤3 marcadores `[PRECISA ESCLARECER]` |
+| 1b Esclarecer | edita `docs/specs/<slug>.md` seção `## Esclarecimentos` | `spec-creator` | cota de 5 perguntas ou ambiguidades críticas resolvidas |
+| 1c Checklist | `docs/specs/<slug>.checklist.md` | `spec-reviewer` | itens `CHK###` gerados (marcação `[x]` é do humano) |
+| 2 Plan (o COMO) | `docs/specs/<slug>.plan.md` | `spec-creator` | Constitution Check sem violação injustificada |
+| 3 Tasks | `docs/specs/<slug>.tasks.md` | `spec-creator` | toda `RF-###` coberta por ≥1 `T###` |
+| 3b Analyze | relatório em tela (read-only) | `spec-reviewer` modo analyze | nenhum achado CRITICAL |
+| 4 Jira | `docs/workflow/<slug>.jira.md` (**derivado** de `.tasks.md`) | `spec-creator` | — |
+| 5 Implementar | código, TDD Red-Green-Refactor | `frontend`/`backend`/`test-writer` | todas as tasks `[X]`, `pnpm test` verde |
+| 6 Convergir | **append** em `docs/specs/<slug>.tasks.md` | `spec-converge` | `✅ Convergido` |
+| 7 Documentar | `docs/features/<slug>.md` + `docs/CHANGELOG.md` + `docs/workflow/<slug>.pr.md` | `docs-writer` | — |
+| Bug | `docs/bugs/<slug>.assessment.md` → `.fix.md` → `.test.md` | `bug-assess` → `frontend`/`backend` → `test-writer` | veredito `verificado` |
+
+## Regras invioláveis
+
+### R1 — Spec sem stack
+
+A spec descreve o QUÊ e o PORQUÊ: proibido nome de framework, biblioteca, arquivo, rota, coleção, campo de banco, componente. Tudo isso vive no `.plan.md`. Única exceção: nomear sistema externo já em produção quando o requisito é de compatibilidade.
+
+### R2 — Ambiguidade com teto
+
+Marque `[PRECISA ESCLARECER: pergunta]`, **máximo 3 por spec**. Se existe default óbvio da indústria ou do projeto, assuma o default e registre em `## Premissas` em vez de perguntar. Mais de 3 marcadores = a feature é grande demais → use `.roadmap.md`.
+
+### R3 — Esclarecimento disciplinado (resumido)
+
+Varredura nas 10 categorias, cada uma marcada `Claro | Parcial | Ausente`: (1) Escopo & comportamento (2) Domínio & dados (3) Fluxo de UX (4) Atributos não-funcionais (5) Integrações & dependências (6) Casos de borda (7) Restrições & trade-offs (8) Terminologia (9) Sinais de conclusão (10) Placeholders. Fila ordenada por `Impacto × Incerteza`. **Máximo 5 perguntas na sessão**, EXATAMENTE uma por vez, nunca antecipando a próxima; cada pergunta traz "Por que importa" + 2 a 5 opções. Após CADA resposta: gravar `- Q: … → A: …` em `## Esclarecimentos` / `### Sessão AAAA-MM-DD`, atualizar a seção temática correspondente e **salvar o arquivo antes da próxima pergunta**. O que sobrar da cota vira `Deferred:` listado na própria seção.
+
+### R4 — IDs estáveis de largura fixa
+
+`RF-001`, `RNF-001`, `AC-001`, `SC-001`, `CHK001`, `T001`, `US1` (user story), `R1` (entrada de roadmap). IDs nunca são renumerados nem reciclados após serem referenciados.
+
+### R5 — Formato de task
+
+`- [ ] T001 [P] [US1] Descrição com caminho exato do arquivo`. `[P]` **somente** se arquivos disjuntos e sem dependência pendente. Fases: `Fase 1: Setup` → `Fase 2: Fundação` (BLOQUEIA todas as user stories) → `Fase 3..N`: uma por user story em ordem `P1..Pn`, cada uma terminando em `**Checkpoint**` → `Fase final: Polimento`.
+
+### R6 — Checklist é do revisor
+
+Itens interrogativos sobre a REDAÇÃO do requisito, não sobre o software. PROIBIDOS os verbos "Verificar", "Testar", "Confirmar", "clicar", "funciona corretamente". Padrão bom: "Os critérios de aceite estão definidos para o cenário de permissão negada?", "O termo vago 'rápido' está quantificado?". O agente **nunca** marca `[x]`; quem implementa lê o checklist como gate e **não** altera marcadores.
+
+### R10 — Persistência flow-forward
+
+Spec aprovada é registro histórico. Mudança de rumo = **nova spec** com `Supersede: docs/specs/<antiga>.md`, e a antiga recebe `Status: superada por <nova>`. É proibido reescrever spec aprovada para caber no que foi implementado; divergência descoberta na implementação vira task de convergência ou spec nova.
+
+### R12 — TDD é MUST
+
+Nenhuma linha de produção sem o teste que a exige (Red-Green-Refactor). Permanece como `RNF-TDD` na spec.
+
+### R13 — Agente de processo não toca produto
+
+Nunca escreve código de produto, nunca roda `git commit`/`git push`/`gh pr create` — prepara arquivos e sugere o comando.
+
+## Demais regras do fluxo
+
+### R7 — Severidade objetiva do analyze (fase 3b)
+
+`CRITICAL` = viola princípio MUST da constituição OU requisito com zero cobertura em `.tasks.md`; `ALTA` = requisito duplicado/conflitante ou critério de aceite não testável; `MÉDIA` = drift de terminologia, caso de borda vago; `BAIXA` = estilo. Teto de 50 achados. Modo read-only: a correção é sempre feita no artefato dono.
+
+### R11 — Memória primeiro
+
+Passo 0 de toda fase: `python3 ~/projects/agent-memory/scripts/memory.py code <caminho>` (arquivo que vou tocar), `memory.py symptom "<erro literal>"`, `memory.py solve "<problema>"`. Achados vão para `## Memória aplicável` do `.plan.md`. Ao concluir, registrar na memória central com `evidence` + `source_refs`.
+
+### R8 e R9 — em regras próprias
+
+- **R8 (convergência, fase 6):** ver `spec-converge.mdc`.
+- **R9 (bug com veredito):** ver `bug-triage.mdc`.
 
 ## Quando pular a spec
 
@@ -22,16 +95,4 @@ Bugfixes triviais de 1 linha ou mudanças sem impacto de design não precisam de
 ## Convenção de arquivo
 
 - **Pasta:** `docs/specs/`
-- **Arquivo:** `<slug>.md` (kebab-case, mesmo slug de Jira/PR/feature)
-
-## Fluxo completo (spec-driven)
-
-1. Spec: `docs/specs/<slug>.md`
-2. Jira: `docs/workflow/<slug>.jira.md` (referencia a spec)
-3. Implementar: `architecture/runes-ports-adapters.mdc` (`classic` e `remote` foram movidos para `deprecated/`)
-4. Feature doc: `docs/features/<slug>.md`
-5. PR: `docs/workflow/<slug>.pr.md`
-
-## Relação com Jira
-
-O Jira (`_template-jira.md`) descreve **a tarefa**; a spec descreve **a solução**. Referenciar a spec no campo Links do Jira quando existir.
+- **Arquivos por feature:** `<slug>.md`, `<slug>.plan.md`, `<slug>.tasks.md`, `<slug>.checklist.md` (+ `<epico>.roadmap.md` quando houver épico) — mesmo `<slug>` de Jira/PR/feature.

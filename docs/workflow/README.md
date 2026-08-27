@@ -2,7 +2,7 @@
 
 **Guia completo (spec-driven):** [../spec-driven-development.md](../spec-driven-development.md)
 
-PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `docs/workflow/`.
+Esta pasta guarda os **derivados de gestão** do fluxo spec-driven — os arquivos `.jira.md` e `.pr.md`. Eles **não** são a fonte da verdade: a fonte é `docs/specs/<slug>.*` (spec, plan, tasks, checklist). O `.jira.md` é **derivado** de `<slug>.tasks.md`, e o `.pr.md` referencia spec/feature/Jira. Se algo aqui divergir da spec, corrija na spec/tasks — nunca edite só o derivado.
 
 ## Índice
 
@@ -34,20 +34,23 @@ PR e tarefas Jira na **mesma pasta**. Templates e arquivos gerados ficam em `doc
 | Tipo | Template | Arquivo gerado |
 |------|----------|----------------|
 | Pull Request | [_template-pr.md](./_template-pr.md) | `<slug>.pr.md` |
-| Jira | [_template-jira.md](./_template-jira.md) | `<slug>.jira.md |
+| Jira | [_template-jira.md](./_template-jira.md) | `<slug>.jira.md` |
 
-Mesmo `<slug>` (kebab-case) para PR e Jira da mesma feature (ex: `add-filters.pr.md` + `add-filters.jira.md`).
+Mesmo `<slug>` (kebab-case com prefixo de data, ex: `2026-07-12-add-filters`) para spec, plan, tasks, checklist, Jira, feature doc e PR da mesma feature. Os arquivos desta pasta (`<slug>.jira.md` e `<slug>.pr.md`) são derivados de `docs/specs/<slug>.*`.
 
 ## Nova feature (fluxo spec-driven)
 
-0. Spec: [../specs/](../specs/) — copie `_template.md` → `<slug>.md` e valide com o usuário
-1. Jira: copie `_template-jira.md` → `<slug>.jira.md` (referencia a spec)
-2. Implemente seguindo `.cursor/rules/architecture/runes-ports-adapters.mdc`
-3. Feature doc: [../features/](../features/)
-4. PR: copie `_template-pr.md` → `<slug>.pr.md`
-5. Atualize este índice
+A fonte da verdade vive em `docs/specs/<slug>.*`. O passo a passo completo das 7 fases está no [guia spec-driven](../spec-driven-development.md); resumo do que toca esta pasta:
 
-Bugfixes triviais podem pular o passo 0 (spec).
+0. Spec + plan + tasks + checklist em [../specs/](../specs/)
+1. Jira: derive `_template-jira.md` → `<slug>.jira.md` a partir de `<slug>.tasks.md` (referencia spec/plan/tasks/checklist)
+2. Implemente seguindo `.cursor/rules/architecture/runes-ports-adapters.mdc` (todas as tasks `[X]`, `pnpm test` verde)
+3. Convergência: append em `docs/specs/<slug>.tasks.md` até `✅ Convergido`
+4. Feature doc: [../features/](../features/)
+5. PR: copie `_template-pr.md` → `<slug>.pr.md`
+6. Atualize este índice
+
+Bugfixes triviais vão para o fluxo de bug (`docs/bugs/`), não para o Jira.
 
 ## Comandos
 

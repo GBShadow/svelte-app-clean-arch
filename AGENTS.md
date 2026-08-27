@@ -81,13 +81,47 @@ Código (variáveis, funções, comentários, nomes de tabelas/colunas no banco)
 
 ## Comandos disponíveis
 
-- `implement <slug>` — ciclo completo spec-driven: spec-creator/spec-reviewer → builders (backend/frontend) → test-writer → code-reviewer → docs-writer, com pausa em cada fase. Definição em `.opencode/command/implement.md`.
+- `implement <slug>` — ciclo completo spec-driven em 7 fases: spec-creator (spec/esclarecimentos/plan/tasks) → spec-reviewer (checklist/analyze) → frontend/backend/test-writer → spec-converge → docs-writer, com pausa e gate em cada fase. Definição em `.opencode/command/implement.md`.
 - `checkpoint` — salva estado da sessão em `docs/sessions/` e sincroniza docs versionados (CHANGELOG, CODE-STRUCTURE, ROUTES, TECH-DEBT, LESSONS-LEARNED, features) via docs-writer, antes de /clear ou commit. Definição em `.opencode/command/checkpoint.md`.
 - `audit-sync` — auditoria de drift entre código e docs (ROUTES, CODE-STRUCTURE, CHANGELOG, TECH-DEBT, specs/features). Toca o stamp `.opencode/.audit-sync-stamp` (lido pelo plugin). Definição em `.opencode/command/audit-sync.md`.
 - `review` — revisão completa de código: análise técnica, lint/typecheck, testes,
   documentação (CODE-STRUCTURE, CHANGELOG, features, tech-debt), lições aprendidas e
   análise de impacto. Aceita commit, branch, PR ou nada (mudanças não commitadas).
   Definição em `.opencode/command/review.md`.
+
+## Agentes disponíveis (`.opencode/agents/` e `.omp/agents/` — espelhados)
+
+- `spec-creator` — spec, esclarecimentos, plan e tasks (Fases 1 e 3)
+- `spec-reviewer` — checklist (Fase 2) e analyze read-only (Fase 4)
+- `spec-converge` — convergência append-only sobre `.tasks.md` (Fase 6)
+- `bug-assess` — triagem de bug: assessment → fix → test, com veredito `verificado | parcial | falhou`
+- `frontend` / `backend` — implementação (Fase 5), com TDD
+- `test-writer` — testes unitários (Vitest) e e2e (Playwright)
+- `docs-writer` — feature doc, CHANGELOG e PR (Fase 7)
+- `code-reviewer`, `debugger`, `infra`, `refactorer`, `e2e-writer` — apoio
+
+## Fluxo spec-driven (7 fases) e regras de processo
+
+Pipeline por feature — 5 artefatos principais (`docs/specs/<slug>.md`, `<slug>.checklist.md`, `<slug>.plan.md`, `<slug>.tasks.md` e `docs/features/<slug>.md`), além de `docs/workflow/<slug>.jira.md` e `<slug>.pr.md` derivados, todos com o mesmo `<slug>`:
+
+| Fase | Artefato | Dono | Gate |
+| --- | --- | --- | --- |
+| 1 Spec + Esclarecimentos | `docs/specs/<slug>.md` | `spec-creator` | ≤3 `[PRECISA ESCLARECER]` |
+| 2 Checklist | `docs/specs/<slug>.checklist.md` | `spec-reviewer` | itens `CHK###` marcados pelo usuário |
+| 3 Plan + Tasks | `docs/specs/<slug>.plan.md` + `.tasks.md` | `spec-creator` | Constitution Check sem violação injustificada |
+| 4 Analyze | relatório read-only | `spec-reviewer` | 0 achados `CRITICAL` |
+| 5 Implementação | código (TDD) | `frontend`/`backend`/`test-writer` | tasks `[X]` + `pnpm test` verde |
+| 6 Convergência | append em `.tasks.md` | `spec-converge` | `✅ Convergido` |
+| 7 Documentação | `docs/features/<slug>.md` + CHANGELOG + PR | `docs-writer` | — |
+
+Regras de processo (resumo literal — lidas em toda sessão):
+
+- **R1 Spec sem stack.** A spec descreve o QUÊ e o PORQUÊ: proibido nome de framework, biblioteca, arquivo, rota, coleção, campo de banco, componente. Tudo isso vive no `.plan.md`. Única exceção: sistema externo já em produção quando o requisito é de compatibilidade.
+- **R2 Ambiguidade com teto.** Marque `[PRECISA ESCLARECER: pergunta]`, máximo 3 por spec. Default óbvio → assuma e registre em `## Premissas`. Mais de 3 = feature grande demais → `.roadmap.md`.
+- **R6 Checklist é do revisor.** Itens interrogativos sobre a REDAÇÃO do requisito, não sobre o software. O agente nunca marca `[x]`; quem implementa lê como gate e não altera marcadores.
+- **R8 Convergência append-only.** Nunca edita/apaga código, nunca reescreve tasks existentes. Classifica: `ausente | parcial | contradiz | não-solicitado`. Violação de constituição = `CRITICAL` primeiro. Próximo id `T{M+1:03d}`. Saída `✅ Convergido` ou `↻ N tarefas anexadas`.
+- **R10 Persistência flow-forward.** Spec aprovada é registro histórico. Mudança de rumo = nova spec com `Supersede:`; a antiga recebe `Status: superada por`. Proibido reescrever spec aprovada para caber no implementado.
+- **R12 TDD é MUST.** Nenhuma linha de produção sem o teste que a exige (Red-Green-Refactor). Permanece como `RNF-TDD` na spec.
 
 ## Skills disponíveis (`.opencode/skills/` — carregadas pelo opencode)
 
@@ -112,12 +146,14 @@ qualquer mudança de regra deve refletir em ambos os lugares (`.opencode/skills/
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
 - `checkpoint` — salva estado da sessão para retomar depois em nova sessão
 - `spec-driven` — agente de processo spec-driven
+- `spec-converge` — convergência append-only sobre `.tasks.md` (nunca reescreve tasks, classifica achados)
+- `bug-triage` — triagem de bug com veredito: assessment → fix → test (`verificado | parcial | falhou`)
 - `commit-and-pr-docs` — atualizar toda documentação ao criar commits e PRs
 - `context7-mcp` — busca de docs de bibliotecas via Context7
 
 ## Plugin de sessão (`.opencode/plugin/session-changes.ts`)
 
-- Edits/Writes em `apps/` e `packages/` são registrados em `.opencode/.session-changes.log` (gitignored) — consumido pelo `docs-writer` (`/checkpoint`, `/implement` Fase 5), que trunca o arquivo. **Não tocar manualmente.**
+- Edits/Writes em `apps/` e `packages/` são registrados em `.opencode/.session-changes.log` (gitignored) — consumido pelo `docs-writer` (`/checkpoint`, `/implement` Fase 7), que trunca o arquivo. **Não tocar manualmente.**
 - Alerta quando `docs/sessions/*.md` passa de 800 linhas (checkpoint não é diário append-only).
 - Alerta quando `pocketbase/pb_migrations/` é editado e `/audit-sync` não roda há 24h (stamp `.opencode/.audit-sync-stamp`).
 
@@ -141,13 +177,22 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 
 > ⚙️ Gerado por `scripts/brief.py` — **não edite à mão**. Carregado em toda sessão. Detalhe completo: `memory.py code <arquivo>` / `memory.py symptom "<erro>"`.
 
-### 🚫 Proibições técnicas (27)
+### 🏛️ Constituição (MUST) — v1.0.0 (14)
 
-- NUNCA publicar `@ApiOperation` sem o campo `description` ou apenas com `summary` raso `REG-DOC-001`
-- NUNCA omitir respostas de erro em `@ApiResponse` cobrindo apenas status 200/201 `REG-DOC-001`
-- NUNCA usar exemplos genéricos ou fictícios como `example: "string"` ou `example: 0` `REG-DOC-001`
-- NUNCA deixar DTOs de entrada ou saída sem decorators de propriedade `REG-DOC-001`
-- NUNCA esconder peculiaridades de parâmetros de rota `REG-DOC-001`
+- **P-001** Domínio puro, mutação por form action `PRJ-SVK-005`
+- **P-002** App ativo é `runes` `PRJ-SVK-005`
+- **P-003** TDD não-negociável `PRJ-SVK-005`
+- **P-004** Toda entrada é validada por schema `PRJ-SVK-005`
+- **P-005** Autorização no banco, por posse e por campo `PRJ-SVK-005`
+- **P-006** Schema versionado e datado `PRJ-SVK-005`
+- **P-007** Sem diálogo nativo do navegador `PRJ-SVK-005`
+- **P-008** `throw redirect()` nunca dentro de `try-catch` `PRJ-SVK-005`
+- _… +6 em PRJ-SVK-005 — `projetos/svelte-app-clean-arch/constituicao.md` para o texto completo._
+
+> Violação de princípio MUST é achado CRITICAL: bloqueia plan, analyze e convergência.
+
+### 🚫 Proibições técnicas (18)
+
 - NUNCA colocar `throw redirect()` dentro de um bloco `try-catch` genérico `REG-FE-002`
 - NUNCA usar `fetch(window.location.href, { body: { action: '...' } })` para Form Actions `REG-FE-002`
 - NUNCA fazer `res.json()` ao chamar uma Form Action via `fetch` `REG-FE-002`
@@ -158,8 +203,7 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - NUNCA divergir o nome do campo entre form, schema Zod e `formData.get` `REG-FE-002`
 - NUNCA usar `window.alert()` ou `window.prompt()` `REG-FE-001`
 - NUNCA usar classes do Tailwind fora do intervalo padrão (ex: `grid-cols-13`) `REG-FE-001`
-- NUNCA criar placeholders de avatar inline sem centralização explícita `REG-FE-001`
-- _… +11 em REG-FE-001, REG-FE-003, REG-SEC-002 — `memory.py search <ID>` para o texto completo._
+- _… +8 em REG-FE-001, REG-FE-003 — `memory.py search <ID>` para o texto completo._
 
 ### 📋 Regras de negócio (13)
 
@@ -171,11 +215,7 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - RN-PP-01: O baralho utiliza a escala de Fibonacci padrão: `0`, `1`, `2`, `3`, `5`, `8`, `13`… `REG-NEG-003`
 - RN-PP-02: Durante a fase ativa de votação, os participantes podem alterar seus votos a qualquer… `REG-NEG-003`
 - RN-PP-03: Apenas o criador/facilitador da sala de poker tem permissão para acionar as ações… `REG-NEG-003`
-- RN-PP-04: Na revelação, o sistema calcula a média aritmética dos votos numéricos e destaca a… `REG-NEG-003`
-- RN-RT-01: Todo card criado em uma retrospectiva é anônimo na visualização de todos os membros da… `REG-NEG-005`
-- RN-RT-02: Apenas o navegador que criou o card recebe o `editToken` (SHA-256) que permite editar… `REG-NEG-005`
-- RN-RT-03: Uma nova retrospectiva é inicializada com 3 colunas marcadas `is_default`: `O que foi… `REG-NEG-005`
-- _… +1 em REG-NEG-005 — `memory.py search <ID>` para o texto completo._
+- _… +5 em REG-NEG-003, REG-NEG-005 — `memory.py search <ID>` para o texto completo._
 
 ### ⚠️ Débitos abertos
 
@@ -190,17 +230,21 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - throw redirect() do SvelteKit Silenciosamente Engolido Dentro de try-catch `ERR-FE-002`
 - Uso de Classe Inexistente no Tailwind (md:grid-cols-13) `ERR-FE-004`
 
-### ♻️ Já resolvido em outro projeto (aplica-se aqui)
-
-- Aprendizado: Isolamento e Determinismo em Testes Unitários — origem `null` `APR-GER-002`
-- Aprendizado: Padronização de Exceções de Domínio e Respostas de Erro HTTP — origem `null` `APR-GER-001`
-- Proxy Reverso Nginx Perdendo Autenticação: 401 Após Login, Cookie Ausente e Authorization Sumindo no Upstream — origem `null` `ERR-INF-002`
-- SQLite 'database is locked' / SQLITE_BUSY no PocketBase em Container: pb_data Compartilhado, WAL em NFS e Migrações Concorrentes — origem `null` `ERR-INF-001`
-
-> Padrão agnóstico de stack. Antes de aplicar, confira a equivalência em `index-por-sintoma.md` (seção ♻️). Busca: `memory.py solve "<problema>"`.
-
 ### 🏛️ Decisões vigentes
 
-
+- Orquestração de modelos por carga cognitiva com fallback funcional `DEC-TEC-005`
+- Pipeline Spec-Driven em Artefatos Separados (spec/plan/tasks/checklist) com Convergência Obrigatória `DEC-TEC-009`
+- Filtro de Stack no Roteamento Global da Memória, por Tecnologia Discriminante `DEC-TEC-010`
+- Adoção do Svelte 5 com Runes e Arquitetura Ports & Adapters `DEC-TEC-001`
+- Migração do Editor WYSIWYG Tiptap (HTML) para Milkdown / Markdown Puro `DEC-TEC-003`
+- PocketBase Isolado em Docker com Migrations JS Versionadas `DEC-TEC-004`
 > ✂️ truncado no orçamento de 4600 chars — use `memory.py load svelte-app-clean-arch`.
+
+### 🧭 Antes de agir
+
+0. Vou decidir/implementar → os MUST acima vêm antes de qualquer regra local
+1. Vou editar um arquivo → `memory.py code <caminho>`
+2. Recebi um erro → `memory.py symptom "<mensagem>"`
+3. Vou decidir algo → checar `decisoes-tecnicas/` (protocolo `SKI-GER-001`)
+4. Ao concluir → registrar com `evidence` + `source_refs`, depois `score.py` e `reindex.py`
 <!-- END:AGENT-MEMORY -->

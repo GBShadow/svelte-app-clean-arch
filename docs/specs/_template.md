@@ -1,14 +1,30 @@
+<!--
+  INSTRUÇÕES AO AGENTE QUE PREENCHE — apague este bloco antes de entregar o rascunho.
+
+  R1 — Spec sem stack. A spec descreve o QUÊ e o PORQUÊ: proibido nome de framework, biblioteca, arquivo, rota, coleção, campo de banco, componente. Tudo isso vive no `.plan.md`. Única exceção: nomear sistema externo já em produção quando o requisito é de compatibilidade.
+
+  R2 — Ambiguidade com teto. Marque `[PRECISA ESCLARECER: pergunta]`, **máximo 3 por spec**. Se existe default óbvio da indústria ou do projeto, assuma o default e registre em `## Premissas` em vez de perguntar. Mais de 3 marcadores = a feature é grande demais → use `.roadmap.md`.
+
+  R4 — IDs estáveis de largura fixa. `RF-001`, `RNF-001`, `AC-001`, `SC-001`, `CHK001`, `T001`, `US1` (user story), `R1` (entrada de roadmap). IDs nunca são renumerados nem reciclados após serem referenciados.
+-->
+
 # <Nome da Feature>
 
-Created: <YYYY-MM-DD>
+Criado: <YYYY-MM-DD>
+Status: Rascunho
+Slug: <YYYY-MM-DD-<nome>>
+Supersede: docs/specs/<spec-substituída>.md
+
+> `Status` assume um de: `Rascunho` | `Em validação` | `Aprovada` | `Superada`.
+> `Supersede` fica presente **apenas** quando esta spec substitui outra (R10 — flow-forward); caso contrário, apague a linha.
 
 ## Contexto
 
-Qual problema existe hoje? Por que essa funcionalidade é necessária?
+Qual problema existe hoje? Por que essa funcionalidade é necessária? O que acontece hoje, e o que fica impossível ou caro sem ela?
 
 ## Objetivo
 
-O que deve existir ao final, em 1–2 frases.
+O que deve existir ao final, em 1–2 frases — sem detalhe de implementação.
 
 ## Escopo
 
@@ -18,96 +34,99 @@ O que deve existir ao final, em 1–2 frases.
 **Fora do escopo:**
 - ...
 
-## Impactos e Dependências
+## User Stories priorizadas
 
-- **Features existentes afetadas:** _listar components, rotas, coleções PocketBase que precisarão de adaptação_
-- **Dívida técnica existente relacionada:** _consultar `docs/TECH-DEBT.md`; mencionar itens que impactam esta feature_
-- **Dependências:** _specs/features que esta tarefa depende (ex: precisa de migração X antes)_
-- **Specs relacionadas:** _outras specs no mesmo ecossistema_
+Cada story é uma fatia de valor que pode ser entregue e validada sozinha. Ordene por prioridade (`P1` > `P2` > …). A implementação segue essa ordem.
+
+### US1 — <título da story> (Prioridade: P1)
+
+**Por que esta prioridade:** <por que esta story vem primeiro — maior valor, menor risco, desbloqueia as demais?>
+
+**Teste independente:** <como validar esta story sozinha, entregando valor, sem depender das demais?>
+
+**Cenários de aceite:**
+1. Dado <estado inicial>, quando <ação>, então <resultado observável>.
+2. Dado <estado inicial>, quando <ação>, então <resultado observável>.
+
+<!-- Adicione `### US2 — … (Prioridade: P2)`, `### US3 — …`, etc., conforme necessário, em ordem decrescente de prioridade. -->
 
 ## Requisitos funcionais
 
-- RF1: O sistema deve ...
-- RF2: ...
-- RF-TDD: **Todo código de produção deve ser precedido pelo teste que o exige** (Red-Green-Refactor). Nenhuma implementação é aceita sem o teste correspondente escrito primeiro.
+> Um comportamento observável por linha. Use `MUST` para o inegociável e `DEVE` para o comportamento esperado.
+
+- RF-001: DEVE <verbo> <objeto> <condição> — observável por <resultado observável>.
+- RF-002: DEVE <verbo> <objeto> <condição>.
+- RF-003: <...>
 
 ## Requisitos não funcionais
 
-_(performance, acessibilidade, segurança, testes — se aplicável)_
+- RNF-001: <atributo não funcional — desempenho, acessibilidade, disponibilidade — com requisito mensurável>.
+- RNF-TDD: Todo código de produção deve ser precedido pelo teste que o exige (Red-Green-Refactor). Nenhuma linha de produção é escrita sem um teste falhando primeiro (R12).
+- RNF-SEG — segurança (ameaça → mitigação exigida, em linguagem agnóstica de stack):
+  - **XSS — conteúdo fornecido pelo usuário executado como marca:** entrada livre ou texto rico é tratada como dado, nunca como marca executável; a renderização exige saneamento/escape explícito no ponto de exibição. A validação na entrada não é mitigação suficiente.
+  - **IDOR / escalação de privilégio — acesso a recurso alheio por adivinhação de identificador:** toda leitura/escrita de um recurso verifica, no servidor, que o usuário autenticado tem vínculo com aquele recurso; o identificador enviado pelo cliente nunca é confiado sozinho.
+  - **Vazamento por canal em tempo real:** toda entrega de evento/atualização passa pelo mesmo critério de autorização da leitura — o servidor filtra antes de enviar, e o cliente re-verifica — para que ninguém receba atualizações de dados a que não tem acesso.
 
-- **Segurança**: Analisar preventivamente XSS (campos de texto rico), IDOR, escalação de privilégios e vazamentos via PocketBase realtime subscriptions. Documentar as mitigações nos RNFs e ACs.
-- **Realtime** (se aplicável): O `load` retorna `pb.authStore.token` na `PageData`. O client usa `pocketbaseClient.ts` (já existente) para criar um PB browser-side, chama `pb.authStore.save(token, model)` antes de abrir subscriptions. Classe reativa (`.svelte.ts`) faz dedup por `id`.
-
-## Casos de Borda e Cenários de Erro
+## Casos de borda
 
 - **Concorrência:** _o que acontece se dois usuários acionam a mesma ação simultaneamente?_
-- **Dados inconsistentes:** _como o sistema reage se o estado do banco não reflete o esperado?_
-- **Timeout / falha de rede:** _qual o comportamento quando uma requisição falha?_
-- **Estado vazio:** _o que aparece quando não há dados?_
+- **Dados inconsistentes:** _como o sistema reage quando o estado armazenado não reflete o esperado?_
+- **Timeout / falha de rede:** _qual o comportamento quando uma requisição falha ou demora além do aceitável?_
+- **Estado vazio:** _o que aparece quando não há dados a exibir?_
 - **Permissão negada:** _qual o fluxo quando o usuário não tem acesso a um recurso?_
-- **Input inválido / malicioso:** _como a validação rejeita e reporta?_
-- **Sessão expirada:** _o que acontece quando o token do PocketBase expira durante o uso?_
-- **Cache / realtime inconsistente:** _como garantir que o dado exibido reflete o estado atual?_
+- **Input malicioso:** _como entrada forjada ou fora do contrato é rejeitada e reportada?_
+- **Sessão expirada:** _o que acontece quando a sessão do usuário expira durante o uso?_
+- **Dado obsoleto em tela:** _como garantir que o que está na tela reflete o estado atual, e não uma cópia antiga?_
 
 ## Critérios de aceite
 
-- [ ] AC1: Dado ..., quando ..., então ...
-- [ ] AC2: ...
-- [ ] Testes unitários puros escritos **antes** da implementação (TDD): (`<feature>Access.test.ts`) e E2E Playwright cobrindo os cenários acima.
-- [ ] `pnpm test` passa antes da abertura do PR.
+> **AC descreve comportamento observável — nunca execução de comando, cobertura de teste ou "testes escritos antes".** Rodar `pnpm test` e escrever testes primeiro são tarefas da fase 5 (`.tasks.md`), não critério de aceite. Cada `AC-###` referencia a `RF-###` de que deriva.
 
-## Design (Ports & Adapters — padrão real do projeto)
+- [ ] AC-001 (deriva de RF-001): Dado <estado inicial>, quando <ação>, então <resultado observável>.
+- [ ] AC-002 (deriva de RF-002): Dado <estado inicial>, quando <ação>, então <resultado observável>.
+- [ ] AC-003 (deriva de RF-00X): <...>
 
-> **Nota:** o app `runes` **não** usa a abstração `Gateway`/`HttpGateway`/`MemoryGateway` de `packages/todo-domain` para features PocketBase — isso é resquício de uma versão anterior do projeto. O padrão real (como em `chat-realtime`) faz as mutações via _form actions_ (`+page.server.ts` chamando `locals.pb`), com a lógica de autorização isolada em funções puras (`$lib/domain/...`) e estado reativo consumindo subscriptions (`.svelte.ts`).
+## Critérios de sucesso
 
-| Camada | Mudança prevista |
-|--------|-------------------|
-| PocketBase | Migration cria `<coleção>` (`campo` tipo constraints, `created`/`updated` autodate). API Rules: `listRule` = ...; `viewRule` = ...; `createRule` = ...; `updateRule` = ...; `deleteRule` = ... |
-| Domínio (função pura) | `apps/runes/src/lib/domain/<feature>Access.ts` (regras puras de permissão) + testes |
-| Domínio reativo (client) | `apps/runes/src/lib/domain/<Feature>.svelte.ts` — classe com `$state`, recebe subscriptions realtime, dedup por `id` |
-| Server (types) | `apps/runes/src/lib/server/<feature>Record.ts` (tipos das coleções) |
-| Validação | `apps/runes/src/lib/validation/<feature>Schemas.ts` (Zod schemas) |
-| API | `apps/runes/src/routes/<feature>/+page.server.ts` — `load` + form actions usando `locals.pb.collection(...)` |
-| UI | `apps/runes/src/lib/components/<feature>/` |
+> Métrica **mensurável e agnóstica de tecnologia** — tempo, taxa ou contagem observável pelo usuário.
 
-_(A partir de 2026-07-09, `classic` e `remote` foram movidos para `deprecated/`. Toda nova funcionalidade usa `apps/runes`.)_
+- SC-001: <ação principal> em menos de <N> s (tempo medido do início da ação à confirmação).
+- SC-002: <N>% de <evento> concluído sem erro (taxa observável).
+- SC-003: <contagem mínima/esperada> de <coisa>.
 
-## UI/UX (Estados)
+## Premissas
 
-| Estado | Comportamento / Componente |
-|--------|---------------------------|
-| **Loading** | _skeleton, spinner, shimmer — qual o feedback imediato?_ |
-| **Empty** | _mensagem de "nenhum item", call-to-action para criar?_ |
-| **Error** | _toast, inline alert, tela de erro — qual o padrão?_ |
-| **Success** | _feedback positivo após ação (toast, redirect, transição)?_ |
-| **Offline** | _badge de desconexão, fila de ações pendentes?_ |
+> Defaults assumidos (R2) em vez de perguntar. Um por linha, com o porquê.
 
-## Contrato de API (se houver)
+- <default assumido 1> — <por que é o default óbvio da indústria ou do projeto>.
 
-| Método | Rota | Request | Response |
-|--------|------|---------|----------|
-| GET | `/<feature>` | — | ... |
-| POST (form action) | `/<feature>` (`<action>`) | `campo1, campo2` | `fail(400, {errors})` se inválido |
+## Esclarecimentos
 
-## Alternativas consideradas
+<!-- Preenchida apenas na fase 1b (R3). Máximo 5 perguntas, uma por vez; o que sobrar da cota vira `Deferred:`. Formato:
 
-Trade-offs entre abordagens e por que esta foi escolhida (opcional).
+### Sessão AAAA-MM-DD
 
-## Análise de Risco e Dívida Técnica
+- Q: <pergunta> → A: <resposta>
 
-- **Riscos identificados:** _ex: dependência externa instável, escala futura não contemplada, segurança_
-- **Dívida técnica aceita:** _o que estamos simplificando agora que precisará ser refeito depois?_
-- **Dívida existente resolvida junto:** _itens de `docs/TECH-DEBT.md` que serão corrigidos como parte desta feature_
-- **Itens registrados em `docs/TECH-DEBT.md`:** _links para os novos itens criados durante esta spec_
+Deferred: <itens da cota não gastos>
+-->
+
+## Riscos e dívida técnica
+
+- **Risco:** <risco> → <mitigação ou plano de contingência>.
+- **Dívida técnica aceita:** <o que simplificamos agora e precisará ser refeito depois>.
 
 ## Questões em aberto
 
-- ...
+- <pergunta ou decisão ainda pendente — remover se não houver>.
 
 ## Links
 
-- Jira (após aprovação da spec): `docs/workflow/<slug>.jira.md`
-- Feature doc (pós-implementação): `docs/features/<slug>.md`
+- Plan: `docs/specs/<slug>.plan.md`
+- Tasks: `docs/specs/<slug>.tasks.md`
+- Checklist: `docs/specs/<slug>.checklist.md`
+- Jira: `docs/workflow/<slug>.jira.md`
+- Feature: `docs/features/<slug>.md`
 - PR: `docs/workflow/<slug>.pr.md`
-- Depende de: [`<spec>`](./spec.md)
-- Specs relacionadas: [`<spec>`](./spec.md)
+- Roadmap: `docs/specs/<epico>.roadmap.md` → entrada `R2` (quando esta spec é uma sub-feature de um épico)
+- Supersede: `docs/specs/<spec-substituída>.md` (quando esta spec substitui outra — R10)

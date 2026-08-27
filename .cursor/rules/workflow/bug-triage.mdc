@@ -1,0 +1,29 @@
+---
+description: Corrigir bug passando por assessment antes do patch, com veredito e registro na memória
+alwaysApply: false
+---
+
+# Triagem de bug
+
+Quando o usuário **reportar um bug**, **pedir correção**, **consertar**, **"está quebrando"** ou **"dá erro"**:
+
+1. **Não pule direto para o patch** (salvo a exceção de bug trivial abaixo).
+2. Copiar [`docs/bugs/_template-assessment.md`](../../docs/bugs/_template-assessment.md) → `docs/bugs/<slug>.assessment.md` (fase **read-only**, não altera código).
+3. Fix confinado à lista fechada do assessment: [`docs/bugs/_template-fix.md`](../../docs/bugs/_template-fix.md) → `docs/bugs/<slug>.fix.md` (TDD: o teste que falhava vem primeiro).
+4. Veredito: [`docs/bugs/_template-test.md`](../../docs/bugs/_template-test.md) → `docs/bugs/<slug>.test.md` (`verificado | parcial | falhou`).
+5. Registrar na memória central conforme o veredito (ver [`docs/bugs/README.md`](../../docs/bugs/README.md)).
+
+## R9 — Bug com veredito
+
+O `assess` é read-only e escreve só o `.assessment.md`. O `fix` fica confinado aos arquivos listados no assessment; ampliar escopo exige a seção `## Desvios do Assessment`. O `test` emite `verificado | parcial | falhou` e **rebaixa obrigatoriamente para `parcial` se a reprodução documentada não foi de fato executada**. Só o veredito `verificado` autoriza registro em `erros/` da memória; `parcial`/`falhou` vão para `debitos-tecnicos/`.
+
+## Bug trivial — dispensa o fluxo
+
+O fluxo de três artefatos pode ser dispensado **apenas** quando a correção é trivial e sem risco de design:
+
+- **typo** em string, label ou comentário, ou
+- **valor literal** errado (texto, cor, constante óbvia) cuja troca é evidente e reversível.
+
+Nesses casos, vá direto ao patch — mas ainda assim registre o aprendizado se o erro tiver chance de se repetir.
+
+Para **qualquer outra coisa** (lógica, fluxo, estado, permissão, realtime, validação, integração), o `.assessment.md` é obrigatório antes do patch.

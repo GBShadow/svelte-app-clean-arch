@@ -2,7 +2,33 @@
 
 **Guia completo:** [../spec-driven-development.md](../spec-driven-development.md)
 
-Especificação **antes** de implementar — o que será construído, por quê, e o desenho Ports & Adapters. Base para Jira, implementação, feature doc e PR (mesmo `<slug>`).
+Esta pasta guarda os **artefatos de especificação**: primeiro o QUÊ (spec), depois o COMO (plan), depois o QUEM-FAZ-O-QUÊ (tasks), com gates de qualidade entre as fases. Tudo compartilha o mesmo `<slug>` em kebab-case com prefixo de data (`YYYY-MM-DD-<nome>`).
+
+## Os 5 artefatos
+
+| Artefato | Fase | Conteúdo | Agente dono |
+|----------|------|----------|-------------|
+| `<slug>.md` | 1 Spec | **o QUÊ** — contexto, objetivo, escopo, user stories, RF/RNF, casos de borda, AC, SC (R1: sem stack) | `spec-creator` |
+| `<slug>.checklist.md` | 1c Checklist | itens `CHK###` interrogativos sobre a redação (R6; a marcação `[x]` é do humano) | `spec-reviewer` |
+| `<slug>.plan.md` | 2 Plan | **o COMO** — contexto técnico, Constitution Check, camadas, modelo de dados, contrato de API | `spec-creator` |
+| `<slug>.tasks.md` | 3 Tasks | tasks `T###` em fases, rastreáveis a `RF-###` (R5) | `spec-creator` |
+| `<epico>.roadmap.md` | (épicos) | decomposição em `R1..Rn` — cada entrada vira uma spec própria | `spec-creator` |
+
+## Pipeline (7 fases)
+
+1. **Spec** — `docs/specs/<slug>.md` (o QUÊ; gate: ≤3 `[PRECISA ESCLARECER]`)
+2. **Plan** — `docs/specs/<slug>.plan.md` (o COMO; gate: Constitution Check sem violação injustificada)
+3. **Tasks** — `docs/specs/<slug>.tasks.md` (gate: toda `RF-###` coberta por ≥1 `T###`)
+4. **Jira** — `docs/workflow/<slug>.jira.md` (derivado das tasks)
+5. **Implementar** — código com TDD Red-Green-Refactor (gate: tasks `[X]` + `pnpm test` verde)
+6. **Convergir** — append `✅ Convergido` em `docs/specs/<slug>.tasks.md` (R8)
+7. **Documentar** — `docs/features/<slug>.md` + `docs/CHANGELOG.md` + `docs/workflow/<slug>.pr.md`
+
+Sub-fases: `1b` Esclarecer (cota de 5 perguntas), `1c` Checklist, `3b` Analyze (read-only). Bug não passa por aqui — usa `docs/bugs/` (R9).
+
+## Regime flow-forward (R10)
+
+Spec aprovada é **registro histórico**: nunca é reescrita para caber no que foi implementado. Mudança de rumo = **nova spec** com `Supersede: docs/specs/<antiga>.md`, e a antiga recebe `Status: superada por <nova>`. Divergência descoberta na implementação vira task de convergência ou spec nova — nunca edição silenciosa.
 
 ## Índice
 
@@ -23,30 +49,28 @@ Especificação **antes** de implementar — o que será construído, por quê, 
 | Backlog Global e Gerenciamento do Ciclo de Vida da Sala (Planning Poker) | Spec em aprovação | 2026-07-12 | [2026-07-12-poker-backlog-global.md](./2026-07-12-poker-backlog-global.md) |
 | Notificações Push de Chat e Sistema (runes) | Implementada | 2026-07-15 | [2026-07-15-notifications.md](./2026-07-15-notifications.md) |
 | Chat — acesso administrativo (runes) | Spec em aprovação | 2026-07-15 | [2026-07-15-chat-admin-access.md](./2026-07-15-chat-admin-access.md) |
+| Projetos, Sprints e Contexto no Kanban + Planning Poker | Implementada | 2026-07-21 | [2026-07-21-projects-sprints-kanban.md](./2026-07-21-projects-sprints-kanban.md) |
 | Campanha de Testes — Cobertura Total | Spec em aprovação | 2026-07-22 | [2026-07-22-testing-campaign.md](./2026-07-22-testing-campaign.md) |
+| Correção do Export de Tasks do Planning Poker | Especificada | 2026-07-23 | [2026-07-23-poker-export-fix.md](./2026-07-23-poker-export-fix.md) |
 | Retrospectiva de Sprint | Implementada | 2026-07-24 | [2026-07-24-sprint-retrospective.md](./2026-07-24-sprint-retrospective.md) |
 | Documentos de Especificação | Implementada | 2026-07-24 | [2026-07-24-specification-documents.md](./2026-07-24-specification-documents.md) |
+| Revisão de Design e Responsividade | Implementada | 2026-08-05 | [2026-08-05-revisao-de-design.md](./2026-08-05-revisao-de-design.md) |
+
+> **Legenda de Status:** o ciclo de vida da spec é `Rascunho` → `Em validação` → `Aprovada` → `Superada` (ver `_template.md`). Neste índice, o valor reflete o estado de implementação: `Especificada` (spec escrita) · `Spec em aprovação` (em validação) · `Implementada` (construída + documentada).
 
 > **Ordem de implementação:** o Kanban vem **antes** do Planning Poker — a exportação de tasks do Poker escreve em `kanban_cards` e localiza a coluna `type = 'backlog'`, então as migrations do Kanban precisam existir primeiro.
 
 ## Nova spec
 
-1. Copie [_template.md](./_template.md) para `<slug-da-feature>.md`
-2. Preencha com o usuário: contexto, objetivo, escopo, requisitos, critérios de aceite, design
+1. Copie [_template.md](./_template.md) para `<slug>.md` e preencha o QUÊ (R1/R2, IDs R4)
+2. Crie checklist, plan e tasks a partir dos templates (`_template-checklist.md`, `_template-plan.md`, `_template-tasks.md`)
 3. Valide/alinhe com o usuário **antes** de abrir Jira ou implementar
 4. Atualize este índice
 
-## Quando pular a spec
+## Quando pular a spec / usar roadmap
 
-Bugfixes triviais de 1 linha ou mudanças sem impacto de design — vá direto para `docs/workflow/<slug>.jira.md`.
-
-## Fluxo completo (spec-driven)
-
-1. **Spec** — `docs/specs/<slug>.md`
-2. **Jira** — `docs/workflow/<slug>.jira.md` (referencia a spec)
-3. **Implementar** — `.cursor/rules/architecture/runes-ports-adapters.mdc`
-4. **Feature** — `docs/features/<slug>.md`
-5. **PR** — `docs/workflow/<slug>.pr.md`
+- Bugfix trivial de poucas linhas ou mudança sem impacto de design → fluxo de bug (`docs/bugs/`, R9)
+- Feature grande demais (mais de 3 `[PRECISA ESCLARECER]` ou ~3+ user stories) → `_template-roadmap.md`
 
 ## Regras para agentes de IA
 

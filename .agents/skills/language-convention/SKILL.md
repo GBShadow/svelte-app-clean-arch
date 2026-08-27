@@ -1,3 +1,8 @@
+---
+name: language-convention
+description: Define quando usar inglês vs. português neste projeto. Aplique sempre a todas as interações e modificações no código.
+---
+
 # Convenção de Idioma
 
 ## Descrição

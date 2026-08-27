@@ -1,3 +1,8 @@
+---
+name: client-realtime-and-actions
+description: Regra de arquitetura para o client SvelteKit: como invocar form actions via `fetch`, como manter boards reativos sincronizados com `data` do load, e como autenticar subscriptions PocketBase. Nascida do incidente da retro + SpecTaskCreator (2026-07-25).
+---
+
 # Client: form actions + boards realtime
 
 ## Descrição

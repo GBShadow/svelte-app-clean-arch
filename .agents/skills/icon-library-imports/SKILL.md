@@ -1,3 +1,8 @@
+---
+name: icon-library-imports
+description: Regra para importar ícones de bibliotecas (`lucide-svelte` e similares) por sub-path, nunca via barrel (`import { X } from 'lucide-svelte'`). O barrel força o Vite a resolver/compilar o pacote inteiro (centenas ou milhares de ícones), não só os nomes usados — tanto no SSR quanto no `optimizeDeps` do client.
+---
+
 # Import de bibliotecas de ícones
 
 ## Descrição

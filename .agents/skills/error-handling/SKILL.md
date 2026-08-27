@@ -1,3 +1,8 @@
+---
+name: error-handling
+description: Regra de arquitetura: todo `catch` de uma operação best-effort (disparada sem `await` no caminho crítico, com `.catch()` para não derrubar a requisição principal — notificação, push, rollback de compensação) precisa logar o erro. `.catch(() => {})` nunca é aceitável.
+---
+
 # Catch silencioso é bug invisível
 
 ## Descrição

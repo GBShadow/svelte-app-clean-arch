@@ -1,3 +1,8 @@
+---
+name: pocketbase-collections
+description: Regra para garantir que toda coleção PocketBase (base ou auth) tenha os campos autodate `created` e `updated`, e que coleções sem uso (como a `users` padrão de fábrica) sejam removidas.
+---
+
 # Timestamps em Coleções PocketBase
 
 ## Descrição

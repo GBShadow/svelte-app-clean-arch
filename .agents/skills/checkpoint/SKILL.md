@@ -1,3 +1,8 @@
+---
+name: checkpoint
+description: Skill de meta-processo que salva o estado completo da sessão atual em um arquivo de checkpoint, permitindo que o trabalho seja retomado exatamente de onde parou em uma nova sessão ou agente. Use **sempre** ao final de uma sessão, antes de pausar, trocar de tarefa, ou quando instruído explicitamente com "checkpoint" ou "salvar sessão".
+---
+
 # Checkpoint de Sessão
 
 ## Descrição

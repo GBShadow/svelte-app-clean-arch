@@ -587,7 +587,6 @@ docs/
 | Local                                                   | Conteúdo                      | Propósito                                          |
 | ------------------------------------------------------- | ----------------------------- | -------------------------------------------------- |
 | `.cursor/rules/architecture/runes-ports-adapters.mdc`   | Ports & Adapters (runes)      | Checklist de implementação                         |
-| `.cursor/rules/architecture/classic-ports-adapters.mdc` | Ports & Adapters (deprecated) | Referência histórica                               |
 | `.cursor/rules/architecture/language-convention.mdc`    | Idioma                        | Código em inglês, UI em português                  |
 | `.cursor/rules/architecture/data-testid.mdc`            | data-testid                   | data-testid em componentes + getByTestId em testes |
 | `.cursor/rules/architecture/pocketbase-collections.mdc` | PocketBase                    | Toda coleção precisa dos campos `created`/`updated` |
@@ -598,17 +597,17 @@ docs/
 | `.cursor/rules/meta/rules-sync.mdc`                     | Sync                          | Manter regras sincronizadas                        |
 | `.cursor/rules/meta/commit-convention.mdc`              | Commits                       | Sem co-autoria de IA                               |
 | `.cursor/rules/meta/code-structure.mdc`                 | Estrutura                     | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
-| `.agents/skills/spec-driven.md`                         | SDD (Freebuff)                | Equivalente ao agente Claude                       |
-| `.agents/skills/runes-ports-adapters.md`                | Runes (Freebuff)              | Guia de implementação runes                        |
-| `.agents/skills/classic-ports-adapters.md`              | Classic (Freebuff)            | Guia de implementação classic (deprecated)         |
-| `.agents/skills/feature-documentation.md`               | Feature doc (Freebuff)        | Documentação de features                           |
-| `.agents/skills/language-convention.md`                 | Idioma (Freebuff)             | Convenção de idioma                                |
-| `.agents/skills/code-structure.md`                      | Estrutura (Freebuff)          | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
-| `.agents/skills/data-testid.md`                         | data-testid (Freebuff)        | data-testid em componentes + getByTestId em testes |
-| `.agents/skills/pocketbase-collections.md`               | PocketBase (Freebuff)         | Toda coleção precisa dos campos `created`/`updated` |
+| `.agents/skills/<nome>/SKILL.md`                        | Skills (Agent Skills)         | Layout canônico lido pelo OMP; espelhado em `.opencode/skills/` |
+| `.agents/skills/spec-driven/SKILL.md`                   | SDD                           | Equivalente ao agente Claude                       |
+| `.agents/skills/runes-ports-adapters/SKILL.md`          | Runes                         | Guia de implementação runes (default)              |
+| `.agents/skills/feature-documentation/SKILL.md`         | Feature doc                   | Documentação de features                           |
+| `.agents/skills/language-convention/SKILL.md`           | Idioma                        | Convenção de idioma                                |
+| `.agents/skills/code-structure/SKILL.md`                | Estrutura                     | Ler CODE-STRUCTURE.md antes; atualizar docs depois |
+| `.agents/skills/data-testid/SKILL.md`                   | data-testid                   | data-testid em componentes + getByTestId em testes |
+| `.agents/skills/pocketbase-collections/SKILL.md`        | PocketBase                    | Toda coleção precisa dos campos `created`/`updated` |
 | `.cursor/rules/meta/tech-debt.mdc`                      | Débito técnico                | Registrar débito identificado (não corrigido) em `docs/TECH-DEBT.md` |
-| `.agents/skills/tech-debt.md`                           | Débito técnico (Freebuff)     | Equivalente à regra acima                          |
-| `.agents/skills/commit-and-pr-docs.md`                  | Commit/PR docs (Freebuff)     | Atualizar docs ao criar commits e PRs              |
+| `.agents/skills/tech-debt/SKILL.md`                     | Débito técnico                | Equivalente à regra acima                          |
+| `.agents/skills/commit-and-pr-docs/SKILL.md`            | Commit/PR docs                | Atualizar docs ao criar commits e PRs              |
 | `.claude/agents/spec-driven.md`                         | SDD (Claude)                  | Agente spec-driven original                        |
 
 ---

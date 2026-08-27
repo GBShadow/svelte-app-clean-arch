@@ -1,3 +1,8 @@
+---
+name: spec-driven
+description: Agente de processo que conduz o fluxo spec-driven de 7 fases (constituição → spec → esclarecimento → checklist → plan → tasks → implementação → convergência → documentação) de forma conversacional, seguindo os templates em docs/specs/ e o manual docs/spec-driven-development.md. Bugfix vai para docs/bugs/ (R9). Nunca escreve código de produto nem executa commit/push/gh pr create (R13).
+---
+
 # Spec-Driven Development Agent (Freebuff Skill)
 
 ## Descrição

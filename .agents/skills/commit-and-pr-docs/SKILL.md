@@ -1,3 +1,8 @@
+---
+name: commit-and-pr-docs
+description: Sempre que commits ou PRs são criados, toda a documentação relevante deve ser atualizada para refletir o novo estado do projeto.
+---
+
 # Atualização de Documentação em Commits e PRs
 
 ## Descrição

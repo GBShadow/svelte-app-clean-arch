@@ -123,16 +123,14 @@ Regras de processo (resumo literal — lidas em toda sessão):
 - **R10 Persistência flow-forward.** Spec aprovada é registro histórico. Mudança de rumo = nova spec com `Supersede:`; a antiga recebe `Status: superada por`. Proibido reescrever spec aprovada para caber no implementado.
 - **R12 TDD é MUST.** Nenhuma linha de produção sem o teste que a exige (Red-Green-Refactor). Permanece como `RNF-TDD` na spec.
 
-## Skills disponíveis (`.opencode/skills/` — carregadas pelo opencode)
+## Skills disponíveis (`.agents/skills/` + `.opencode/skills/`)
 
-As skills são versionadas em `.opencode/skills/<nome>/SKILL.md` (formato opencode). A fonte
-original para o ecossistema Claude/Cursor continua em `.agents/skills/` — **regra de sync:**
-qualquer mudança de regra deve refletir em ambos os lugares (`.opencode/skills/` e
-`.agents/skills/`).
+As skills são versionadas em `.agents/skills/<nome>/SKILL.md` (layout Agent Skills, lido pelo
+OMP) e espelhadas em `.opencode/skills/<nome>/SKILL.md` (opencode). **Regra de sync:** qualquer
+mudança de regra deve refletir nos dois lugares.
 
 - `verify-before-accept` — disciplina de evidência (esta regra — detalhada acima)
 - `runes-ports-adapters` — guia de implementação runes
-- `classic-ports-adapters` — guia de implementação classic (deprecated)
 - `feature-documentation` — documentação de funcionalidades
 - `language-convention` — convenção de idioma
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois
@@ -146,8 +144,8 @@ qualquer mudança de regra deve refletir em ambos os lugares (`.opencode/skills/
 - `tech-debt` — débito técnico identificado e não corrigido na hora deve ser registrado em `docs/TECH-DEBT.md`
 - `checkpoint` — salva estado da sessão para retomar depois em nova sessão
 - `spec-driven` — agente de processo spec-driven
-- `spec-converge` — convergência append-only sobre `.tasks.md` (nunca reescreve tasks, classifica achados)
-- `bug-triage` — triagem de bug com veredito: assessment → fix → test (`verificado | parcial | falhou`)
+- `spec-converge` — **não é skill**: agente em `.omp/agents/` + `.opencode/agents/` e regra `.cursor/rules/workflow/spec-converge.mdc`
+- `bug-triage` — **não é skill**: regra `.cursor/rules/workflow/bug-triage.mdc`
 - `commit-and-pr-docs` — atualizar toda documentação ao criar commits e PRs
 - `context7-mcp` — busca de docs de bibliotecas via Context7
 
@@ -191,7 +189,7 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 
 > Violação de princípio MUST é achado CRITICAL: bloqueia plan, analyze e convergência.
 
-### 🚫 Proibições técnicas (18)
+### 🚫 Proibições técnicas (22)
 
 - NUNCA colocar `throw redirect()` dentro de um bloco `try-catch` genérico `REG-FE-002`
 - NUNCA usar `fetch(window.location.href, { body: { action: '...' } })` para Form Actions `REG-FE-002`
@@ -203,7 +201,7 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - NUNCA divergir o nome do campo entre form, schema Zod e `formData.get` `REG-FE-002`
 - NUNCA usar `window.alert()` ou `window.prompt()` `REG-FE-001`
 - NUNCA usar classes do Tailwind fora do intervalo padrão (ex: `grid-cols-13`) `REG-FE-001`
-- _… +8 em REG-FE-001, REG-FE-003 — `memory.py search <ID>` para o texto completo._
+- _… +12 em REG-FE-001, REG-FE-003, REG-SEC-002 — `memory.py search <ID>` para o texto completo._
 
 ### 📋 Regras de negócio (13)
 

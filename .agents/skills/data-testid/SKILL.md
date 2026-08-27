@@ -1,3 +1,8 @@
+---
+name: data-testid
+description: Regra para adicionar `data-testid` em kebab-case a todos os elementos interativos em componentes Svelte, e usar `getByTestId` nos testes e2e para seletores estáveis.
+---
+
 # data-testid em Componentes Svelte
 
 ## Descrição

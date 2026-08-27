@@ -1,3 +1,8 @@
+---
+name: tech-debt
+description: Regra de meta-processo: todo débito técnico identificado durante uma spec, code review, implementação ou investigação — e deliberadamente **não corrigido na hora** — deve ser registrado em `docs/TECH-DEBT.md`, um documento vivo mantido continuamente (nunca reescrito do zero, nunca apagado — só atualizado/movido para "Resolvidos").
+---
+
 # Registrar débito técnico em docs/TECH-DEBT.md
 
 ## Descrição

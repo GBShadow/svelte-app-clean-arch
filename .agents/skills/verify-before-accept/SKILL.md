@@ -1,3 +1,8 @@
+---
+name: verify-before-accept
+description: Regra transversal de qualidade: **só confio no que eu toco.** Evidência bate inferência — sempre. Quando os dois divergem, a hipótese a revisar é a minha, não a medição. Esta regra se aplica a TODO trabalho neste repositório.
+---
+
 # Verify-before-accept (disciplina de evidência)
 
 ## Descrição

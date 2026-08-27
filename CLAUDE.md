@@ -49,17 +49,16 @@ Agentes de processo (`.opencode/agents/` e `.omp/agents/` — espelhados; invoca
 | `docs-writer` | feature doc, CHANGELOG e PR (Fase 7) |
 | `code-reviewer`, `debugger`, `infra`, `refactorer`, `e2e-writer` | apoio |
 
-Skills Freebuff (`.agents/skills/`):
+Skills (`.agents/skills/<nome>/SKILL.md`):
 
-> **Nota de sync:** o opencode carrega skills de `.opencode/skills/<nome>/SKILL.md` (espelho das
-> skills Freebuff, com frontmatter `name`/`description`). Qualquer mudança de regra deve refletir
-> em `.agents/skills/` **e** `.opencode/skills/` (ver AGENTS.md).
+> **Nota de sync:** as skills usam o layout Agent Skills (`<nome>/SKILL.md` com frontmatter
+> `name`/`description`), lido pelo OMP, e são espelhadas em `.opencode/skills/<nome>/SKILL.md`
+> para o opencode. Qualquer mudança de regra deve refletir nos dois lugares (ver AGENTS.md).
 
 - `spec-driven` — agente de processo spec-driven
-- `spec-converge` — convergência append-only sobre `.tasks.md` (nunca reescreve tasks, classifica achados)
-- `bug-triage` — triagem de bug com veredito: assessment → fix → test (`verificado | parcial | falhou`)
+- `spec-converge` — **não é skill**: agente em `.omp/agents/` + `.opencode/agents/` e regra `.cursor/rules/workflow/spec-converge.mdc`
+- `bug-triage` — **não é skill**: regra `.cursor/rules/workflow/bug-triage.mdc`
 - `runes-ports-adapters` — guia de implementação runes
-- `classic-ports-adapters` — guia de implementação classic (deprecated)
 - `feature-documentation` — documentação de funcionalidades
 - `language-convention` — convenção de idioma
 - `code-structure` — ler CODE-STRUCTURE.md antes; atualizar docs depois

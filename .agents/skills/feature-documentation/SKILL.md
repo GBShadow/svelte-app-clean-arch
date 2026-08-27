@@ -1,3 +1,8 @@
+---
+name: feature-documentation
+description: Guia para documentar toda nova funcionalidade implementada. Deve ser usado ao **concluir** uma funcionalidade (não para bugfixes triviais de 1 linha).
+---
+
 # Documentação de Funcionalidades
 
 ## Descrição

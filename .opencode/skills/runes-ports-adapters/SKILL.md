@@ -9,7 +9,7 @@ description: Guia para implementar novas funcionalidades seguindo o padrão Port
 
 Guia para implementar novas funcionalidades seguindo o padrão Ports & Adapters no app **runes** (default).
 
-> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/`. A referência ao `classic-ports-adapters` existe apenas como documentação histórica.
+> **Nota:** Os apps `classic` e `remote` foram movidos para `deprecated/`. O guia `classic-ports-adapters` foi removido (2026-08-27): use apenas este padrão.
 
 ## Quando usar
 

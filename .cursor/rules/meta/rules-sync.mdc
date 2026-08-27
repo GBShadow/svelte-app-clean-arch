@@ -10,11 +10,11 @@ Ao **criar, alterar ou remover** convenções, refletir em **Cursor**, **Freebuf
 | Destino | Local |
 |---------|-------|
 | Cursor | `.cursor/rules/<pasta>/<nome>.mdc` |
-| Freebuff | `.agents/skills/<nome>.md` |
+| Freebuff / OMP (skills) | `.agents/skills/<nome>/SKILL.md` — layout Agent Skills, com frontmatter `name` + `description` |
 | Claude | `CLAUDE.md` (raiz) |
 | Antigravity | `AGENTS.md` (raiz) — mesmo conteúdo relevante do `CLAUDE.md`, adaptado para outra IA |
 | OMP | `.omp/agents/<nome>.md` + `.omp/commands/<nome>.md` |
-| OpenCode | `.opencode/agents/<nome>.md` |
+| OpenCode | `.opencode/agents/<nome>.md` + `.opencode/skills/<nome>/SKILL.md` |
 | Índice | `README.md` + `docs/README.md` + `docs/CODE-STRUCTURE.md` |
 | Docs | `docs/features/`, `docs/specs/`, `docs/workflow/`, `docs/bugs/`, `docs/CHANGELOG.md`, `docs/TECH-DEBT.md` (débitos identificados/resolvidos) |
 
@@ -38,7 +38,6 @@ docs/
 | Pasta | Arquivo | Escopo |
 |-------|---------|--------|
 | architecture | `runes-ports-adapters.mdc` | runes + todo-domain (default) |
-| architecture | `classic-ports-adapters.mdc` | classic + todo-domain |
 | architecture | `language-convention.mdc` | alwaysApply — código em inglês, UI/erros em português |
 | architecture | `data-testid.mdc` | alwaysApply — data-testid em componentes + getByTestId em testes |
 | architecture | `pocketbase-collections.mdc` | alwaysApply — toda coleção PocketBase precisa dos campos `created`/`updated` |

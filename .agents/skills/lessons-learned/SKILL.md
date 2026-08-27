@@ -1,3 +1,8 @@
+---
+name: lessons-learned
+description: Regra de meta-processo: todo problema não trivial resolvido (bug encontrado em revisão, vulnerabilidade, suposição do plano/spec que se mostrou errada durante a implementação, comportamento inesperado de uma dependência) deve ser registrado, não só corrigido — para que o mesmo erro não se repita em outra feature ou sessão.
+---
+
 # Registrar problemas resolvidos
 
 ## Descrição

@@ -1,3 +1,8 @@
+---
+name: pocketbase-api-rules
+description: Regra para garantir que API Rules (`listRule`/`viewRule`/`createRule`/`updateRule`/`deleteRule`) sejam seguras assumindo chamada direta à API do PocketBase, e não apenas checagens de autorização em `+page.server.ts`. Uma rule baseada em posse/participação (ex.: `participants.id ?= @request.auth.id`) decide **se** a requisição é aceita, não **quais campos** podem ser alterados.
+---
+
 # API Rules do PocketBase
 
 ## Descrição

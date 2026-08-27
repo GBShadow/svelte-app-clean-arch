@@ -1,3 +1,8 @@
+---
+name: code-structure
+description: Regra para: (1) **sempre ler** `docs/CODE-STRUCTURE.md` antes de iniciar qualquer tarefa para entender a estrutura do projeto; (2) **atualizar todos os documentos relevantes** ao concluir a tarefa.
+---
+
 # Uso e Atualização do CODE-STRUCTURE.md
 
 ## Descrição

@@ -226,8 +226,8 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 ### 🔥 Já quebrou aqui antes
 
 - Falha Silenciosa em expand com viewRule Restritiva no PocketBase `ERR-FE-003`
-- PocketBase fields.add() Requer Instância de Tipo de Campo, Não Plain Object `ERR-FE-001`
 - throw redirect() do SvelteKit Silenciosamente Engolido Dentro de try-catch `ERR-FE-002`
+- PocketBase fields.add() Requer Instância de Tipo de Campo, Não Plain Object `ERR-FE-001`
 - Uso de Classe Inexistente no Tailwind (md:grid-cols-13) `ERR-FE-004`
 
 ### 🏛️ Decisões vigentes

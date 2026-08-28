@@ -27,7 +27,8 @@ export const createCardSchema = z.object({
 	points: z.coerce
 		.number()
 		.nullable()
-		.optional()
+		.optional(),
+	category: z.string().nullable().optional()
 });
 
 export const updateCardSchema = z.object({
@@ -50,7 +51,8 @@ export const updateCardSchema = z.object({
 	points: z.coerce
 		.number()
 		.nullable()
-		.optional()
+		.optional(),
+	category: z.string().nullable().optional()
 });
 
 export const moveCardSchema = z.object({

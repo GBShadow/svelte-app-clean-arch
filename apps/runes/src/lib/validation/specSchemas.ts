@@ -6,7 +6,8 @@ export const createDocSchema = z.object({
 		.min(1, { message: 'Título obrigatório.' })
 		.max(200, { message: 'Título muito longo (máx. 200 caracteres).' }),
 	body_md: z.string().optional().default(''),
-	tags: z.array(z.string()).optional().default([])
+	tags: z.array(z.string()).optional().default([]),
+	category: z.string().nullable().optional()
 });
 
 export const updateDocSchema = z.object({
@@ -15,7 +16,8 @@ export const updateDocSchema = z.object({
 		.min(1, { message: 'Título obrigatório.' })
 		.max(200, { message: 'Título muito longo (máx. 200 caracteres).' }),
 	body_md: z.string().optional().default(''),
-	tags: z.array(z.string()).optional().default([])
+	tags: z.array(z.string()).optional().default([]),
+	category: z.string().nullable().optional()
 });
 
 export const addPermissionSchema = z.object({

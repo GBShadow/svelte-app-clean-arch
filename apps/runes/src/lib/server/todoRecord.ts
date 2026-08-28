@@ -1,3 +1,5 @@
+import type { CategoryRecord } from './categoryRecord';
+
 export type TodoListRecord = {
 	id: string;
 	title: string;
@@ -10,4 +12,8 @@ export type TodoItemRecord = {
 	list: string;
 	description: string;
 	done: boolean;
+	category?: string | null;
+	expand?: {
+		category?: CategoryRecord;
+	};
 };

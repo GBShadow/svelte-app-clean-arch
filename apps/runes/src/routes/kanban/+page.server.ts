@@ -33,8 +33,8 @@ import type {
 	KanbanCardRecord,
 	KanbanCardCommentRecord
 } from '$lib/server/kanbanRecord';
+import type { CategoryRecord } from '$lib/server/categoryRecord';
 import type { ProjectRecord, SprintRecord } from '$lib/server/projectRecord';
-
 export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 	if (!locals.user) {
 		throw redirect(303, '/login');
@@ -162,12 +162,16 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 		);
 	}
 
-	const cards = (await adminPb.collection('kanban_cards').getFullList({
-		filter: cardsFilter,
-		sort: 'position',
-		expand: 'assignees,created_by,column'
-	})) as KanbanCardRecord[];
-
+	const [cards, categories] = await Promise.all([
+		adminPb.collection('kanban_cards').getFullList({
+			filter: cardsFilter,
+			sort: 'position',
+			expand: 'assignees,created_by,column,category'
+		}) as Promise<KanbanCardRecord[]>,
+		adminPb.collection('categories').getFullList<CategoryRecord>({
+			sort: 'name'
+		}).catch(() => [])
+	]);
 	// Load users for assignee selection
 	const users = await adminPb.collection('user').getFullList({
 		sort: 'name'
@@ -209,6 +213,7 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 		plannedSprint,
 		columns,
 		cards,
+		categories,
 		users,
 		comments,
 		history,
@@ -216,7 +221,6 @@ export const load: PageServerLoad = async ({ locals, url, cookies }) => {
 		canManageProject: canManageProject(locals.user, project)
 	};
 };
-
 export const actions: Actions = {
 	createColumn: async ({ request, locals }) => {
 		if (!locals.user) return fail(401);
@@ -407,6 +411,7 @@ export const actions: Actions = {
 		const tagsString = formData.get('tags') as string;
 		const dueDate = formData.get('dueDate') as string;
 		const pointsRaw = formData.get('points');
+		const category = formData.get('category')?.toString() || null;
 
 		const tags = tagsString ? tagsString.split(',').map((t) => t.trim()).filter(Boolean) : [];
 		const points = pointsRaw ? parseInt(pointsRaw as string, 10) : null;
@@ -420,7 +425,8 @@ export const actions: Actions = {
 			assigneeIds,
 			tags,
 			dueDate: dueDate || null,
-			points: isNaN(points as number) ? null : points
+			points: isNaN(points as number) ? null : points,
+			category
 		});
 
 		if (!validation.success) {
@@ -452,7 +458,8 @@ export const actions: Actions = {
 			position: existingCards.length,
 			points: validation.data.points,
 			tags: validation.data.tags,
-			dueDate: validation.data.dueDate || null
+			dueDate: validation.data.dueDate || null,
+			category: validation.data.category || null
 		});
 
 		await recordCardHistory(newCard.id, locals.user.id, 'created');
@@ -493,6 +500,7 @@ export const actions: Actions = {
 		const dueDate = formData.get('dueDate') as string;
 		const pointsRaw = formData.get('points');
 		const sprintId = formData.get('sprintId') as string;
+		const category = formData.has('category') ? (formData.get('category')?.toString() || null) : undefined;
 
 		const tags = tagsString ? tagsString.split(',').map((t) => t.trim()).filter(Boolean) : [];
 		const points = pointsRaw ? parseInt(pointsRaw as string, 10) : null;
@@ -505,7 +513,8 @@ export const actions: Actions = {
 			tags,
 			dueDate: dueDate || null,
 			points: isNaN(points as number) ? null : points,
-			sprintId: sprintId || null
+			sprintId: sprintId || null,
+			category
 		});
 
 		if (!validation.success) {
@@ -536,7 +545,7 @@ export const actions: Actions = {
 		if (validation.data.dueDate !== undefined) updateData.dueDate = validation.data.dueDate;
 		if (validation.data.points !== undefined) updateData.points = validation.data.points;
 		if (validation.data.sprintId !== undefined) updateData.sprint = validation.data.sprintId;
-
+		if (validation.data.category !== undefined) updateData.category = validation.data.category;
 		await adminPb.collection('kanban_cards').update(validation.data.cardId, updateData);
 		await recordCardChanges(validation.data.cardId, locals.user.id, oldCard, updateData);
 

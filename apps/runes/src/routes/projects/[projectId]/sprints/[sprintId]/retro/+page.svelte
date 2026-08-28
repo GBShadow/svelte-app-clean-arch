@@ -29,7 +29,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 	let newColumnName = $state('');
 	let showCreateColumn = $state(false);
 	let showFinalizeConfirm = $state(false);
-
+	let selectedCategoryFilter = $state('');
 	function loadEditTokens(): Map<string, string> {
 		try {
 			const stored = localStorage.getItem('retroEditTokens');
@@ -239,13 +239,19 @@ import PageShell from '$lib/components/PageShell.svelte';
 	const cards = $derived(board.cards);
 	const participants = $derived(board.participants);
 	const isFinalized = $derived(board.isFinalized);
+	const filteredCards = $derived(
+		cards.filter((c) => {
+			if (!selectedCategoryFilter) return true;
+			return c.category === selectedCategoryFilter;
+		})
+	);
 
 	const cardsByColumn = $derived.by(() => {
 		const map = new Map<string, typeof cards>();
 		for (const col of columns) {
 			map.set(
 				col.id,
-				cards.filter((c) => c.column === col.id)
+				filteredCards.filter((c) => c.column === col.id)
 			);
 		}
 		return map;
@@ -283,7 +289,20 @@ import PageShell from '$lib/components/PageShell.svelte';
 					{/if}
 				</h1>
 			</div>
-			<div class="flex gap-2">
+			<div class="flex items-center gap-2">
+				{#if data.categories && data.categories.length > 0}
+					<select
+						bind:value={selectedCategoryFilter}
+						class="select select-bordered select-sm"
+						data-testid="select-retro-category-filter"
+					>
+						<option value="">Todas as categorias</option>
+						{#each data.categories as cat (cat.id)}
+							<option value={cat.id}>{cat.name}</option>
+						{/each}
+					</select>
+				{/if}
+
 				{#if !retro && data.canManageRetro}
 					<form method="POST" action="?/createRetro" use:enhance>
 						<input type="hidden" name="sprintId" value={data.sprint?.id} />

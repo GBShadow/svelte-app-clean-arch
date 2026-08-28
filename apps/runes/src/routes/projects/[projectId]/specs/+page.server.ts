@@ -4,6 +4,7 @@ import { getAdminClient } from '$lib/server/pocketbaseAdmin';
 import { canViewProject, canManageProject } from '$lib/domain/projectAccess';
 import { filterDocumentsByAccess } from '$lib/domain/specAccess';
 import { createDocSchema } from '$lib/validation/specSchemas';
+import type { CategoryRecord } from '$lib/server/categoryRecord';
 import type { SpecDocumentRecord, SpecTagRecord, SpecPermissionRecord, SpecDocumentWithTags } from '$lib/server/specRecord';
 import type { ProjectRecord } from '$lib/server/projectRecord';
 import type { UserRecord } from '$lib/server/userRecord';
@@ -31,11 +32,16 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const q = url.searchParams.get('q') || '';
 	const tagFilter = url.searchParams.get('tag') || '';
 
-	let allDocs = await adminPb.collection('spec_documents').getFullList({
-		filter: adminPb.filter('project = {:projectId}', { projectId }),
-		sort: '-updated',
-		expand: 'created_by'
-	}) as unknown as SpecDocumentRecord[];
+	let [allDocs, categories] = await Promise.all([
+		adminPb.collection('spec_documents').getFullList({
+			filter: adminPb.filter('project = {:projectId}', { projectId }),
+			sort: '-updated',
+			expand: 'created_by,category'
+		}) as Promise<unknown> as Promise<SpecDocumentRecord[]>,
+		adminPb.collection('categories').getFullList<CategoryRecord>({
+			sort: 'name'
+		}).catch(() => [])
+	]);
 
 	const allPermissions = await adminPb.collection('spec_document_permissions').getFullList({
 		filter: adminPb.filter('document.project = {:projectId}', { projectId })
@@ -103,12 +109,12 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	return {
 		project,
 		docs,
+		categories,
 		allProjectTags,
-		users,
-		canManageProject: canManageProject(locals.user, project),
 		tab,
 		q,
-		tagFilter
+		tagFilter,
+		users
 	};
 };
 
@@ -123,8 +129,9 @@ export const actions: Actions = {
 		const body_md = formData.get('body_md') as string;
 		const tagsRaw = formData.get('tags') as string;
 		const tags = tagsRaw ? tagsRaw.split(',').map((t) => t.trim()).filter(Boolean) : [];
+		const category = formData.get('category')?.toString() || null;
 
-		const val = createDocSchema.safeParse({ title, body_md, tags });
+		const val = createDocSchema.safeParse({ title, body_md, tags, category });
 		if (!val.success) {
 			return fail(400, { errors: val.error.flatten().fieldErrors });
 		}
@@ -144,6 +151,7 @@ export const actions: Actions = {
 			project: projectId,
 			title: val.data.title,
 			body_md: val.data.body_md,
+			category: val.data.category || null,
 			created_by: locals.user.id,
 			is_public_link: false
 		});

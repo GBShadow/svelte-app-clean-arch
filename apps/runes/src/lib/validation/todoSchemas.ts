@@ -5,7 +5,8 @@ export const createListSchema = z.object({
 });
 
 export const addItemSchema = z.object({
-	description: z.string().min(1, { error: 'Descrição obrigatória.' })
+	description: z.string().min(1, { error: 'Descrição obrigatória.' }),
+	category: z.string().nullable().optional()
 });
 
 export type CreateListInput = z.infer<typeof createListSchema>;

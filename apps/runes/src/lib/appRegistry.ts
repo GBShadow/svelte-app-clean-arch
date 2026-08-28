@@ -4,6 +4,7 @@ import Users from 'lucide-svelte/icons/users';
 import Kanban from 'lucide-svelte/icons/kanban';
 import Dices from 'lucide-svelte/icons/dices';
 import FolderKanban from 'lucide-svelte/icons/folder-kanban';
+import Tag from 'lucide-svelte/icons/tag';
 
 export interface AppEntry {
 	id: string;
@@ -57,5 +58,12 @@ export const appRegistry: AppEntry[] = [
 		description: 'Gerencie projetos, sprints e participantes',
 		icon: FolderKanban,
 		route: '/projects'
+	},
+	{
+		id: 'categories',
+		name: 'Categorias',
+		description: 'Gerencie categorias e visualize dados agregados',
+		icon: Tag,
+		route: '/categories'
 	}
 ];

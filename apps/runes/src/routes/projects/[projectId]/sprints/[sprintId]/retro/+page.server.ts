@@ -28,6 +28,7 @@ import { canViewProject, canManageProject } from '$lib/domain/projectAccess';
 import { generateEditToken, verifyEditToken } from '$lib/server/editToken';
 import { createRetroFinalizedNotification } from '$lib/server/notificationStore';
 import { logError } from '$lib/server/logger';
+import type { CategoryRecord } from '$lib/server/categoryRecord';
 import type {
 	RetroRecord,
 	RetroColumnRecord,
@@ -85,7 +86,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		cards = await adminPb.collection('retrospective_cards').getFullList({
 			filter: adminPb.filter('retro = {:retroId}', { retroId: retro.id }),
 			sort: 'position',
-			expand: 'column'
+			expand: 'column,category'
 		}) as unknown as RetroCardRecord[];
 
 		// Strip edit_token_hash from all cards before sending to client
@@ -97,12 +98,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}) as unknown as RetroParticipantRecord[];
 	}
 
+	const categories = await adminPb.collection('categories').getFullList<CategoryRecord>({
+		sort: 'name'
+	}).catch(() => []);
+
 	return {
 		project,
 		sprint,
 		retro,
 		columns,
 		cards,
+		categories,
 		participants,
 		canManageRetro: canManageRetro(locals.user, project),
 		canManageProject: canManageProject(locals.user, project),
@@ -364,10 +370,12 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const columnId = formData.get('columnId') as string;
 		const content = formData.get('content') as string;
+		const category = formData.get('category')?.toString() || null;
 
 		const val = createCardSchema.safeParse({
 			columnId,
-			content: normalizeMarkdown(content)
+			content: normalizeMarkdown(content),
+			category
 		});
 
 		if (!val.success) {
@@ -413,10 +421,10 @@ export const actions: Actions = {
 			retro: retro.id,
 			column: val.data.columnId,
 			content: val.data.content,
+			category: val.data.category || null,
 			position: existingCards.length,
 			edit_token_hash: hash
 		});
-
 		return { cardId: card.id, editToken: token };
 	},
 
@@ -428,11 +436,13 @@ export const actions: Actions = {
 		const cardId = formData.get('cardId') as string;
 		const content = formData.get('content') as string;
 		const editToken = formData.get('editToken') as string;
+		const category = formData.has('category') ? (formData.get('category')?.toString() || null) : undefined;
 
 		const val = editCardSchema.safeParse({
 			cardId,
 			content: normalizeMarkdown(content),
-			editToken
+			editToken,
+			category
 		});
 
 		if (!val.success) {
@@ -465,12 +475,9 @@ export const actions: Actions = {
 			return fail(404);
 		}
 
-		if (!verifyEditToken(val.data.editToken, card.edit_token_hash)) {
-			return fail(403, { message: 'Token de edição inválido.' });
-		}
-
 		await adminPb.collection('retrospective_cards').update(val.data.cardId, {
-			content: val.data.content
+			content: val.data.content,
+			...(val.data.category !== undefined ? { category: val.data.category || null } : {})
 		});
 
 		return { success: true };

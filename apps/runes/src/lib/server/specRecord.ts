@@ -1,3 +1,4 @@
+import type { CategoryRecord } from './categoryRecord';
 import type { UserRecord } from './userRecord';
 import type { ProjectRecord } from './projectRecord';
 
@@ -8,11 +9,13 @@ export type SpecDocumentRecord = {
 	body_md: string;
 	created_by: string;
 	is_public_link: boolean;
+	category?: string | null;
 	created: string;
 	updated: string;
 	expand?: {
 		project?: ProjectRecord;
 		created_by?: UserRecord;
+		category?: CategoryRecord;
 	};
 };
 

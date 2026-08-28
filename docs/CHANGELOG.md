@@ -2,6 +2,21 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-08-27] CRUD de Categorias e Busca Agregada
+
+- **Gestão Global de Categorias (`/categories`)**: Catálogo central de categorias acessível no App Hub com CRUD completo (criação, edição, exclusão segura com nullify automático), validação via schemas Zod e contadores de itens vinculados.
+- **Busca e Visão Agregada (`/categories/[id]`)**: Página detalhada da categoria consolidando consultas paralelas (`Promise.all`) em Todos, Kanban Cards, Planning Poker Tasks, Documentos de Especificação e Retrospectivas com links diretos aos itens.
+- **Integração nos Módulos**:
+  - **Todos**: seletor `CategorySelect` no formulário de adição, badge `CategoryBadge` nos itens e filtro reativo por categoria na lista.
+  - **Kanban**: seletor nos modais de criação/edição de cartão, badge no board e filtro dropdown na barra de ferramentas.
+  - **Planning Poker**: seletor e badge nas tarefas do backlog global + filtro de categoria.
+  - **Documentos de Especificação**: seletor no formulário de criação de doc, badges e filtro na listagem.
+  - **Retrospectivas**: badges nos cartões de retro e filtro por categoria no board.
+- **Componentes**: `CategoryBadge.svelte` e `CategorySelect.svelte` com `data-testid` e suporte a Svelte 5 Runes.
+- **PocketBase Migration**: `0024_create_categories_and_relations.js` criando a coleção `categories` e relacionamentos com `cascadeDelete: false`.
+- **Testes**: 357 testes unitários passando em 41 suítes + teste E2E `categories.spec.ts`.
+- **Spec**: `docs/specs/2026-08-27-crud-categorias.md`
+
 ## [2026-08-05] Revisão de Design e Responsividade
 
 - **Shell**: removido `container mx-auto p-4` do layout global. Navbar com perfil sempre acessível (dropdown unificado, sem `btn-logout-mobile`). Dropdown de notificações com largura responsiva.

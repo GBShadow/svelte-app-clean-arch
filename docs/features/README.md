@@ -23,6 +23,7 @@ Documentação de funcionalidades implementadas no monorepo.
 | UI improvements — accent, toast, chat, kanban, todos | runes | 2026-07-22 | [2026-07-22-ui-improvements.md](./2026-07-22-ui-improvements.md) |
 | Retrospectiva de Sprint | runes | 2026-07-24 | [2026-07-24-sprint-retrospective.md](./2026-07-24-sprint-retrospective.md) |
 | Documentos de Especificação | runes | 2026-07-24 | [2026-07-24-specification-documents.md](./2026-07-24-specification-documents.md) |
+| CRUD de Categorias e Busca Agregada | runes | 2026-08-27 | [2026-08-27-crud-categorias.md](./2026-08-27-crud-categorias.md) |
 
 ## Nova feature
 

@@ -29,7 +29,8 @@ export const createTaskSchema = z.object({
 		.string()
 		.min(1, 'O título da task é obrigatório.')
 		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
-	description: z.string().optional().default('')
+	description: z.string().optional().default(''),
+	category: z.string().nullable().optional()
 });
 
 export const voteSchema = z.object({
@@ -61,7 +62,8 @@ export const editTaskSchema = z.object({
 		.string()
 		.min(1, 'O título da task é obrigatório.')
 		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
-	description: z.string().optional().default('')
+	description: z.string().optional().default(''),
+	category: z.string().nullable().optional()
 });
 
 export const createGlobalTaskSchema = z.object({
@@ -69,7 +71,8 @@ export const createGlobalTaskSchema = z.object({
 		.string()
 		.min(1, 'O título da task é obrigatório.')
 		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
-	description: z.string().optional().default('')
+	description: z.string().optional().default(''),
+	category: z.string().nullable().optional()
 });
 
 export const editGlobalTaskSchema = z.object({
@@ -78,7 +81,8 @@ export const editGlobalTaskSchema = z.object({
 		.string()
 		.min(1, 'O título da task é obrigatório.')
 		.max(200, 'O título da task deve ter no máximo 200 caracteres.'),
-	description: z.string().optional().default('')
+	description: z.string().optional().default(''),
+	category: z.string().nullable().optional()
 });
 
 export const linkGlobalTasksSchema = z.object({

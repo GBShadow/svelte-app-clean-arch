@@ -1,3 +1,4 @@
+import type { CategoryRecord } from './categoryRecord';
 import type { UserRecord } from './userRecord';
 import type { ProjectRecord, SprintRecord } from './projectRecord';
 
@@ -49,9 +50,11 @@ export type RetroCardRecord = {
 	content: string;
 	position: number;
 	edit_token_hash: string | null;
+	category?: string | null;
 	created: string;
 	updated: string;
 	expand?: {
 		column?: RetroColumnRecord;
+		category?: CategoryRecord;
 	};
 };

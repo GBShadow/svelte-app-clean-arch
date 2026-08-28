@@ -6,7 +6,8 @@
 	import PageShell from '$lib/components/PageShell.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
-
+	import CategoryBadge from '$lib/components/categories/CategoryBadge.svelte';
+	import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 	let {
 		data
 	}: {
@@ -16,13 +17,18 @@
 	let activeTab = $state(data.tab || 'mine');
 	let searchQuery = $state(data.q || '');
 	let tagFilter = $state(data.tagFilter || '');
+	let categoryFilter = $state('');
 	let showCreateForm = $state(false);
 	let newTitle = $state('');
 	let newBody = $state('');
 	let newTags = $state('');
-
-	const filteredDocCount = $derived(data.docs.length);
-
+	let newCategory = $state('');
+	const filteredDocs = $derived(
+		data.docs.filter((doc: any) => {
+			if (!categoryFilter) return true;
+			return doc.category === categoryFilter;
+		})
+	);
 	function switchTab(tab: string) {
 		activeTab = tab;
 		goto(`/projects/${data.project.id}/specs?tab=${tab}${searchQuery ? `&q=${searchQuery}` : ''}${tagFilter ? `&tag=${tagFilter}` : ''}`, { replaceState: true });
@@ -76,9 +82,18 @@
 						<input
 							type="text"
 							name="tags"
-							class="input input-bordered w-full mb-2 mt-2"
 							placeholder="Tags (separadas por vírgula)"
 						/>
+						<div class="mb-3">
+							<CategorySelect
+								categories={data.categories || []}
+								bind:value={newCategory}
+								name="category"
+								placeholder="Categoria (opcional)"
+								size="sm"
+								dataTestId="select-new-spec-category"
+							/>
+						</div>
 						<button class="btn btn-primary btn-sm" type="submit">Criar</button>
 					</form>
 				</div>
@@ -119,17 +134,33 @@
 					<option value={tag}>{tag}</option>
 				{/each}
 			</select>
-		</div>
 
-		{#if data.docs.length === 0}
+			{#if data.categories && data.categories.length > 0}
+				<select
+					class="select select-bordered select-sm"
+					bind:value={categoryFilter}
+					data-testid="select-specs-category-filter"
+				>
+					<option value="">Todas categorias</option>
+					{#each data.categories as cat (cat.id)}
+						<option value={cat.id}>{cat.name}</option>
+					{/each}
+				</select>
+			{/if}
+		</div>
+		{#if filteredDocs.length === 0}
 			<div class="text-center py-16 text-base-content/60">
 				<p class="text-lg mb-2">
-					{activeTab === 'mine' ? 'Você ainda não criou nenhuma especificação.' : 'Nenhum documento compartilhado com você ainda.'}
+					{categoryFilter
+						? 'Nenhuma especificação encontrada com esta categoria.'
+						: activeTab === 'mine'
+							? 'Você ainda não criou nenhuma especificação.'
+							: 'Nenhum documento compartilhado com você ainda.'}
 				</p>
 			</div>
 		{:else}
 			<div class="space-y-2">
-				{#each data.docs as doc (doc.id)}
+				{#each filteredDocs as doc (doc.id)}
 					<a
 						href="/projects/{data.project.id}/specs/{doc.id}"
 						class="block bg-base-100 rounded-box shadow p-4 hover:shadow-md transition"
@@ -142,14 +173,18 @@
 									&middot; {doc.expand?.created_by?.name ?? 'Desconhecido'}
 								</p>
 							</div>
-							{#if doc.tags && doc.tags.length > 0}
-								<div class="flex gap-1 flex-wrap">
-									{#each doc.tags as tag (tag)}
-										<span class="badge badge-ghost badge-sm">{tag}</span>
-									{/each}
-								</div>
-							{/if}
-						</div>
+							<div class="flex flex-col items-end gap-1.5 shrink-0">
+								{#if doc.expand?.category}
+									<CategoryBadge category={doc.expand.category} size="xs" clickable={true} />
+								{/if}
+								{#if doc.tags && doc.tags.length > 0}
+									<div class="flex gap-1 flex-wrap">
+										{#each doc.tags as tag (tag)}
+											<span class="badge badge-ghost badge-sm">{tag}</span>
+										{/each}
+									</div>
+								{/if}
+							</div>
 					</a>
 				{/each}
 			</div>

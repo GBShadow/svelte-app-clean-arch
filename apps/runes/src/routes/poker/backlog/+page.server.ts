@@ -5,6 +5,7 @@ import { createGlobalTaskSchema, editGlobalTaskSchema } from '$lib/validation/po
 import { fieldErrorsFrom } from '$lib/validation/formErrors';
 import { canEditGlobalTask, canDeleteGlobalTask } from '$lib/domain/planningPokerAccess';
 import { normalizeMarkdown } from '$lib/markdown/normalizeMarkdown';
+import type { CategoryRecord } from '$lib/server/categoryRecord';
 import type { PokerTaskRecord } from '$lib/server/pokerRecord';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -14,14 +15,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	try {
 		// Carrega tarefas globais ainda não vinculadas (room é nulo ou vazio)
-		const adminPb = await getAdminClient();
-		const tasks = await adminPb.collection('poker_tasks').getFullList<PokerTaskRecord>({
-			filter: 'is_global_backlog = true && room = null',
-			sort: 'created'
-		});
+		const [tasks, categories] = await Promise.all([
+			adminPb.collection('poker_tasks').getFullList<PokerTaskRecord>({
+				filter: 'is_global_backlog = true && room = null',
+				sort: 'created',
+				expand: 'category'
+			}),
+			adminPb.collection('categories').getFullList<CategoryRecord>({
+				sort: 'name'
+			}).catch(() => [])
+		]);
 
 		return {
 			tasks,
+			categories,
 			isAdmin: locals.user.isAdmin === true,
 			pbToken: locals.pb.authStore.token,
 			pbRecord: locals.pb.authStore.record
@@ -46,9 +53,9 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const validation = createGlobalTaskSchema.safeParse({
 			title: formData.get('title'),
-			description: formData.get('description')
+			description: formData.get('description'),
+			category: formData.get('category')?.toString() || null
 		});
-
 		if (!validation.success) {
 			return fail(400, { errors: fieldErrorsFrom(validation.error) });
 		}
@@ -61,6 +68,7 @@ export const actions: Actions = {
 			await adminPb.collection('poker_tasks').create({
 				title: validation.data.title,
 				description: cleanDescription,
+				category: validation.data.category || null,
 				status: 'backlog',
 				is_global_backlog: true,
 				room: null
@@ -82,9 +90,9 @@ export const actions: Actions = {
 		const validation = editGlobalTaskSchema.safeParse({
 			taskId: formData.get('taskId'),
 			title: formData.get('title'),
-			description: formData.get('description')
+			description: formData.get('description'),
+			category: formData.has('category') ? (formData.get('category')?.toString() || null) : undefined
 		});
-
 		if (!validation.success) {
 			return fail(400, { errors: fieldErrorsFrom(validation.error) });
 		}
@@ -102,7 +110,8 @@ export const actions: Actions = {
 
 			await adminPb.collection('poker_tasks').update(validation.data.taskId, {
 				title: validation.data.title,
-				description: cleanDescription
+				description: cleanDescription,
+				...(validation.data.category !== undefined ? { category: validation.data.category || null } : {})
 			});
 		} catch (err) {
 			console.error('Erro ao editar tarefa global:', err);

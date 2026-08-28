@@ -1,3 +1,4 @@
+import type { CategoryRecord } from './categoryRecord';
 import type { UserRecord } from './userRecord';
 
 export interface PokerRoomRecord {
@@ -26,10 +27,13 @@ export interface PokerTaskRecord {
 	is_global_backlog: boolean;
 	exported_card: string | null;
 	source_spec: string | null;
+	category?: string | null;
 	created: string;
 	updated: string;
-}
-
+	expand?: {
+		category?: CategoryRecord;
+	};
+};
 export interface PokerParticipantRecord {
 	id: string;
 	room: string;

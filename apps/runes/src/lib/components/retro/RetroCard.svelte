@@ -2,6 +2,7 @@
 	import type { RetroCardRecord } from '$lib/server/retroRecord';
 	import MarkdownEditor from '$lib/components/editor/MarkdownEditor.svelte';
 	import MarkdownView from '$lib/components/editor/MarkdownView.svelte';
+	import CategoryBadge from '$lib/components/categories/CategoryBadge.svelte';
 
 	let {
 		card,
@@ -58,6 +59,11 @@
 		</div>
 	{:else}
 		<MarkdownView content={card.content} />
+		{#if card.expand?.category}
+			<div class="mt-2">
+				<CategoryBadge category={card.expand.category} size="xs" clickable={true} />
+			</div>
+		{/if}
 
 		{#if !isFinalized && (canEdit || canDelete)}
 			<div class="absolute top-1 right-1 hidden group-hover:flex gap-1">

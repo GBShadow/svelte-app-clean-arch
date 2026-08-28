@@ -1,3 +1,4 @@
+import type { CategoryRecord } from './categoryRecord';
 import type { AuthParticipant } from './chatRecord';
 
 export type KanbanColumnRecord = {
@@ -24,6 +25,7 @@ export type KanbanCardRecord = {
 	project: string;
 	sprint: string | null;
 	source_spec: string | null;
+	category?: string | null;
 	created: string;
 	updated: string;
 	expand?: {
@@ -32,6 +34,7 @@ export type KanbanCardRecord = {
 		assignees?: AuthParticipant[];
 		project?: { id: string; title: string };
 		sprint?: { id: string; title: string; status: string };
+		category?: CategoryRecord;
 	};
 };
 

@@ -32,7 +32,8 @@ export const createCardSchema = z.object({
 	content: z
 		.string()
 		.min(1, { message: 'Conteúdo do card obrigatório.' })
-		.max(10000, { message: 'Conteúdo muito longo (máx. 10000 caracteres).' })
+		.max(10000, { message: 'Conteúdo muito longo (máx. 10000 caracteres).' }),
+	category: z.string().nullable().optional()
 });
 
 export const editCardSchema = z.object({
@@ -41,7 +42,8 @@ export const editCardSchema = z.object({
 		.string()
 		.min(1, { message: 'Conteúdo do card obrigatório.' })
 		.max(10000, { message: 'Conteúdo muito longo (máx. 10000 caracteres).' }),
-	editToken: z.string().min(1)
+	editToken: z.string().min(1),
+	category: z.string().nullable().optional()
 });
 
 export const deleteCardSchema = z.object({

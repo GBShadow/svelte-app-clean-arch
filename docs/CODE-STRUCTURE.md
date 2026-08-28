@@ -66,6 +66,13 @@ src/routes/
 │       ├── +page.server.ts     ← Load + Actions: ver/editar/excluir lista + itens
 │       └── +page.svelte        ← UI: detalhe da lista com itens
 │
+├── categories/
+│   ├── +page.server.ts         ← Load + Actions: listar, criar, editar e excluir categorias
+│   ├── +page.svelte            ← UI: catálogo de categorias e modais CRUD
+│   └── [id]/
+│       ├── +page.server.ts     ← Load: agregação paralela de dados vinculados à categoria
+│       └── +page.svelte        ← UI: visão de busca agregada por categoria
+│
 ├── users/
 │   ├── +page.server.ts         ← Load: lista de usuários (admin only)
 │   ├── +page.svelte            ← UI: tabela de usuários

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import PageShell from '$lib/components/PageShell.svelte';
+	import CategoryBadge from '$lib/components/categories/CategoryBadge.svelte';
+	import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 	import { enhance } from '$app/forms';
 	import { withToast } from '$lib/client/enhanceWithToast';
 	import type { PageProps } from './$types';
@@ -11,27 +13,44 @@
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import X from 'lucide-svelte/icons/x';
 	import ClipboardList from 'lucide-svelte/icons/clipboard-list';
+	import Tag from 'lucide-svelte/icons/tag';
+	import type { CategoryRecord } from '$lib/server/categoryRecord';
+	import type { PokerTaskRecord } from '$lib/server/pokerRecord';
 
 	let { data, form }: PageProps = $props();
 
+	let categories = $derived((data.categories || []) as CategoryRecord[]);
+	let tasks = $derived((data.tasks || []) as PokerTaskRecord[]);
+	let selectedCategoryFilter = $state('');
+
 	// Modal controls
 	let showModal = $state(false);
-	let editingTask = $state<{ id: string; title: string; description: string } | null>(null);
+	let editingTask = $state<PokerTaskRecord | null>(null);
 
 	let title = $state('');
 	let description = $state('');
+	let taskCategory = $state('');
+
+	let filteredTasks = $derived(
+		tasks.filter((task) => {
+			if (!selectedCategoryFilter) return true;
+			return task.category === selectedCategoryFilter;
+		})
+	);
 
 	function openCreate() {
 		editingTask = null;
 		title = '';
 		description = '';
+		taskCategory = '';
 		showModal = true;
 	}
 
-	function openEdit(task: any) {
+	function openEdit(task: PokerTaskRecord) {
 		editingTask = task;
 		title = task.title;
 		description = task.description || '';
+		taskCategory = task.category || '';
 		showModal = true;
 	}
 
@@ -40,6 +59,7 @@
 		editingTask = null;
 		title = '';
 		description = '';
+		taskCategory = '';
 	}
 </script>
 
@@ -56,37 +76,62 @@
 			</div>
 		</div>
 
-		{#if data.isAdmin}
-			<button class="btn btn-primary btn-sm flex items-center gap-1.5" onclick={openCreate} data-testid="btn-new-global-task">
-				<Plus class="w-4 h-4" />
-				Nova Tarefa Global
-			</button>
-		{/if}
+		<div class="flex items-center gap-2 flex-wrap">
+			{#if categories.length > 0}
+				<div class="flex items-center gap-1.5">
+					<Tag class="size-3.5 opacity-60" />
+					<select
+						bind:value={selectedCategoryFilter}
+						class="select select-bordered select-sm"
+						data-testid="select-poker-category-filter"
+					>
+						<option value="">Todas as categorias</option>
+						{#each categories as cat (cat.id)}
+							<option value={cat.id}>{cat.name}</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
+
+			{#if data.isAdmin}
+				<button class="btn btn-primary btn-sm flex items-center gap-1.5" onclick={openCreate} data-testid="btn-new-global-task">
+					<Plus class="w-4 h-4" />
+					Nova Tarefa Global
+				</button>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Errors if any -->
 	{#if form?.errors?.general}
-		<div class="alert alert-error" role="alert">
+		<div class="alert alert-error my-4" role="alert">
 			<span>{form.errors.general}</span>
 		</div>
 	{/if}
 
 	<!-- Tasks List -->
-	{#if data.tasks.length === 0}
-		<div class="flex flex-col items-center justify-center py-20 px-4 bg-base-200 border border-dashed border-base-300 rounded-2xl text-center text-base-content/40 text-sm">
+	{#if filteredTasks.length === 0}
+		<div class="flex flex-col items-center justify-center py-20 px-4 bg-base-200 border border-dashed border-base-300 rounded-2xl text-center text-base-content/40 text-sm mt-6">
 			<ClipboardList class="w-12 h-12 text-base-content/20 mb-3" />
-			Nenhuma tarefa cadastrada no Backlog Global ainda.
-			{#if data.isAdmin}
+			{selectedCategoryFilter
+				? 'Nenhuma tarefa encontrada com esta categoria.'
+				: 'Nenhuma tarefa cadastrada no Backlog Global ainda.'}
+			{#if data.isAdmin && !selectedCategoryFilter}
 				<button class="btn btn-primary btn-sm mt-4" onclick={openCreate}>Criar primeira tarefa</button>
 			{/if}
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-			{#each data.tasks as task (task.id)}
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+			{#each filteredTasks as task (task.id)}
 				<div class="card bg-base-100 border border-base-300 shadow-xs hover:shadow-md transition-shadow">
 					<div class="card-body p-5 justify-between">
 						<div class="space-y-2">
-							<h3 class="font-bold text-lg text-base-content/90" data-testid="task-title-{task.id}">{task.title}</h3>
+							<div class="flex items-start justify-between gap-2">
+								<h3 class="font-bold text-lg text-base-content/90 truncate" data-testid="task-title-{task.id}">{task.title}</h3>
+								{#if task.expand?.category}
+									<CategoryBadge category={task.expand.category} size="xs" clickable={true} />
+								{/if}
+							</div>
 							{#if task.description}
 								<div class="text-sm text-base-content/75 prose prose-sm max-w-none">
 									<MarkdownView content={task.description} />
@@ -148,7 +193,7 @@
 				<!-- Title -->
 				<div class="form-control w-full">
 					<label class="label text-xs font-semibold uppercase tracking-wider text-base-content/60" for="global-task-title">
-						Título da Tarefa
+						Título da Tarefa *
 					</label>
 					<input
 						type="text"
@@ -160,9 +205,17 @@
 						required
 						data-testid="input-global-task-title"
 					/>
-					{#if (form?.errors as any)?.title}
-						<span class="text-xs text-error mt-1">{(form?.errors as any)?.title}</span>
-					{/if}
+				</div>
+
+				<!-- Category -->
+				<div class="form-control w-full">
+					<CategorySelect
+						{categories}
+						bind:value={taskCategory}
+						name="category"
+						label="Categoria (Opcional)"
+						dataTestId="select-poker-task-category"
+					/>
 				</div>
 
 				<!-- Rich Text Editor (Description) -->
@@ -175,9 +228,6 @@
 						bind:value={description}
 						compact
 					/>
-					{#if (form?.errors as any)?.description}
-						<span class="text-xs text-error mt-1">{(form?.errors as any)?.description}</span>
-					{/if}
 				</div>
 
 				<!-- Actions -->

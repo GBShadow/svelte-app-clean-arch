@@ -78,6 +78,18 @@
 | | | `actions.removeItem` — remover item | Owner-only |
 | | `+page.svelte` | Detalhe da lista com itens | |
 
+### Categorias
+
+| Rota | Arquivos | Funções | Proteção |
+|------|----------|---------|----------|
+| `/categories` | `+page.server.ts` | `load` — lista de categorias + contagens agregadas | hooks global |
+| | | `actions.create` — criar categoria | Autenticado |
+| | | `actions.update` — atualizar nome/descrição | Autenticado |
+| | | `actions.delete` — excluir categoria (nullify automático) | Autenticado |
+| | `+page.svelte` | Catálogo de categorias + modais CRUD | |
+| `/categories/[id]` | `+page.server.ts` | `load` — categoria + agregação paralela de Todos, Kanban, Poker, Specs e Retro | hooks global |
+| | `+page.svelte` | Visão agregada transversal por abas/seções com links diretos | |
+
 ### Chat
 
 | Rota | Arquivos | Funções | Proteção |

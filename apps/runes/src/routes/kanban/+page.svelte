@@ -29,9 +29,10 @@
 	import Trash from 'lucide-svelte/icons/trash';
 	import Settings from 'lucide-svelte/icons/settings';
 	import FolderKanban from 'lucide-svelte/icons/folder-kanban';
-	import Play from 'lucide-svelte/icons/play';
+import Play from 'lucide-svelte/icons/play';
 import PageShell from '$lib/components/PageShell.svelte';
-
+import CategoryBadge from '$lib/components/categories/CategoryBadge.svelte';
+import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 	let { data, form }: PageProps = $props();
 
 	const project = $derived(data.project as ProjectRecord);
@@ -132,6 +133,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 	// Filters
 	let filterUser = $state('');
 	let filterTag = $state('');
+	let filterCategory = $state('');
 	let filterPoints = $state<number | null>(null);
 	let filterDueDate = $state('');
 	let filterSprint = $state('all');
@@ -140,6 +142,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 		board.cards.filter((card) => {
 			if (filterUser && !card.assignees.includes(filterUser)) return false;
 			if (filterTag && !(card.tags || []).includes(filterTag)) return false;
+			if (filterCategory && card.category !== filterCategory) return false;
 			if (filterPoints !== null && card.points !== filterPoints) return false;
 			if (filterDueDate && card.dueDate !== filterDueDate) return false;
 			if (filterSprint === 'backlog' && card.sprint) return false;
@@ -182,10 +185,10 @@ import PageShell from '$lib/components/PageShell.svelte';
 	let cardDescription = $state('');
 	let cardAssignees = $state<string[]>([]);
 	let cardTags = $state('');
+	let cardCategory = $state('');
 	let cardPoints = $state<number | null>(null);
 	let cardDueDate = $state('');
 	let cardSprintId = $state('');
-
 	let columnName = $state('');
 
 	function openCreateCard(columnId: string) {
@@ -194,10 +197,10 @@ import PageShell from '$lib/components/PageShell.svelte';
 		cardDescription = '';
 		cardAssignees = [];
 		cardTags = '';
+		cardCategory = '';
 		cardPoints = null;
 		cardDueDate = '';
 		cardSprintId = activeSprint?.id || plannedSprint?.id || '';
-		isNewCardOpen = true;
 	}
 
 	function openEditCard(card: KanbanCardRecord) {
@@ -206,10 +209,10 @@ import PageShell from '$lib/components/PageShell.svelte';
 		cardDescription = card.description || '';
 		cardAssignees = card.assignees || [];
 		cardTags = (card.tags || []).join(', ');
+		cardCategory = card.category || '';
 		cardPoints = card.points;
 		cardDueDate = card.dueDate ? card.dueDate.slice(0, 10) : '';
 		cardSprintId = card.sprint || '';
-		isEditCardOpen = true;
 	}
 
 	const usersMap = $derived(new Map(data.users.map((u: any) => [u.id, u])));
@@ -355,6 +358,15 @@ import PageShell from '$lib/components/PageShell.svelte';
 					<option value={tag}>{tag}</option>
 				{/each}
 			</select>
+			<!-- Filter by Category -->
+			{#if data.categories && data.categories.length > 0}
+				<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterCategory} data-testid="select-kanban-category-filter">
+					<option value="">Filtrar por Categoria</option>
+					{#each data.categories as cat}
+						<option value={cat.id}>{cat.name}</option>
+					{/each}
+				</select>
+			{/if}
 
 			<!-- Filter by Points -->
 			<select
@@ -503,6 +515,12 @@ import PageShell from '$lib/components/PageShell.svelte';
 									</div>
 								{/if}
 
+								{#if card.expand?.category}
+									<div class="mt-1">
+										<CategoryBadge category={card.expand.category} size="xs" clickable={true} />
+									</div>
+								{/if}
+
 								{#if !card.sprint}
 									<div class="mt-1">
 										<span class="badge badge-xs badge-ghost">Backlog</span>
@@ -611,6 +629,16 @@ import PageShell from '$lib/components/PageShell.svelte';
 								</label>
 							{/each}
 						</div>
+					</div>
+
+					<div class="form-control">
+						<CategorySelect
+							categories={data.categories || []}
+							bind:value={cardCategory}
+							name="category"
+							label="Categoria"
+							dataTestId="select-new-card-category"
+						/>
 					</div>
 
 					<div class="form-control">
@@ -737,10 +765,19 @@ import PageShell from '$lib/components/PageShell.svelte';
 						</div>
 
 						<div class="form-control">
+							<CategorySelect
+								categories={data.categories || []}
+								bind:value={cardCategory}
+								name="category"
+								label="Categoria"
+								dataTestId="select-edit-card-category"
+							/>
+						</div>
+
+						<div class="form-control">
 							<label class="label font-medium text-sm" for="edit-card-tags">Tags</label>
 							<input id="edit-card-tags" type="text" name="tags" class="input input-bordered" bind:value={cardTags} />
 						</div>
-					</form>
 
 					<div class="flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-base-200 pt-6 lg:pt-0 lg:pl-6">
 						<!-- Comments -->

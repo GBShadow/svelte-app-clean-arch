@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { ClientResponseError } from 'pocketbase';
 import type PocketBase from 'pocketbase';
 import type { Actions, PageServerLoad } from './$types';
+import type { CategoryRecord } from '$lib/server/categoryRecord';
 import type { TodoItemRecord, TodoListRecord } from '$lib/server/todoRecord';
 import { canView, canWrite } from '$lib/domain/todoListAccess';
 import { addItemSchema, createListSchema } from '$lib/validation/todoSchemas';
@@ -32,14 +33,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(403, 'Você não tem acesso a esta lista.');
 	}
 
-	const items = await locals.pb.collection('todo_items').getFullList<TodoItemRecord>({
-		filter: locals.pb.filter('list = {:list}', { list: params.id }),
-		sort: 'created'
-	});
+	const [items, categories] = await Promise.all([
+		locals.pb.collection('todo_items').getFullList<TodoItemRecord>({
+			filter: locals.pb.filter('list = {:list}', { list: params.id }),
+			sort: 'created',
+			expand: 'category'
+		}),
+		locals.pb.collection('categories').getFullList<CategoryRecord>({
+			sort: 'name'
+		}).catch(() => [])
+	]);
 
 	return {
 		list,
 		items,
+		categories,
 		isOwner: canWrite({ ownerId: list.owner, public: list.public }, userId)
 	};
 };
@@ -99,7 +107,12 @@ export const actions: Actions = {
 		if (denied) return denied;
 
 		const formData = await request.formData();
-		const parsed = addItemSchema.safeParse({ description: formData.get('description') });
+		const rawDescription = formData.get('description')?.toString() ?? '';
+		const rawCategory = formData.get('category')?.toString() || null;
+		const parsed = addItemSchema.safeParse({
+			description: rawDescription,
+			category: rawCategory
+		});
 		if (!parsed.success) {
 			return fail(400, { errors: fieldErrorsFrom(parsed.error) });
 		}
@@ -107,6 +120,7 @@ export const actions: Actions = {
 		await locals.pb.collection('todo_items').create({
 			list: params.id,
 			description: parsed.data.description,
+			category: parsed.data.category || null,
 			done: false
 		});
 

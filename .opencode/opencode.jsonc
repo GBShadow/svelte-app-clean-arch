@@ -5,6 +5,11 @@
       "type": "remote",
       "url": "https://mcp.svelte.dev/mcp",
       "enabled": true
+    },
+    "penpot": {
+      "type": "remote",
+      "url": "https://design.penpot.app/mcp/stream?userToken=eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIn0.hZ_qRvU5g2GOh7FbLc4rM9V2hhuRWG8Lcy07iJv_h0zHCdARE6tjDg.ML2gBpOVfZw2tnDY.LBGAQyf04SORlNGm5FYjFYQMnTiSgSjS3g_IIXD7JdTs17qAD8fFeT4hZM7_hepCLrQhJZVzhq9tYtsSykYsHwjEVeUDspY2le09KO4YcDqxzTFBnUin1wJRYkIi6Z06mof4rrZi_5dBRKsckWg5s7bj7rW5V9MnNRJ4DJ2oC-jI-u7UsIh0bVhuqKtUULyz6coLFsjJw0oh.AFxQR2zpKPMfD6aRLN93Ag",
+      "enabled": true
     }
   },
   "skills": {

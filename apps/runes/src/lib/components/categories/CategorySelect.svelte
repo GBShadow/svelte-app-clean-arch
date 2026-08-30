@@ -26,8 +26,8 @@
 
 	let selectClass = $derived(
 		size === 'sm'
-			? 'select select-bordered select-sm w-full'
-			: 'select select-bordered w-full'
+			? 'select select-bordered select-sm w-full rounded-xl bg-base-100/70 border-base-content/15 focus:border-primary transition-all text-xs'
+			: 'select select-bordered w-full rounded-xl bg-base-100/70 border-base-content/15 focus:border-primary transition-all text-sm'
 	);
 </script>
 

@@ -2,6 +2,22 @@
 
 Registro resumido de funcionalidades implementadas. Detalhes em [docs/features/](./features/).
 
+## [2026-08-27] Refatoração Visual Moderna da Aplicação
+
+- **Design Tokens & Superfícies**: Tokens utilitários modernos em `app.css` (`.surface-glass`, `.surface-card`, `.surface-elevated`, `.glow-accent`, `.skeleton-modern`).
+- **Shell & Navegação Global**: Barra superior translúcida com `backdrop-blur`, logo com efeito de iluminação e menu de perfil unificado com backdrop refinado.
+- **Componentes Core Modernizados**:
+  - `Toast.svelte`: Notificações flutuantes arredondadas com ícones em destaque e bordas translúcidas.
+  - `NotificationBell.svelte`: Sino e dropdown com animações e acabamento vítreo.
+  - `AccentPicker.svelte`: Seletor de paletas com microinterações táteis e ring ativo.
+  - `CategoryBadge.svelte` e `CategorySelect.svelte`: Pílulas modernas com dots indicadores.
+  - `AppCard.svelte`: Cards imersivos com gradiente suave e ícones de alto contraste.
+  - `CardDeck.svelte`: Cartas de Planning Poker com elevação e anel de foco refinado.
+  - `RetroCard.svelte`: Cartões de retrospectiva em camadas com ações em hover.
+- **Telas Atualizadas**: Hub inicial, Perfil de usuário, Categorias (catálogo e visão agregada), Todos, Quadro Kanban e Salas de Chat.
+- **Zero Regressão**: 100% dos testes unitários (357 testes) passando e integridade completa de todos os `data-testid`.
+- **Spec**: `docs/specs/2026-08-27-refatoracao-visual-moderna.md`
+
 ## [2026-08-27] CRUD de Categorias e Busca Agregada
 
 - **Gestão Global de Categorias (`/categories`)**: Catálogo central de categorias acessível no App Hub com CRUD completo (criação, edição, exclusão segura com nullify automático), validação via schemas Zod e contadores de itens vinculados.

@@ -131,26 +131,29 @@ import PageShell from '$lib/components/PageShell.svelte';
 			{/if}
 
 			<div class="flex flex-1 min-h-0 gap-4">
-				<div class="flex flex-col flex-1 min-h-0 gap-4 min-w-0">
+				<div class="flex flex-col flex-1 min-h-0 gap-3 min-w-0">
 					<div
-						class="card bg-base-100 border border-base-300 shadow-sm flex-1 min-h-0 overflow-y-auto relative"
+						class="surface-card rounded-2xl flex-1 min-h-0 overflow-y-auto relative p-4"
 						data-testid="chat-messages-card"
 						bind:this={messagesEl}
 						onscroll={handleScroll}
 					>
-						<div class="card-body gap-2">
+						<div class="flex flex-col gap-3.5">
 							{#each feed.messages as message (message.id)}
 								{@const sender = participantsById.get(message.sender)}
-								<div class="flex items-start gap-2" data-testid="chat-message-{message.id}">
+								{@const isMe = message.sender === data.userId}
+								<div class="flex items-start gap-3 group {isMe ? 'flex-row-reverse' : ''}" data-testid="chat-message-{message.id}">
 									<Avatar
 										userId={message.sender}
 										avatar={sender?.avatar ?? ''}
 										name={sender?.name ?? ''}
-										size="size-6"
+										size="size-8"
 									/>
-									<div>
-										<p class="text-xs opacity-60">{sender?.name ?? ''}</p>
-										<p data-testid="chat-message-text-{message.id}">{message.text}</p>
+									<div class="flex flex-col {isMe ? 'items-end' : 'items-start'} max-w-[80%]">
+										<p class="text-[11px] font-semibold text-base-content/50 mb-1 px-1">{sender?.name ?? ''}</p>
+										<div class="p-3 px-4 rounded-2xl text-sm leading-relaxed shadow-sm {isMe ? 'bg-primary text-primary-content rounded-tr-sm' : 'bg-base-200/90 text-base-content rounded-tl-sm border border-base-content/10'}">
+											<p data-testid="chat-message-text-{message.id}">{message.text}</p>
+										</div>
 									</div>
 								</div>
 							{/each}
@@ -159,7 +162,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 						{#if !isNearBottom}
 							<button
 								type="button"
-								class="btn btn-circle btn-sm btn-soft btn-primary absolute bottom-4 right-4 shadow-lg z-10"
+								class="btn btn-circle btn-sm btn-primary absolute bottom-4 right-4 shadow-xl z-10 shadow-primary/30"
 								onclick={scrollToBottom}
 								data-testid="btn-scroll-bottom"
 								aria-label="Ir para a mensagem mais recente"
@@ -173,7 +176,7 @@ import PageShell from '$lib/components/PageShell.svelte';
 						method="POST"
 						action="?/sendMessage"
 						novalidate
-						class="flex flex-col gap-2 shrink-0"
+						class="surface-glass rounded-2xl p-2 shrink-0 border border-base-content/15 shadow-md flex flex-col gap-1"
 						data-testid="send-message-form"
 						use:enhance={() => {
 							return async ({ update }) => {
@@ -188,18 +191,17 @@ import PageShell from '$lib/components/PageShell.svelte';
 								name="text"
 								placeholder="Escreva uma mensagem..."
 								data-testid="input-message"
-								class="input input-bordered flex-1"
+								class="input input-ghost flex-1 rounded-xl text-sm focus:bg-base-content/5"
 								required
 								bind:this={inputEl}
 							/>
-							<button type="submit" class="btn btn-primary" data-testid="btn-send-message">Enviar</button>
+							<button type="submit" class="btn btn-primary btn-sm sm:btn-md rounded-xl px-5 font-semibold shadow-sm" data-testid="btn-send-message">Enviar</button>
 						</div>
 						{#if form?.errors?.text}
-							<span class="text-error text-sm" data-testid="error-message-text">{form.errors.text}</span>
+							<span class="text-error text-xs px-2 font-medium" data-testid="error-message-text">{form.errors.text}</span>
 						{/if}
 					</form>
 				</div>
-
 				{#if showParticipants}
 					<button class="fixed inset-0 z-30 bg-black/50 lg:hidden" onclick={() => showParticipants = false} aria-label="Fechar participantes" type="button" data-testid="btn-close-participants-drawer"></button>
 					<div class="fixed inset-y-0 right-0 z-40 w-[min(18rem,100vw)] shadow-xl lg:relative lg:inset-auto lg:z-auto lg:shadow-none lg:w-72 shrink-0 self-start card bg-base-100 border border-base-300">

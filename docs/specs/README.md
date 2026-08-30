@@ -55,6 +55,8 @@ Spec aprovada é **registro histórico**: nunca é reescrita para caber no que f
 | Retrospectiva de Sprint | Implementada | 2026-07-24 | [2026-07-24-sprint-retrospective.md](./2026-07-24-sprint-retrospective.md) |
 | Documentos de Especificação | Implementada | 2026-07-24 | [2026-07-24-specification-documents.md](./2026-07-24-specification-documents.md) |
 | Revisão de Design e Responsividade | Implementada | 2026-08-05 | [2026-08-05-revisao-de-design.md](./2026-08-05-revisao-de-design.md) |
+| CRUD de Categorias e Busca Agregada | Implementada | 2026-08-27 | [2026-08-27-crud-categorias.md](./2026-08-27-crud-categorias.md) |
+| Refatoração Visual Moderna da Aplicação | Implementada | 2026-08-27 | [2026-08-27-refatoracao-visual-moderna.md](./2026-08-27-refatoracao-visual-moderna.md) |
 
 > **Legenda de Status:** o ciclo de vida da spec é `Rascunho` → `Em validação` → `Aprovada` → `Superada` (ver `_template.md`). Neste índice, o valor reflete o estado de implementação: `Especificada` (spec escrita) · `Spec em aprovação` (em validação) · `Implementada` (construída + documentada).
 

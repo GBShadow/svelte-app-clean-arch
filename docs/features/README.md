@@ -24,6 +24,7 @@ Documentação de funcionalidades implementadas no monorepo.
 | Retrospectiva de Sprint | runes | 2026-07-24 | [2026-07-24-sprint-retrospective.md](./2026-07-24-sprint-retrospective.md) |
 | Documentos de Especificação | runes | 2026-07-24 | [2026-07-24-specification-documents.md](./2026-07-24-specification-documents.md) |
 | CRUD de Categorias e Busca Agregada | runes | 2026-08-27 | [2026-08-27-crud-categorias.md](./2026-08-27-crud-categorias.md) |
+| Refatoração Visual Moderna da Aplicação | runes | 2026-08-27 | [2026-08-27-refatoracao-visual-moderna.md](./2026-08-27-refatoracao-visual-moderna.md) |
 
 ## Nova feature
 

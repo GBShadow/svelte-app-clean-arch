@@ -37,30 +37,37 @@
 	}
 </script>
 
-<div class="flex flex-col min-h-dvh bg-base-200">
-	<div class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30">
+<div class="flex flex-col min-h-dvh bg-base-200 selection:bg-primary/30 selection:text-primary-content">
+	<div class="navbar surface-glass sticky top-0 z-30 px-4 sm:px-8 transition-all">
 		<div class="flex-1">
-			<a href="/" class="btn btn-ghost text-xl font-mono normal-case" data-testid="logo-link">
-				<span class="text-primary">&#10095;</span> hub
+			<a href="/" class="btn btn-ghost text-xl font-mono normal-case tracking-tight gap-1.5 hover:bg-base-content/10 transition-all rounded-xl" data-testid="logo-link">
+				<span class="text-primary font-bold drop-shadow-[0_0_8px_rgba(255,121,198,0.5)]">&#10095;</span>
+				<span class="font-display font-semibold tracking-normal text-base-content">hub</span>
 			</a>
 		</div>
-		<div class="flex-none flex items-center gap-4">
+		<div class="flex-none flex items-center gap-2 sm:gap-3">
 			{#if data.user}
 				<div class="dropdown dropdown-end">
-					<button type="button" class="btn btn-ghost btn-sm gap-1.5" data-testid="btn-user-menu">
-						<User class="size-4 sm:hidden" />
-						<span class="hidden sm:inline">{data.user.name}</span>
+					<button type="button" class="btn btn-ghost btn-sm gap-2 rounded-xl hover:bg-base-content/10 border border-transparent hover:border-base-content/10 transition-all" data-testid="btn-user-menu">
+						<div class="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+							{data.user.name ? data.user.name[0].toUpperCase() : 'U'}
+						</div>
+						<span class="hidden sm:inline font-medium text-sm text-base-content/90">{data.user.name}</span>
 					</button>
-					<ul class="dropdown-content z-20 bg-base-100 border border-base-300 rounded-box shadow-lg p-1.5 min-w-40" data-testid="user-dropdown">
+					<ul class="dropdown-content z-20 surface-glass border border-base-content/15 rounded-2xl shadow-2xl p-2 min-w-48 mt-2 backdrop-blur-2xl" data-testid="user-dropdown">
+						<li class="px-3 py-2 border-b border-base-content/10 mb-1">
+							<p class="text-xs text-base-content/50 font-medium">Conectado como</p>
+							<p class="text-sm font-semibold text-base-content truncate">{data.user.name}</p>
+						</li>
 						<li>
-							<a href="/profile" class="btn btn-ghost btn-sm justify-start gap-2 w-full font-normal" data-testid="btn-profile">
-								<User class="size-4" />
+							<a href="/profile" class="btn btn-ghost btn-sm justify-start gap-2.5 w-full font-normal rounded-lg hover:bg-base-content/10 text-sm" data-testid="btn-profile">
+								<User class="size-4 text-primary" />
 								Perfil
 							</a>
 						</li>
 						<li>
 							<form method="POST" action="/logout" onsubmit={handleLogout}>
-								<button type="submit" class="btn btn-ghost btn-sm justify-start gap-2 w-full font-normal text-error" data-testid="btn-logout">
+								<button type="submit" class="btn btn-ghost btn-sm justify-start gap-2.5 w-full font-normal text-error rounded-lg hover:bg-error/10 text-sm" data-testid="btn-logout">
 									<IconLogout class="size-4" />
 									Sair
 								</button>
@@ -72,7 +79,6 @@
 			{/if}
 		</div>
 	</div>
-
 	{#if data.user?.mustChangePassword}
 		<div class="alert alert-warning rounded-none justify-center" role="alert" data-testid="alert-change-password">
 			Sua senha precisa ser trocada em breve. <a href="/change-password" class="link ml-1">Trocar agora</a>

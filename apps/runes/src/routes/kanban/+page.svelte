@@ -277,14 +277,14 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 
 <PageShell bleed class="px-2 sm:px-4 py-3" testId="kanban-page">
 	<!-- Project Selector & Sprint Info -->
-	<div class="toolbar-wrap bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
-		<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+	<div class="toolbar-wrap surface-card p-4 rounded-2xl mb-4">
+		<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 w-full">
 			<div class="flex items-center gap-3 flex-wrap">
 				<!-- Project Switcher -->
 				<div class="flex items-center gap-2">
 					<FolderKanban class="w-5 h-5 text-primary" />
 					<select
-						class="select select-bordered select-sm font-semibold w-full sm:w-auto"
+						class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 font-semibold w-full sm:w-auto"
 						value={project?.id ?? ''}
 						onchange={(e) => switchProject((e.target as HTMLSelectElement).value)}
 					>
@@ -298,18 +298,18 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 				{#if project}
 					<!-- Active Sprint Badge -->
 					{#if activeSprint}
-						<span class="badge badge-primary gap-1 py-3">
-							<Play class="w-3 h-3" />
+						<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/15 text-primary border border-primary/25">
+							<Play class="w-3 h-3 text-primary" />
 							{activeSprint.title}
 							<span class="opacity-70">({formatDate(activeSprint.startDate)} — {formatDate(activeSprint.endDate)})</span>
 						</span>
 					{:else if plannedSprint}
-						<span class="badge badge-ghost gap-1 py-3">
+						<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-base-300/60 text-base-content/80 border border-base-content/10">
 							<Calendar class="w-3 h-3" />
 							{plannedSprint.title} (planejada)
 						</span>
 					{:else}
-						<span class="text-xs opacity-50">Nenhuma sprint ativa</span>
+						<span class="text-xs text-base-content/50">Nenhuma sprint ativa</span>
 					{/if}
 				{/if}
 			</div>
@@ -317,8 +317,8 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 			<!-- Actions -->
 			<div class="flex items-center gap-2 flex-wrap">
 				{#if project && canManageProject}
-					<a href="/projects/{project.id}" class="btn btn-outline btn-xs gap-1">
-						<Settings class="w-3 h-3" />
+					<a href="/projects/{project.id}" class="btn btn-ghost btn-xs gap-1.5 rounded-xl border border-base-content/15 hover:bg-base-content/10 font-medium">
+						<Settings class="w-3.5 h-3.5" />
 						Projeto
 					</a>
 				{/if}
@@ -329,22 +329,22 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 	{#if project}
 
 	<!-- Filters & Header -->
-	<div class="toolbar-wrap bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
-		<div>
-			<h1 class="text-2xl font-extrabold font-display tracking-tight">{project.title}</h1>
-			<p class="text-sm opacity-60 mt-1"><MarkdownView content={project.description} /></p>
+	<div class="toolbar-wrap surface-card p-4 sm:p-5 rounded-2xl mb-5">
+		<div class="mb-3">
+			<h1 class="text-2xl sm:text-3xl font-extrabold font-display tracking-tight text-base-content">{project.title}</h1>
+			<p class="text-sm text-base-content/60 mt-1"><MarkdownView content={project.description} /></p>
 		</div>
 
-		<div class="flex items-center gap-2 flex-wrap">
+		<div class="flex items-center gap-2.5 flex-wrap w-full">
 			<!-- Sprint Filter -->
-			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterSprint}>
+			<select class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterSprint}>
 				<option value="all">Todos os cartões</option>
 				<option value="sprint">Na sprint</option>
 				<option value="backlog">Backlog (sem sprint)</option>
 			</select>
 
 			<!-- Filter by User -->
-			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterUser}>
+			<select class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterUser}>
 				<option value="">Filtrar por Responsável</option>
 				{#each data.users as u}
 					<option value={u.id}>{u.name}</option>
@@ -352,7 +352,7 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 			</select>
 
 			<!-- Filter by Tag -->
-			<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterTag}>
+			<select class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterTag}>
 				<option value="">Filtrar por Tag</option>
 				{#each uniqueTags as tag}
 					<option value={tag}>{tag}</option>
@@ -360,7 +360,7 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 			</select>
 			<!-- Filter by Category -->
 			{#if data.categories && data.categories.length > 0}
-				<select class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterCategory} data-testid="select-kanban-category-filter">
+				<select class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs w-full sm:w-auto min-w-0 sm:min-w-[10rem]" bind:value={filterCategory} data-testid="select-kanban-category-filter">
 					<option value="">Filtrar por Categoria</option>
 					{#each data.categories as cat}
 						<option value={cat.id}>{cat.name}</option>
@@ -370,7 +370,7 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 
 			<!-- Filter by Points -->
 			<select
-				class="select select-bordered select-sm w-full sm:w-auto min-w-0 sm:min-w-[10rem]"
+				class="select select-bordered select-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs w-full sm:w-auto min-w-0 sm:min-w-[10rem]"
 				value={filterPoints === null ? '' : String(filterPoints)}
 				onchange={(e) => {
 					const val = (e.target as HTMLSelectElement).value;
@@ -385,7 +385,7 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 
 			<!-- Filter by Date -->
 			<div class="relative">
-				<input type="date" class="input input-bordered input-sm pr-8 w-full sm:w-auto" bind:value={filterDueDate} />
+				<input type="date" class="input input-bordered input-sm rounded-xl bg-base-100/70 border-base-content/15 text-xs pr-8 w-full sm:w-auto" bind:value={filterDueDate} />
 				{#if filterDueDate}
 					<button
 						class="absolute right-2 top-1/2 -translate-y-1/2 text-xs opacity-60 hover:opacity-100"
@@ -398,11 +398,11 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 
 			{#if data.user?.isAdmin}
 				<button
-					class="btn btn-outline btn-sm gap-2"
+					class="btn btn-ghost btn-sm gap-2 rounded-xl border border-base-content/15 hover:bg-base-content/10 font-medium"
 					onclick={() => (isManageColumnsOpen = true)}
 					data-testid="btn-manage-columns"
 				>
-					<Settings class="size-4" />
+					<Settings class="size-4 text-primary" />
 					Colunas
 				</button>
 			{/if}
@@ -431,20 +431,20 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 	>
 		{#each board.columns as column (column.id)}
 			<div
-				class="bg-base-200/60 border border-base-300 w-[min(20rem,calc(100vw-2rem))] sm:w-80 rounded-2xl flex flex-col max-h-[70dvh] shadow-sm flex-shrink-0"
+				class="surface-card bg-base-100/50 border border-base-content/10 w-[min(20rem,calc(100vw-2rem))] sm:w-80 rounded-2xl flex flex-col max-h-[70dvh] flex-shrink-0"
 				data-testid="kanban-column-{column.id}"
 			>
-				<div class="p-4 flex items-center justify-between border-b border-base-300">
+				<div class="p-3.5 px-4 flex items-center justify-between border-b border-base-content/10 bg-base-100/30">
 					<div class="flex items-center gap-2">
-						<h2 class="font-bold text-sm tracking-wide text-base-content/80 uppercase">
+						<h2 class="font-display font-bold text-xs tracking-wider text-base-content/90 uppercase">
 							{column.name}
 						</h2>
-						<span class="badge badge-sm badge-neutral">
+						<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-base-300/80 text-base-content/80">
 							{cardsByColumn(column.id).length}
 						</span>
 					</div>
 					<button
-						class="btn btn-ghost btn-circle btn-xs hover:bg-base-300"
+						class="btn btn-ghost btn-circle btn-xs hover:bg-base-content/10 text-base-content/70 hover:text-base-content transition-all"
 						onclick={() => openCreateCard(column.id)}
 						data-testid="btn-add-card-{column.id}"
 					>
@@ -465,25 +465,25 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 					{#each cardsByColumn(column.id) as card (card.id)}
 						<button
 							type="button"
-							class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left block w-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+							class="surface-card rounded-xl p-3.5 bg-base-100/90 border border-base-content/10 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-left block w-full focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
 							onclick={() => openEditCard(card)}
 							data-testid="kanban-card-{card.id}"
 						>
-							<div class="card-body p-4 gap-3">
-								<h3 class="font-semibold text-sm leading-tight text-base-content" data-testid="card-title-{card.id}">
+							<div class="gap-3 flex flex-col">
+								<h3 class="font-semibold text-sm leading-snug text-base-content" data-testid="card-title-{card.id}">
 									{card.title}
 								</h3>
 
-								<div class="flex items-center justify-between gap-2 mt-1">
+								<div class="flex items-center justify-between gap-2 mt-0.5">
 									<div class="flex items-center gap-1.5 flex-wrap">
 										{#if card.points !== null}
-											<div class="badge badge-sm badge-primary gap-1" data-testid="card-points-{card.id}">
+											<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-primary/15 text-primary border border-primary/20" data-testid="card-points-{card.id}">
 												<Award class="size-3" />
 												{card.points} SP
 											</div>
 										{/if}
 										{#if card.dueDate}
-											<div class="badge badge-sm badge-outline gap-1 text-xs opacity-75">
+											<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-base-300/60 text-base-content/70 border border-base-content/10">
 												<Calendar class="size-3" />
 												{new Date(card.dueDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
 											</div>
@@ -508,22 +508,22 @@ import CategorySelect from '$lib/components/categories/CategorySelect.svelte';
 								</div>
 
 								{#if card.tags && card.tags.length > 0}
-									<div class="flex gap-1 flex-wrap mt-1">
+									<div class="flex gap-1.5 flex-wrap mt-0.5">
 										{#each card.tags as tag}
-											<span class="badge badge-xs badge-neutral opacity-80">{tag}</span>
+											<span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-base-300/80 text-base-content/70">{tag}</span>
 										{/each}
 									</div>
 								{/if}
 
 								{#if card.expand?.category}
-									<div class="mt-1">
+									<div class="mt-0.5">
 										<CategoryBadge category={card.expand.category} size="xs" clickable={true} />
 									</div>
 								{/if}
 
 								{#if !card.sprint}
-									<div class="mt-1">
-										<span class="badge badge-xs badge-ghost">Backlog</span>
+									<div class="mt-0.5">
+										<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-base-content/5 text-base-content/50 border border-base-content/10">Backlog</span>
 									</div>
 								{/if}
 							</div>

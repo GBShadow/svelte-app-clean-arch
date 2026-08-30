@@ -72,98 +72,103 @@ import PageShell from '$lib/components/PageShell.svelte';
 </script>
 
 <PageShell width="sm" testId="profile-page">
-	<h1 class="text-2xl font-bold font-display">Meu perfil</h1>
+	<div class="space-y-6">
+		<div class="border-b border-base-content/10 pb-4">
+			<h1 class="text-2xl sm:text-3xl font-bold font-display tracking-tight text-base-content">Meu perfil</h1>
+			<p class="text-sm text-base-content/60 mt-1">Gerencie seu avatar, notificações e preferências de tema</p>
+		</div>
 
-	{#if form?.errors?.general}
-		<div class="alert alert-error" role="alert" data-testid="error-general">{form.errors.general}</div>
-	{/if}
+		{#if form?.errors?.general}
+			<div class="alert alert-error surface-glass border-error/30 text-error-content rounded-2xl shadow-lg" role="alert" data-testid="error-general">{form.errors.general}</div>
+		{/if}
 
-	<div class="card bg-base-100 border border-base-300 shadow-sm">
-		<div class="card-body gap-4 items-center">
-			<Avatar
-				userId={data.authId}
-				avatar={data.user?.avatar ?? ''}
-				name={data.user?.name ?? ''}
-				size="size-24"
-			/>
-
-			<form
-				method="POST"
-				action="?/uploadAvatar"
-				enctype="multipart/form-data"
-				novalidate
-				class="flex flex-col gap-2 w-full"
-				data-testid="avatar-form"
-			>
-				<input
-					type="file"
-					name="avatar"
-					accept="image/jpeg,image/png,image/webp"
-					data-testid="input-avatar"
-					class="file-input file-input-bordered w-full"
+		<div class="surface-card rounded-2xl p-6">
+			<div class="flex flex-col gap-5 items-center">
+				<Avatar
+					userId={data.authId}
+					avatar={data.user?.avatar ?? ''}
+					name={data.user?.name ?? ''}
+					size="size-24"
 				/>
-				{#if form?.errors?.avatar}
-					<span class="text-error text-sm" data-testid="error-avatar">{form.errors.avatar}</span>
+
+				<form
+					method="POST"
+					action="?/uploadAvatar"
+					enctype="multipart/form-data"
+					novalidate
+					class="flex flex-col gap-3 w-full"
+					data-testid="avatar-form"
+				>
+					<input
+						type="file"
+						name="avatar"
+						accept="image/jpeg,image/png,image/webp"
+						data-testid="input-avatar"
+						class="file-input file-input-bordered w-full rounded-xl bg-base-100/70 border-base-content/15 focus:border-primary text-sm"
+					/>
+					{#if form?.errors?.avatar}
+						<span class="text-error text-xs font-medium" data-testid="error-avatar">{form.errors.avatar}</span>
+					{/if}
+					<button type="submit" class="btn btn-primary rounded-xl font-semibold shadow-md shadow-primary/20 hover:shadow-lg transition-all" data-testid="btn-upload-avatar">Salvar avatar</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="surface-card rounded-2xl p-6">
+			<div class="space-y-3">
+				<h2 class="text-base font-display font-bold text-base-content">Notificações push</h2>
+
+				{#if notificationError}
+					<div class="alert alert-error surface-glass text-xs rounded-xl" role="alert" data-testid="error-notifications">
+						{notificationError}
+					</div>
 				{/if}
-				<button type="submit" class="btn btn-primary" data-testid="btn-upload-avatar">Salvar avatar</button>
-			</form>
+
+				{#if notificationState === 'loading'}
+					<p class="text-sm text-base-content/50">Verificando suporte...</p>
+				{:else if notificationState === 'unsupported'}
+					<p class="text-sm text-base-content/50" data-testid="notifications-unsupported">
+						Este navegador não é compatível com notificações push.
+					</p>
+				{:else if notificationState === 'denied'}
+					<p class="text-sm text-base-content/70" data-testid="notifications-blocked">
+						As notificações estão bloqueadas nas configurações do navegador. Para ativar,
+						permita notificações para este site manualmente nas configurações do navegador.
+					</p>
+				{:else if notificationState === 'subscribed'}
+					<p class="text-sm text-base-content/70">Notificações ativas neste dispositivo.</p>
+					<button
+						type="button"
+						class="btn btn-outline btn-sm gap-2 rounded-xl"
+						disabled={notificationBusy}
+						onclick={handleDisable}
+						data-testid="btn-disable-notifications"
+					>
+						<BellOff class="size-4" />
+						Desativar notificações
+					</button>
+				{:else}
+					<p class="text-sm text-base-content/70">Receba um alerta quando chegar uma nova mensagem.</p>
+					<button
+						type="button"
+						class="btn btn-primary btn-sm gap-2 rounded-xl font-medium shadow-sm"
+						disabled={notificationBusy}
+						onclick={handleEnable}
+						data-testid="btn-enable-notifications"
+					>
+						<Bell class="size-4" />
+						Ativar notificações
+					</button>
+				{/if}
+			</div>
 		</div>
-	</div>
 
-	<div class="card bg-base-100 border border-base-300 shadow-sm">
-		<div class="card-body gap-3">
-			<h2 class="card-title text-base">Notificações push</h2>
-
-			{#if notificationError}
-				<div class="alert alert-error" role="alert" data-testid="error-notifications">
-					{notificationError}
-				</div>
-			{/if}
-
-			{#if notificationState === 'loading'}
-				<p class="text-sm opacity-60">Verificando suporte...</p>
-			{:else if notificationState === 'unsupported'}
-				<p class="text-sm opacity-60" data-testid="notifications-unsupported">
-					Este navegador não é compatível com notificações push.
-				</p>
-			{:else if notificationState === 'denied'}
-				<p class="text-sm opacity-80" data-testid="notifications-blocked">
-					As notificações estão bloqueadas nas configurações do navegador. Para ativar,
-					permita notificações para este site manualmente nas configurações do navegador.
-				</p>
-			{:else if notificationState === 'subscribed'}
-				<p class="text-sm opacity-70">Notificações ativas neste dispositivo.</p>
-				<button
-					type="button"
-					class="btn btn-outline btn-sm gap-1.5 w-fit"
-					disabled={notificationBusy}
-					onclick={handleDisable}
-					data-testid="btn-disable-notifications"
-				>
-					<BellOff class="size-4" />
-					Desativar notificações
-				</button>
-			{:else}
-				<p class="text-sm opacity-70">Receba um alerta quando chegar uma nova mensagem.</p>
-				<button
-					type="button"
-					class="btn btn-primary btn-sm gap-1.5 w-fit"
-					disabled={notificationBusy}
-					onclick={handleEnable}
-					data-testid="btn-enable-notifications"
-				>
-					<Bell class="size-4" />
-					Ativar notificações
-				</button>
-			{/if}
-		</div>
-	</div>
-
-	<div class="card bg-base-100 border border-base-300 shadow-sm">
-		<div class="card-body gap-3">
-			<h2 class="card-title text-base">Acentuar</h2>
-			<p class="text-sm opacity-70">Escolha a paleta de cores da aplicação.</p>
-			<AccentPicker />
+		<div class="surface-card rounded-2xl p-6">
+			<div class="space-y-3">
+				<h2 class="text-base font-display font-bold text-base-content">Acentuar</h2>
+				<p class="text-sm text-base-content/60">Escolha a paleta de cores da aplicação.</p>
+				<AccentPicker />
+			</div>
 		</div>
 	</div>
 </PageShell>

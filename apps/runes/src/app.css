@@ -108,3 +108,83 @@
 
 /* Modais em mobile estreito */
 .modal-box-responsive { @apply w-[calc(100vw-1rem)] sm:w-full; }
+
+/* Modern Glassmorphism & Surface Layering */
+.surface-glass {
+	background-color: color-mix(in oklch, var(--color-base-100) 80%, transparent);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid color-mix(in oklch, var(--color-base-content) 8%, transparent);
+}
+
+.surface-card {
+	background-color: color-mix(in oklch, var(--color-base-100) 90%, var(--color-base-200) 10%);
+	border: 1px solid color-mix(in oklch, var(--color-base-content) 10%, transparent);
+	box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.35);
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.surface-card:hover {
+	border-color: color-mix(in oklch, var(--color-primary) 30%, transparent);
+	box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.45);
+}
+
+.surface-elevated {
+	background-color: var(--color-base-100);
+	border: 1px solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+	box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+/* Glow & Interactive Microtransitions */
+.glow-accent {
+	box-shadow: 0 0 20px -3px color-mix(in oklch, var(--color-primary) 35%, transparent);
+}
+
+.glow-accent-hover:hover {
+	box-shadow: 0 0 25px -2px color-mix(in oklch, var(--color-primary) 45%, transparent);
+	transform: translateY(-1px);
+}
+
+.interactive-scale {
+	transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.interactive-scale:hover {
+	transform: translateY(-2px);
+}
+.interactive-scale:active {
+	transform: translateY(0) scale(0.98);
+}
+
+/* Modern Skeleton Shimmer */
+.skeleton-modern {
+	background: linear-gradient(
+		90deg,
+		color-mix(in oklch, var(--color-base-300) 40%, transparent) 0%,
+		color-mix(in oklch, var(--color-base-content) 10%, var(--color-base-300)) 50%,
+		color-mix(in oklch, var(--color-base-300) 40%, transparent) 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.8s infinite ease-in-out;
+	border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+	0% { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+
+/* Focus ring padronizado */
+:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.skeleton-modern,
+	.interactive-scale,
+	.surface-card {
+		animation: none !important;
+		transition: none !important;
+		transform: none !important;
+	}
+}

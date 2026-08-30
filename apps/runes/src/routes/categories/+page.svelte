@@ -89,28 +89,28 @@
 				type="text"
 				placeholder="Buscar categorias..."
 				bind:value={searchQuery}
-				class="input input-bordered w-full pl-10 input-sm sm:input-md"
+				class="input input-bordered w-full pl-10 rounded-xl bg-base-100/70 border-base-content/15 focus:border-primary text-sm transition-all"
 				data-testid="input-search-categories"
 			/>
 		</div>
-		<div class="text-xs text-base-content/60 self-end sm:self-center">
-			Total: <span class="font-bold text-base-content">{filteredCategories.length}</span> categoria(s)
+		<div class="text-xs text-base-content/60 self-end sm:self-center font-medium">
+			Total: <span class="font-bold text-primary">{filteredCategories.length}</span> categoria(s)
 		</div>
 	</div>
 
 	<!-- Listagem / Grid -->
 	{#if filteredCategories.length === 0}
 		<div
-			class="flex flex-col items-center justify-center py-16 px-4 bg-base-200/50 border border-base-300 rounded-2xl text-center"
+			class="surface-card rounded-2xl flex flex-col items-center justify-center py-16 px-4 text-center border-dashed"
 			data-testid="categories-empty-state"
 		>
-			<div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3">
-				<Tag class="size-7 opacity-70" />
+			<div class="size-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 shadow-inner">
+				<Tag class="size-8 opacity-80" />
 			</div>
-			<h3 class="text-base font-semibold text-base-content/80">
+			<h3 class="text-lg font-display font-bold text-base-content">
 				{searchQuery ? 'Nenhuma categoria encontrada' : 'Nenhuma categoria cadastrada'}
 			</h3>
-			<p class="text-xs text-base-content/50 max-w-sm mt-1">
+			<p class="text-sm text-base-content/60 max-w-sm mt-1.5 leading-relaxed">
 				{searchQuery
 					? 'Tente ajustar os termos da sua busca para encontrar o que procura.'
 					: 'Crie sua primeira categoria para começar a classificar e buscar seus itens de trabalho.'}
@@ -118,7 +118,7 @@
 			{#if !searchQuery}
 				<button
 					type="button"
-					class="btn btn-primary btn-sm mt-5 gap-1.5"
+					class="btn btn-primary btn-sm mt-6 gap-2 rounded-xl font-medium shadow-md shadow-primary/20"
 					onclick={openCreateModal}
 					data-testid="btn-empty-new-category"
 				>
@@ -128,65 +128,65 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="categories-grid">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" data-testid="categories-grid">
 			{#each filteredCategories as category (category.id)}
 				<div
-					class="card bg-base-100 border border-base-300 hover:border-primary/40 hover:shadow-md transition-all group flex flex-col justify-between"
+					class="surface-card rounded-2xl p-5 group flex flex-col justify-between"
 					data-testid="category-card-{category.id}"
 				>
-					<div class="card-body p-5">
+					<div>
 						<div class="flex items-start justify-between gap-3">
-							<div class="flex items-center gap-2 min-w-0">
-								<div class="size-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-									<Tag class="size-4" />
+							<div class="flex items-center gap-2.5 min-w-0">
+								<div class="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 group-hover:scale-105 transition-transform">
+									<Tag class="size-5" />
 								</div>
 								<h3
-									class="font-semibold text-base truncate text-base-content"
+									class="font-display font-bold text-base truncate text-base-content group-hover:text-primary transition-colors"
 									data-testid="category-name-{category.id}"
 								>
 									{category.name}
 								</h3>
 							</div>
-							<div class="badge badge-neutral badge-sm gap-1 shrink-0" title="Itens associados">
-								<Layers class="size-3" />
+							<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-base-300/80 text-base-content/80 border border-base-content/10 shrink-0" title="Itens associados">
+								<Layers class="size-3 text-primary" />
 								<span>{counts[category.id] || 0}</span>
 							</div>
 						</div>
 
-						<p class="text-xs text-base-content/60 mt-3 line-clamp-2 min-h-[32px]">
+						<p class="text-xs text-base-content/65 mt-3.5 line-clamp-2 min-h-[32px] leading-relaxed">
 							{category.description || 'Sem descrição.'}
 						</p>
+					</div>
 
-						<div class="flex items-center justify-between mt-5 pt-3 border-t border-base-200">
-							<a
-								href="/categories/{category.id}"
-								class="btn btn-ghost btn-xs gap-1 text-primary hover:bg-primary/10"
-								data-testid="btn-view-category-{category.id}"
+					<div class="flex items-center justify-between mt-5 pt-3.5 border-t border-base-content/10">
+						<a
+							href="/categories/{category.id}"
+							class="btn btn-ghost btn-xs gap-1.5 text-primary hover:bg-primary/10 rounded-lg font-medium"
+							data-testid="btn-view-category-{category.id}"
+						>
+							Ver itens
+							<ArrowRight class="size-3.5" />
+						</a>
+
+						<div class="flex items-center gap-1">
+							<button
+								type="button"
+								class="btn btn-ghost btn-xs btn-square rounded-lg text-base-content/70 hover:text-base-content hover:bg-base-content/10"
+								onclick={() => openEditModal(category)}
+								data-testid="btn-edit-category-{category.id}"
+								title="Editar"
 							>
-								Ver itens
-								<ArrowRight class="size-3.5" />
-							</a>
-
-							<div class="flex items-center gap-1">
-								<button
-									type="button"
-									class="btn btn-ghost btn-xs btn-square text-base-content/70 hover:text-base-content"
-									onclick={() => openEditModal(category)}
-									data-testid="btn-edit-category-{category.id}"
-									title="Editar"
-								>
-									<Edit2 class="size-3.5" />
-								</button>
-								<button
-									type="button"
-									class="btn btn-ghost btn-xs btn-square text-error/70 hover:text-error"
-									onclick={() => openDeleteModal(category)}
-									data-testid="btn-delete-category-{category.id}"
-									title="Excluir"
-								>
-									<Trash2 class="size-3.5" />
-								</button>
-							</div>
+								<Edit2 class="size-3.5" />
+							</button>
+							<button
+								type="button"
+								class="btn btn-ghost btn-xs btn-square rounded-lg text-error/70 hover:text-error hover:bg-error/10"
+								onclick={() => openDeleteModal(category)}
+								data-testid="btn-delete-category-{category.id}"
+								title="Excluir"
+							>
+								<Trash2 class="size-3.5" />
+							</button>
 						</div>
 					</div>
 				</div>

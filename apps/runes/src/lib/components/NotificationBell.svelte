@@ -32,7 +32,7 @@
 <div class="relative" data-notification-bell>
 	<button
 		type="button"
-		class="btn btn-ghost btn-square relative"
+		class="btn btn-ghost btn-square relative rounded-xl hover:bg-base-content/10 transition-all text-base-content/80 hover:text-base-content"
 		onclick={toggle}
 		aria-label={`Notificações, {notificationStore.unreadCount} não lidas`}
 		aria-expanded={open}
@@ -41,7 +41,7 @@
 		<Bell class="size-5" />
 		{#if notificationStore.unreadCount > 0}
 			<span
-				class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-content text-xs font-medium"
+				class="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-content text-[11px] font-bold shadow-md shadow-primary/30 animate-pulse"
 				data-testid="notification-badge"
 			>
 				{notificationStore.unreadCount > 99 ? '99+' : notificationStore.unreadCount}
@@ -56,7 +56,7 @@
 			onclick={close}
 			aria-label="Fechar notificações"
 		></button>
-		<div class="absolute right-0 top-full z-50 mt-2 w-[min(24rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] max-h-96 bg-base-100 border border-base-300 rounded-box shadow-lg overflow-hidden" data-testid="notification-dropdown">
+		<div class="absolute right-0 top-full z-50 mt-2 w-[min(24rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] max-h-96 surface-glass border border-base-content/15 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl" data-testid="notification-dropdown">
 			<NotificationCenter onClose={close} />
 		</div>
 	{/if}

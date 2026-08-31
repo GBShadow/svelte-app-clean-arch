@@ -220,6 +220,7 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - **baixa** — Migração em Massa de Registros Legados de HTML para Markdown `DEB-TEC-001`
 - **media** — Resolução de Módulos $env do SvelteKit no Runner do Playwright E2E `DEB-TEC-002`
 - **media** — API Rules Excessivamente Permissivas na Coleção Sprints `DEB-TEC-003`
+- **media** — Revisão e Correções Visuais Pendentes no Redesign do Svelte App `DEB-TEC-009`
 
 ### 🔥 Já quebrou aqui antes
 
@@ -235,7 +236,6 @@ python3 ~/projects/agent-memory/scripts/memory.py load svelte-app-clean-arch
 - Filtro de Stack no Roteamento Global da Memória, por Tecnologia Discriminante `DEC-TEC-010`
 - Adoção do Svelte 5 com Runes e Arquitetura Ports & Adapters `DEC-TEC-001`
 - Migração do Editor WYSIWYG Tiptap (HTML) para Milkdown / Markdown Puro `DEC-TEC-003`
-- PocketBase Isolado em Docker com Migrations JS Versionadas `DEC-TEC-004`
 > ✂️ truncado no orçamento de 4600 chars — use `memory.py load svelte-app-clean-arch`.
 
 ### 🧭 Antes de agir
